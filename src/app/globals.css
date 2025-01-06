@@ -1,10 +1,18 @@
+/* globals.css */
+@import url("https://fonts.googleapis.com/css2?family=Novecento+Wide&family=Raleway:wght@400&display=swap");
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-blue: #003c71; /* Pantone 540c */
+  --color-yellow: #f6e70f; /* Pantone 121c */
+  --color-gold: #e3d8b0; /* Pantone 451c */
+  --color-gray: #e5e7eb; /* gray-200 */
+  --color-orange: #ffa500; /* orange  #ffa500*/
+  --color-navy: #1f2937; /* gray-900 */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,7 +23,144 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  font-family: "Raleway", sans-serif;
+  background-color: var(--color-blue);
+  color: white; /* Color del texto */
 }
+
+h1,
+h2,
+h3 {
+  font-family: "Novecento Wide", sans-serif;
+}
+
+.escudo {
+  max-width: 120px; /* Ajusta el tamaño según la recomendación */
+  margin: 20px auto; /* Centra la imagen horizontalmente */
+  padding: 0; /* Elimina el padding para evitar fondo blanco */
+  display: block;
+}
+
+/* Clases de color personalizadas utilizando las variables CSS */
+.text-blue {
+  color: var(--color-blue);
+}
+
+.text-yellow-500 {  
+  color: var(--color-yellow);
+}
+
+.text-gold {
+  color: var(--color-gold);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Estilos adicionales para mejorar la presentación */
+.bg-blue {
+  background-color: var(--color-blue);
+}
+
+.bg-yellow {
+  background-color: var(--color-yellow);
+}
+
+.bg-gold {
+  background-color: var(--color-gold);
+}
+
+.bg-orange {
+  background-color: var(--color-orange);
+}
+
+/* Específico para iconos */
+.fb-icon:hover {
+  color: #2563eb; /* Forzar el color azul */
+}
+
+/* Carrusel 3D */
+.embla {
+  overflow: hidden;
+  width: 100%; /* Define el ancho del carrusel */
+  height: 400px; /* Define la altura del carrusel */
+  margin: 0 auto; /* Centrar el carrusel en la página */
+  perspective: 1000px; /* Para la sensación de profundidad */
+}
+
+.embla__container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  transition: transform 1s ease; /* Transición suave para el desplazamiento */
+}
+
+.embla__slide {
+  position: relative;
+  min-width: 100%;
+  flex: 0 0 100%;
+  transform: rotateY(0deg); /* Inicialmente sin rotación */
+  transition: transform 1s ease; /* Transición suave para la rotación */
+}
+
+/* Estilos de las imágenes */
+.embla__slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Asegura que las imágenes se ajusten bien al contenedor */
+}
+
+/* Cambia la rotación de las imágenes al desplazarse */
+.embla__slide:nth-child(even) {
+  transform: rotateY(15deg); /* Rotación hacia la derecha para las imágenes pares */
+}
+
+.embla__slide:nth-child(odd) {
+  transform: rotateY(-15deg); /* Rotación hacia la izquierda para las imágenes impares */
+}
+
+/* Estilos de los botones */
+.carrusel-button {
+  width: 80px;
+  height: 80px;
+  background-color: yellow; /* Color de fondo amarillo */
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  ); /* Hexágono */
+  border: none;
+  color: blue; /* Color de flecha azul */
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  transition: background-color 0.3s, color 0.3s; /* Transición suave */
+}
+
+.carrusel-button--prev {
+  left: 10px; /* Botón anterior a la izquierda */
+}
+
+.carrusel-button--next {
+  right: 10px; /* Botón siguiente a la derecha */
+}
+
+/* Efecto hover - cambia los colores al pasar */
+.carrusel-button:hover {
+  background-color: blue; /* Fondo azul al hacer hover */
+  color: yellow; /* Flecha amarilla al hacer hover */
+}
+
