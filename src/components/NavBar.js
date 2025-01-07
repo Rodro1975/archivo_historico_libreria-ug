@@ -34,6 +34,7 @@ const NavBar = () => {
             alt="UGTO Logo"
             width={150} // Ajusta el tamaño de la imagen
             height={50} // Ajusta el tamaño de la imagen
+            style={{ width: '100%', height: 'auto' }} 
           />
         </a>
         <a
@@ -42,11 +43,12 @@ const NavBar = () => {
         >
           <Image
             src="/images/logo_libreria.png"
-            className="h-12"
-            alt="libreria Logo"
-            width={150} // Ajusta el tamaño de la imagen
-            height={50} // Ajusta el tamaño de la imagen
+            alt="Librería Logo"
+            width={150} // Ajusta el ancho
+            height={50} // Ajusta la altura
+            style={{ width: '100%', height: 'auto' }} // Mantén la proporción
           />
+
         </a>
         <div className="flex md:order-2">
           <button
