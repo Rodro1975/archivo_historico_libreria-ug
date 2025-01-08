@@ -12,6 +12,8 @@ import Modal from "../components/Modal";
 import { useEffect, useState, useCallback } from "react";
 
 
+
+
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -169,27 +171,28 @@ export default function Home() {
       </section>
 
       <section className="featured-month py-8">
-        <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
-          Colección Destacada del Mes
-        </h2>
-        <div className="p-6 bg-gray-100 rounded-lg shadow-md">
-          <Image
-            src="/images/libroUg.jpg"
-            alt="Colección Destacada"
-            width={600}
-            height={400}
-            className="w-full h-auto object-cover rounded-lg mb-4"
-          />
-          <p className="text-gray-700 mb-2">
-            Este mes, exploramos la colección sobre [Tema de la Colección]. Esta
-            colección incluye documentos, fotografías y testimonios que destacan
-            su importancia histórica.
-          </p>
-          <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600">
-            Una cita inspiradora o un testimonio relevante sobre la colección.
-          </blockquote>
-        </div>
-      </section>
+  <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
+    Colección Destacada del Mes
+  </h2>
+  <div className="p-6 bg-gray-100 rounded-lg shadow-md mx-auto max-w-3xl"> {/* Limitar el ancho del contenedor */}
+    <Image
+      src="/images/libroUg.jpg"
+      alt="Colección Destacada"
+      width={600}
+      height={400}
+      className="w-full h-auto object-cover rounded-lg mb-4" // Mantener proporciones
+    />
+    <p className="text-gray-700 mb-2">
+      Este mes, exploramos la colección sobre [Tema de la Colección]. Esta
+      colección incluye documentos, fotografías y testimonios que destacan
+      su importancia histórica.
+    </p>
+    <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600">
+      Una cita inspiradora o un testimonio relevante sobre la colección.
+    </blockquote>
+  </div>
+</section>
+
 
       <section className="personal-stories py-8">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">

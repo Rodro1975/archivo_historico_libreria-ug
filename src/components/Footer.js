@@ -103,11 +103,12 @@ const Footer = () => {
           {/* Logo al centro */}
           <div className="flex-shrink-0 mb-6 md:mb-0 md:order-2 md:w-auto w-full flex justify-center">
             <Image
-              src="/images/Logo_libreria.png"
-              alt="Logo Librería"
-              width={200}
-              height={200}
-            />
+                        src="/images/logo_libreria.png"
+                        alt="Librería Logo"
+                        width={300} // Ajusta el ancho
+                        height={100} // Ajusta la altura
+                        style={{ width: '100%', height: 'auto' }} // Mantén la proporción
+                      />
           </div>
 
           {/* Sección de Suscripción a la derecha */}
