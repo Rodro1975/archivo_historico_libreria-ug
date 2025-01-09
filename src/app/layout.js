@@ -2,7 +2,7 @@
 
 "use client";
 
-import 'animate.css';
+import "animate.css";
 import "tailwindcss/tailwind.css"; // Tailwind CSS
 import "./globals.css"; // Asegúrate de que la ruta sea correcta
 import { usePathname } from "next/navigation";
@@ -24,8 +24,8 @@ export default function RootLayout({ children }) {
           return "Panel de Control - Archivo Histórico de la Editorial UG";
         case "/login":
           return "Iniciar Sesión - Archivo Histórico de la Editorial UG";
-        case "/register":
-          return "Registro - Archivo Histórico de la Editorial UG";
+        case "/acercaDe":
+          return "Acerca de - Archivo Histórico de la Editorial UG";
         default:
           return "Archivo Histórico de la Editorial UG"; // Título por defecto
       }
@@ -40,8 +40,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
-
-
-
-
