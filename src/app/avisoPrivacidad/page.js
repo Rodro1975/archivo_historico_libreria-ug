@@ -25,7 +25,7 @@ const AvisoPrivacidadPage = () => {
           Periódico Oficial del Gobierno del Estado de Guanajuato el 14 de julio
           de 2017, se hace de su conocimiento lo siguiente:
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Responsable
         </h2>
         <p className="text-gray-700 mb-4">
@@ -40,14 +40,14 @@ const AvisoPrivacidadPage = () => {
           que en este documento se indican, obtenidos en virtud de las
           atribuciones expresas que la normatividad aplicable le confiere.
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Domicilio del Responsable
         </h2>
         <p className="text-gray-700 mb-4">
           La Universidad de Guanajuato tiene su domicilio en Lascurain de Retana
           5, Colonia Centro, C.P. 36000 en Guanajuato, Gto
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Datos personales sometidos a tratamiento
         </h2>
         <p className="text-gray-700 mb-4">
@@ -68,7 +68,7 @@ const AvisoPrivacidadPage = () => {
           El Programa Editorial Universitario no lleva a cabo el tratamiento de
           datos personales sensibles.
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Finalidad del tratamiento
         </h2>
         <p className="text-gray-700 mb-4">
@@ -83,7 +83,7 @@ const AvisoPrivacidadPage = () => {
           impacten positivamente en la comunidad, a través de actividades de
           venta de libros impresos y digitales.
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Fundamento legal que faculta expresamente al responsable para llevar a
           cabo el tratamiento de datos personales
         </h2>
@@ -97,7 +97,7 @@ const AvisoPrivacidadPage = () => {
           98 del Reglamento Académico de la Universidad de Guanajuato (labor
           editorial).
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Mecanismos y medios disponibles para que el Titular de los datos
           personales pueda manifestar su negativa para el tratamiento de sus
           datos personales
@@ -113,7 +113,7 @@ const AvisoPrivacidadPage = () => {
           para el tratamiento de datos personales), disponible en:{" "}
           <span className="text-orange"> CLICK AQUÍ.</span>
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Mecanismos, medios y procedimientos disponibles para ejercer los
           derechos ARCO y domicilio de la Unidad de Transparencia
         </h2>
@@ -127,7 +127,7 @@ const AvisoPrivacidadPage = () => {
           en un horario de lunes a viernes de 08:00 a 16:00 horas, o bien a
           través del correo electrónico: transparencia@ugto.mx.
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Sitio de consulta para el aviso de privacidad integral
         </h2>
         <p className="text-gray-700 mb-4">
@@ -135,7 +135,7 @@ const AvisoPrivacidadPage = () => {
           institucional: <span className="text-orange"> CLICK AQUÍ </span> y en{" "}
           <span className="text-orange"> CLICK AQUÍ.</span>
         </p>
-        <h2 className="text-4xl font-bold text-center text-[#003c71] mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
           Los medios a través de los cuales el responsable comunicará a los
           titulares el aviso de privacidad
         </h2>

@@ -56,7 +56,7 @@ const Footer = () => {
 
               <li>
                 <a
-                  href="/terminos-condiciones"
+                  href="/terminosCondiciones"
                   onClick={() => {
                     /* Lógica para abrir modal de Términos y condiciones */
                   }}

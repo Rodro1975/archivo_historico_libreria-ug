@@ -64,7 +64,7 @@ const NavBar = () => {
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <Image
-            src="/images/logo_libreria.png"
+            src="/images/Logo_libreria.png"
             alt="Librería Logo"
             width={150}
             height={50}
