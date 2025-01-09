@@ -47,7 +47,7 @@ const Footer = () => {
             <ul className="space-y-2 text-blue">
               <li>
                 <a
-                  href="/privacy-policy" // Cambia el href aquí para que apunte a la página de aviso de privacidad
+                  href="/avisoPrivacidad" // Cambia el href aquí para que apunte a la página de aviso de privacidad
                   className="hover:text-white transition duration-300"
                 >
                   Aviso de privacidad
@@ -102,13 +102,19 @@ const Footer = () => {
 
           {/* Logo al centro */}
           <div className="flex-shrink-0 mb-6 md:mb-0 md:order-2 md:w-auto w-full flex justify-center">
-            <Image
-                        src="/images/logo_libreria.png"
-                        alt="Librería Logo"
-                        width={300} // Ajusta el ancho
-                        height={100} // Ajusta la altura
-                        style={{ width: '100%', height: 'auto' }} // Mantén la proporción
-                      />
+            <a
+              href="https://www.ugto.mx/editorial/"
+              target="_blank"
+              className="flex items-center space-x-3 rtl:space-x-reverse"
+            >
+              <Image
+                src="/images/editorial-ug.png"
+                alt="Librería Logo"
+                width={150}
+                height={50}
+                className="h-12 w-auto rounded-full"
+              />
+            </a>
           </div>
 
           {/* Sección de Suscripción a la derecha */}
