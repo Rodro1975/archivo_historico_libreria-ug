@@ -79,7 +79,7 @@ const NavBar = () => {
               <Link href="/login">
                 <span
                   onClick={handleAnimation}
-                  className={`block py-2 px-3 text-[#003c71] ${currentPath === "/login" && isVisible ? "animate__animated animate__hinge" : ""} font-semibold`}
+                  className={`block py-2 px-3 text-[#003c71] ${currentPath === "/login" && undefined ? "animate__animated animate__hinge" : ""} font-semibold`}
                 >
                   Login
                 </span>
