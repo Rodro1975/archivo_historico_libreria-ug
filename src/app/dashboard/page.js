@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import supabase from "@/lib/supabase"; // Asegúrate de que esta ruta sea correcta
-import Image from "next/image";
+import supabase from "@/lib/supabase";
+import Sidebar from "@/components/Sidebar";
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
@@ -21,8 +21,7 @@ const DashboardPage = () => {
         console.log("Sesión no válida, redirigiendo a /login");
         router.push("/login");
       } else {
-        const userId = session.user.id; // Asegúrate de que este ID corresponda a tu tabla
-        fetchUserData(userId);
+        fetchUserData(session.user.id);
       }
       setLoading(false);
     };
@@ -33,78 +32,40 @@ const DashboardPage = () => {
   const fetchUserData = async (userId) => {
     const { data, error } = await supabase
       .from("usuarios")
-      .select("primer_nombre, apellido_paterno, role, foto") // Incluye el campo 'foto'
-      .eq("id_auth", userId) // Cambia "id_auth" por el campo correcto que uses para identificar al usuario
+      .select("primer_nombre, apellido_paterno, role, foto")
+      .eq("id_auth", userId)
       .single();
 
     if (error) {
       console.error("Error fetching user data:", error.message);
     } else {
-      setUserData(data); // Almacena los datos del usuario
+      setUserData(data);
     }
   };
 
-  if (loading) return <h1>Cargando...</h1>;
+  if (loading) return <h1 className="text-center mt-10">Cargando...</h1>;
 
   return (
-    <div
-      style={{
-        backgroundColor: "var(--color-gray)",
-        minHeight: "100vh",
-        padding: "20px",
-      }}
-    >
-      <header
-        style={{
-          width: "100%",
-          backgroundColor: "var(--color-blue)",
-          color: "white",
-          padding: "20px 0",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          position: "relative",
-        }}
-      >
+    <div className="bg-gray-100 min-h-screen">
+      <Sidebar />
+      <header className="bg-blue text-white py-6 text-center">
         {userData?.foto && (
           <img
             src={userData.foto}
             alt={`${userData.primer_nombre} ${userData.apellido_paterno}`}
-            style={{
-              width: "120px",
-              height: "120px",
-              borderRadius: "50%",
-              objectFit: "cover",
-              border: "3px solid var(--color-orange)",
-              marginBottom: "15px",
-            }}
+            className="w-32 h-32 rounded-full object-cover border-4 border-orange mx-auto mb-4"
           />
         )}
-        <h1 style={{ fontSize: "2rem", fontWeight: "bold", margin: "0 10px" }}>
-          Bienvenido a tu espacio de trabajo:{" "}
-          {userData
-            ? `${userData.primer_nombre} ${userData.apellido_paterno}`
-            : "Usuario"}
+        <h1 className="text-3xl font-bold">
+          Bienvenido a tu espacio de trabajo, {userData?.primer_nombre}{" "}
+          {userData?.apellido_paterno}
         </h1>
-        <p
-          style={{
-            fontSize: "1.2rem",
-            color: "var(--color-gold)",
-            marginTop: "5px",
-          }}
-        >
-          Rol:{" "}
-          <span style={{ fontWeight: "300" }}>
-            {userData?.role || "No especificado"}
-          </span>
+        <p className="text-xl text-yellow-300">
+          Rol: {userData?.role || "No especificado"}
         </p>
       </header>
-
-      <main style={{ padding: "20px", textAlign: "center" }}>
-        {/* Aquí puedes añadir el contenido principal del dashboard */}
-        <p style={{ color: "var(--color-navy)" }}>
+      <main className="p-6 text-center">
+        <p className="text-blue">
           ¡Explora las funcionalidades de tu dashboard!
         </p>
       </main>
