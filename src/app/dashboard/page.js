@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import Sidebar from "@/components/Sidebar";
+import PanelAdmin from "@/components/PanelAdmin";
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
@@ -45,6 +46,9 @@ const DashboardPage = () => {
 
   if (loading) return <h1 className="text-center mt-10">Cargando...</h1>;
 
+  // Rol del usuario
+  const userRole = userData?.role;
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <Sidebar />
@@ -69,6 +73,12 @@ const DashboardPage = () => {
           ¡Explora las funcionalidades de tu dashboard!
         </p>
       </main>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        {/* Mostrar panel según el rol */}
+        {userRole === "Administrador" && <PanelAdmin />}
+        {userRole === "Editor" && <PanelEditor />}
+        {userRole === "Lector" && <PanelReader />}
+      </div>
     </div>
   );
 };

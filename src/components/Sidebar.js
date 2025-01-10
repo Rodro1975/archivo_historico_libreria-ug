@@ -9,12 +9,26 @@ import {
   AiOutlineUser,
   AiOutlineLogout,
 } from "react-icons/ai";
+import { useRouter } from "next/navigation";
+import supabase from "@/lib/supabase";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      console.log("Sesión cerrada exitosamente");
+      router.push("/login"); // Redirigir a la página de login
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error.message);
+    }
   };
 
   return (
@@ -73,7 +87,7 @@ const Sidebar = () => {
             <AiOutlineLogout size={24} />
             <button
               className="block text-lg"
-              onClick={() => console.log("Cerrar sesión")}
+              onClick={handleLogout} // Llama a la función handleLogout
             >
               Cerrar Sesión
             </button>
