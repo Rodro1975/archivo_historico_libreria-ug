@@ -126,7 +126,7 @@ const PanelAdmin = () => {
           />
           <div>
             <Link href="/register">
-              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
+              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
                 Usuarios
               </h2>
             </Link>
@@ -149,7 +149,7 @@ const PanelAdmin = () => {
             className="mr-4"
           />
           <div>
-            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
               Estadísticas
             </h2>
             <p className="text-blue text-sm">
@@ -158,12 +158,6 @@ const PanelAdmin = () => {
           </div>
         </div>
       </div>
-      {/* Botón para Ver Catálogo Completo */}
-      <Link href="/completeCatalog" passHref>
-        <button className="bg-gold text-blue px-4 py-2 rounded mb-4">
-          Ver Catálogo Completo
-        </button>
-      </Link>
     </div>
   );
 };

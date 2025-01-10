@@ -8,6 +8,7 @@ import {
   AiOutlineMail,
   AiOutlineUser,
   AiOutlineLogout,
+  AiOutlineBook,
 } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
@@ -53,31 +54,38 @@ const Sidebar = () => {
           <Image
             src="/images/editorial-ug.png"
             alt="Logo Librería UG"
-            width={180}
-            height={90}
+            width={200}
+            height={100}
             className="object-contain rounded-md"
           />
         </div>
 
         {/* Menú */}
         <ul className="flex flex-col gap-6 p-6 text-[var(--color-blue)]">
-          <li className="flex items-center gap-4 hover:text-[var(--color-yellow)]">
+          <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
             <AiOutlineHome size={24} />
             <Link href="/" className="block text-lg">
               Inicio
             </Link>
           </li>
-          <li className="flex items-center gap-4 hover:text-[var(--color-yellow)]">
+          {/* Botón para la Galería del Editor */}
+          <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+            <AiOutlineBook size={24} />
+            <Link href="#" className="block text-lg">
+              Galería del Editor
+            </Link>
+          </li>
+          <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
             <AiOutlineMail size={24} />
             <Link
-              href="https://mail.google.com"
+              href="#" //aqui va el correo institucional al que sera redireccionado el usuario
               target="_blank"
               className="block text-lg"
             >
               Correo
             </Link>
           </li>
-          <li className="flex items-center gap-4 hover:text-[var(--color-yellow)]">
+          <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
             <AiOutlineUser size={24} />
             <Link href="/profile" className="block text-lg">
               Perfil

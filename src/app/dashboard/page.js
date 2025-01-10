@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import Sidebar from "@/components/Sidebar";
 import PanelAdmin from "@/components/PanelAdmin";
+import PanelEditor from "@/components/PanelEditor";
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
