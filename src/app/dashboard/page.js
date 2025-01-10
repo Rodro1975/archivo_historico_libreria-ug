@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase"; // Asegúrate de que esta ruta sea correcta
+import Image from "next/image";
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
@@ -46,7 +47,13 @@ const DashboardPage = () => {
   if (loading) return <h1>Cargando...</h1>;
 
   return (
-    <div style={{ backgroundColor: "var(--color-gray)", minHeight: "100vh", padding: "20px" }}>
+    <div
+      style={{
+        backgroundColor: "var(--color-gray)",
+        minHeight: "100vh",
+        padding: "20px",
+      }}
+    >
       <header
         style={{
           width: "100%",
@@ -76,22 +83,33 @@ const DashboardPage = () => {
           />
         )}
         <h1 style={{ fontSize: "2rem", fontWeight: "bold", margin: "0 10px" }}>
-          Bienvenido a tu espacio de trabajo:  {userData ? `${userData.primer_nombre} ${userData.apellido_paterno}` : "Usuario"}
+          Bienvenido a tu espacio de trabajo:{" "}
+          {userData
+            ? `${userData.primer_nombre} ${userData.apellido_paterno}`
+            : "Usuario"}
         </h1>
-        <p style={{ fontSize: "1.2rem", color: "var(--color-gold)", marginTop: "5px" }}>
-          Rol: <span style={{ fontWeight: "300" }}>{userData?.role || "No especificado"}</span>
+        <p
+          style={{
+            fontSize: "1.2rem",
+            color: "var(--color-gold)",
+            marginTop: "5px",
+          }}
+        >
+          Rol:{" "}
+          <span style={{ fontWeight: "300" }}>
+            {userData?.role || "No especificado"}
+          </span>
         </p>
       </header>
 
       <main style={{ padding: "20px", textAlign: "center" }}>
         {/* Aquí puedes añadir el contenido principal del dashboard */}
-        <p style={{ color: "var(--color-navy)" }}>¡Explora las funcionalidades de tu dashboard!</p>
+        <p style={{ color: "var(--color-navy)" }}>
+          ¡Explora las funcionalidades de tu dashboard!
+        </p>
       </main>
     </div>
   );
 };
 
 export default DashboardPage;
-
-
-

@@ -153,7 +153,7 @@ const NavBar = () => {
             </li>
 
             <li>
-              <Link href="/catalog">
+              <Link href="/catalogo">
                 <span
                   onClick={handleAnimation}
                   className={`block py-2 px-3 text-[#003c71] ${

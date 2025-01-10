@@ -2,12 +2,22 @@
 import React from "react";
 import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa"; // Importa iconos de react-icons
 import { SiX } from "react-icons/si"; // Importa el icono de X
+import Image from "next/image";
 
 const SocialBar = () => {
   return (
     <div className="sticky top-0 flex justify-center items-center p-4 bg-gray-800 z-30">
+      <Image
+        src="/images/editorial-ug.png"
+        alt="Editorial Logo"
+        width={150}
+        height={50}
+        className="h-12 w-auto rounded-md mr-6"
+      />
       {/* Iconos de redes sociales */}
-      <div className="flex space-x-6"> {/* Utiliza flex y espacio entre iconos */}
+      <div className="flex space-x-6">
+        {" "}
+        {/* Utiliza flex y espacio entre iconos */}
         <a
           href="https://www.facebook.com"
           target="_blank"
@@ -54,5 +64,3 @@ const SocialBar = () => {
 };
 
 export default SocialBar;
-
-
