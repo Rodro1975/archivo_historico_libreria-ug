@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { set } from "react-hook-form";
 import Head from "next/head";
+import ModalGalery from "@/components/ModalGalery";
 import "animate.css";
 
 const CatalogoPage = () => {
