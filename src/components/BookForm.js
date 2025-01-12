@@ -22,12 +22,14 @@ const RegisterBookSchema = z.object({
   materia: z.string().optional(),
   tematica: z.string().optional(),
   coleccion: z.string().min(1, { message: "La colección es requerida" }),
-  numeroEdicion: z
-    .number()
-    .int({ message: "El número de edición debe ser un entero." }),
-  anioPublicacion: z
-    .string()
-    .min(1, { message: "La fecha de publicación es requerida." }),
+  numeroEdicion: z.preprocess(
+    (value) => parseInt(value, 10), // Convertir el valor a un número
+    z.number().int({ message: "El número de edición debe ser un entero." })
+  ),
+  anioPublicacion: z.preprocess(
+    (value) => parseInt(value, 10), // Convertir el valor a un número
+    z.number().int({ message: "El número de edición debe ser un entero." })
+  ),
   formato: z.string().min(1, { message: "El formato es requerido" }),
   responsablePublicacion: z.string().optional(),
   correoResponsable: z.string().optional(),
@@ -39,12 +41,14 @@ const RegisterBookSchema = z.object({
   dimensiones: z
     .string()
     .min(2, { message: "Las dimensiones deben tener al menos 2 caracteres." }),
-  numeroPaginas: z
-    .number()
-    .int({ message: "El número de páginas debe ser un entero." }),
-  pesoGramos: z
-    .number()
-    .int({ message: "El peso en gramos debe ser un entero." }),
+  numeroPaginas: z.preprocess(
+    (value) => parseInt(value, 10), // Convertir el valor a un número
+    z.number().int({ message: "El número de edición debe ser un entero." })
+  ),
+  pesoGramos: z.preprocess(
+    (value) => parseInt(value, 10), // Convertir el valor a un número
+    z.number().int({ message: "El número de edición debe ser un entero." })
+  ),
   tiraje_o_ibd: z.string().min(1, { message: "El tiraje es requerido" }),
   esTraduccion: z.boolean(),
   sinopsis: z.string().min(1, { message: "La sinopsis es requerida" }),
@@ -72,9 +76,10 @@ export default function BookForm() {
     // Sanitizar datos antes de enviar a Supabase
     const sanitizedData = {
       ...data,
+      numeroEdicion: parseInt(data.numeroEdicion, 10),
     };
 
-    console.log("Sanitized data before sending:", sanitizedData);
+    console.log("Datos preparados para Supabase:", sanitizedData);
 
     // Enviar los datos a Supabase
     const { data: insertDataResponse, error } = await supabase
@@ -82,7 +87,7 @@ export default function BookForm() {
       .insert([sanitizedData]);
 
     if (error) {
-      console.error("Error al insertar datos:", error);
+      console.error("Error al insertar datos:", error.message, error.details);
       setSuccessMessage("");
     } else {
       console.log("Datos insertados:", insertDataResponse);
