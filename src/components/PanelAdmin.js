@@ -101,7 +101,7 @@ const PanelAdmin = () => {
           />
           <div>
             {/* Enlace con href a /libros */}
-            <Link href="/libros">
+            <Link href="/mostrarLibros">
               <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
                 Libros
               </h2>

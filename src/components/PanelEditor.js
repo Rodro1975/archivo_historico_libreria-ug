@@ -9,9 +9,7 @@ import Link from "next/link"; // Importa Link para la navegación
 const PanelEditor = () => {
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl text-blue font-bold mb-4">
-        Panel de Administración
-      </h1>
+      <h1 className="text-2xl text-blue font-bold mb-4">Panel del Editor</h1>
 
       {/* Estilos para el hexágono */}
       <style jsx>{`
@@ -79,7 +77,7 @@ const PanelEditor = () => {
           />
           <div>
             {/* Enlace con href a /libros */}
-            <Link href="/libros">
+            <Link href="/mostrarLibros">
               <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
                 Libros
               </h2>
