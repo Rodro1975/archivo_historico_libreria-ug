@@ -61,8 +61,33 @@ const MostrarLibrosPage = () => {
               <th className="border px-4 py-2">ISBN</th>
               <th className="border px-4 py-2">DOI</th>
               <th className="border px-4 py-2">Titulo</th>
-              {/* Más columnas aquí */}
-              <th className="border px-4 py-2">Acciones</th>
+              <th className="border px-4 py-2">Subtitulo</th>
+              <th className="border px-4 py-2">Materia</th>
+              <th className="border px-4 py-2">Tematica</th>
+              <th className="border px-4 py-2">Colección</th>
+              <th className="border px-4 py-2">Número de Edición</th>
+              <th className="border px-4 py-2">Año de publicación</th>
+              <th className="border px-4 py-2">Formato</th>
+              <th className="border px-4 py-2">Responsable de publicación</th>
+              <th className="border px-4 py-2">Correo Responsable</th>
+              <th className="border px-4 py-2">Teléfono Responsable</th>
+              <th className="border px-4 py-2">Campus</th>
+              <th className="border px-4 py-2">División</th>
+              <th className="border px-4 py-2">Departamento</th>
+              <th className="border px-4 py-2">Tipo de Autoria</th>
+              <th className="border px-4 py-2">Dimensiones</th>
+              <th className="border px-4 py-2">Número de páginas</th>
+              <th className="border px-4 py-2">Idioma</th>
+              <th className="border px-4 py-2">Peso en gramos</th>
+              <th className="border px-4 py-2">Tiraje o IBD</th>
+              <th className="border px-4 py-2">Es traducción</th>
+              <th className="border px-4 py-2">Sinopsis</th>
+              <th className="border px-4 py-2">Depósito Legal</th>
+              <th className="border px-4 py-2">Fecha de registro</th>
+              <th className="border px-4 py-2">Fecha de modificación</th>
+              <th className="border px-4 py-2">Portada</th>
+              <th className="border px-4 py-2">Archivo PDF</th>
+              <th className="border px-4 py-2">Deposito Legal PDF</th>
             </tr>
           </thead>
           <tbody>
@@ -73,7 +98,37 @@ const MostrarLibrosPage = () => {
                 <td className="border px-4 py-2">{libro.isbn}</td>
                 <td className="border px-4 py-2">{libro.doi}</td>
                 <td className="border px-4 py-2">{libro.titulo}</td>
-                {/* Más datos aquí */}
+                <td className="border px-4 py-2">{libro.subtitulo}</td>
+                <td className="border px-4 py-2">{libro.materia}</td>
+                <td className="border px-4 py-2">{libro.tematica}</td>
+                <td className="border px-4 py-2">{libro.coleccion}</td>
+                <td className="border px-4 py-2">{libro.numeroEdicion}</td>
+                <td className="border px-4 py-2">{libro.anioPublicacion}</td>
+                <td className="border px-4 py-2">{libro.formato}</td>
+                <td className="border px-4 py-2">
+                  {libro.responsablePublicacion}
+                </td>
+                <td className="border px-4 py-2">{libro.correoResponsable}</td>
+                <td className="border px-4 py-2">
+                  {libro.telefonoResponsable}
+                </td>
+                <td className="border px-4 py-2">{libro.campus}</td>
+                <td className="border px-4 py-2">{libro.division}</td>
+                <td className="border px-4 py-2">{libro.departamento}</td>
+                <td className="border px-4 py-2">{libro.tipoAutoria}</td>
+                <td className="border px-4 py-2">{libro.dimensiones}</td>
+                <td className="border px-4 py-2">{libro.numeroPaginas}</td>
+                <td className="border px-4 py-2">{libro.idioma}</td>
+                <td className="border px-4 py-2">{libro.pesoGramos}</td>
+                <td className="border px-4 py-2">{libro.tiraje_o_ibd}</td>
+                <td className="border px-4 py-2">{libro.esTraduccion}</td>
+                <td className="border px-4 py-2">{libro.sinopsis}</td>
+                <td className="border px-4 py-2">{libro.depositoLegal}</td>
+                <td className="border px-4 py-2">{libro.fecha_registro}</td>
+                <td className="border px-4 py-2">{libro.fecha_modificacion}</td>
+                <td className="border px-4 py-2">{libro.portada}</td>
+                <td className="border px-4 py-2">{libro.archivo_pdf}</td>
+                <td className="border px-4 py-2">{libro.depositoLegal_pdf}</td>
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => handleDelete(libro.codigoRegistro)}
