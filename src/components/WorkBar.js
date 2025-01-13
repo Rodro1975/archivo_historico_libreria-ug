@@ -10,6 +10,7 @@ const WorkBar = () => {
   const [isResearch, setIsResearch] = useState(false);
   const [isReader, setIsReader] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false); // Estado para mostrar/ocultar BookForm
+  const [showUserForm, setShowUserForm] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,9 +38,13 @@ const WorkBar = () => {
     window.location.href = "/login";
   };
 
-  // Función para alternar la visibilidad del formulario
+  // Función para alternar la visibilidad de los formularios
   const toggleBookForm = () => {
     setShowBookForm((prev) => !prev);
+  };
+
+  const toggleUserForm = () => {
+    setShowUserForm((prev) => !prev);
   };
 
   return (
@@ -56,15 +61,12 @@ const WorkBar = () => {
 
       {/* Enlaces específicos para cada tipo de usuario */}
       <div className="flex flex-col items-center space-y-2">
-        <Link href="/" className="hover:text-[#FFD700] font-bold">
+        <Link href="/" className="hover:text-yellow font-bold">
           Inicio
         </Link>
         {isAdmin && (
           <>
-            <Link
-              href="/admin/users"
-              className="hover:text-[#FFD700] font-bold"
-            >
+            <Link href="/admin/users" className="hover:text-yellow font-bold">
               Gestionar Usuarios
             </Link>
             <Link
@@ -73,15 +75,12 @@ const WorkBar = () => {
             >
               Gestionar Libros
             </Link>
-            <Link
-              href="/admin/reports"
-              className="hover:text-[#FFD700] font-bold"
-            >
+            <Link href="/admin/reports" className="hover:text-yellow font-bold">
               Reporte 1
             </Link>
             <Link
               href="/admin/reports2"
-              className="hover:text-[#FFD700] font-bold"
+              className="hover:text-yellow font-bold"
             >
               Reporte 2
             </Link>
@@ -89,10 +88,7 @@ const WorkBar = () => {
         )}
         {isEditor && (
           <>
-            <Link
-              href="/editor/books"
-              className="hover:text-[#FFD700] font-bold"
-            >
+            <Link href="/editor/books" className="hover:text-yellow font-bold">
               Modificar Libros
             </Link>
             <Link
@@ -103,6 +99,15 @@ const WorkBar = () => {
             </Link>
           </>
         )}
+        {/* Botón para mostrar/ocultar el formulario */}
+        <button
+          onClick={toggleUserForm}
+          className="hover:text-orange font-bold"
+        >
+          {showUserForm
+            ? "Ocultar Formulario"
+            : "Formulario de Registro de Usuarios"}
+        </button>
 
         {/* Botón para mostrar/ocultar el formulario */}
         <button
@@ -124,7 +129,7 @@ const WorkBar = () => {
           </div>
         )}
 
-        <Link href="/dashboard" className="hover:text-[#FFD700] font-bold">
+        <Link href="/dashboard" className="hover:text-yellow font-bold">
           Volver al Dashboard
         </Link>
 

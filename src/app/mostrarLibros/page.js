@@ -50,9 +50,11 @@ const MostrarLibrosPage = () => {
   return (
     <div className="min-h-screen bg-blue">
       <WorkBar />
-      <h1 className="text-4xl text-yellow font-bold mb-8">Lista de libros</h1>
+      <h1 className="text-4xl text-yellow text-center font-bold mt-8 mb-8">
+        Lista de libros
+      </h1>
       <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
-        <table className="min-w-full bg-white border border-gray-300 text-blue">
+        <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
           <thead>
             <tr>
               {/* Encabezados de la tabla */}
