@@ -6,6 +6,7 @@ import supabase from "@/lib/supabase";
 import Sidebar from "@/components/Sidebar";
 import PanelAdmin from "@/components/PanelAdmin";
 import PanelEditor from "@/components/PanelEditor";
+import PanelReader from "@/components/PanelReader";
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
