@@ -71,7 +71,7 @@ const Sidebar = () => {
           {/* Botón para la Galería del Editor */}
           <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
             <AiOutlineBook size={24} />
-            <Link href="#" className="block text-lg">
+            <Link href="/catalogoCompleto" className="block text-lg">
               Galería del Editor
             </Link>
           </li>
