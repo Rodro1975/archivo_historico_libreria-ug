@@ -3,14 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { decode } from "jsonwebtoken";
 import BookForm from "./BookForm";
+import UserForm from "./UserForm";
 
 const WorkBar = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditor, setIsEditor] = useState(false);
-  const [isResearch, setIsResearch] = useState(false);
-  const [isReader, setIsReader] = useState(false);
-  const [showBookForm, setShowBookForm] = useState(false); // Estado para mostrar/ocultar BookForm
-  const [showUserForm, setShowUserForm] = useState(false);
+  const [activeForm, setActiveForm] = useState(null); // 'book' | 'user' | null
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -21,10 +19,6 @@ const WorkBar = () => {
           setIsAdmin(true);
         } else if (decoded.rol === "Editor") {
           setIsEditor(true);
-        } else if (decoded.rol === "Investigador") {
-          setIsResearch(true);
-        } else if (decoded.rol === "Lector") {
-          setIsReader(true);
         }
       } catch (error) {
         console.error("Error al decodificar el token:", error);
@@ -32,24 +26,17 @@ const WorkBar = () => {
     }
   }, []);
 
-  // Función para cerrar sesión
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
-  // Función para alternar la visibilidad de los formularios
-  const toggleBookForm = () => {
-    setShowBookForm((prev) => !prev);
-  };
-
-  const toggleUserForm = () => {
-    setShowUserForm((prev) => !prev);
+  const toggleForm = (formType) => {
+    setActiveForm((prev) => (prev === formType ? null : formType));
   };
 
   return (
     <div className="bg-white shadow-lg border-[#E5E7EB] dark:bg-[#111827] text-[#1E3A8A] flex flex-col items-center py-8 space-y-4">
-      {/* Logo en el centro */}
       <div>
         <Image
           src="/images/editorial-ug.png"
@@ -58,8 +45,6 @@ const WorkBar = () => {
           height={150}
         />
       </div>
-
-      {/* Enlaces específicos para cada tipo de usuario */}
       <div className="flex flex-col items-center space-y-2">
         <Link href="/" className="hover:text-yellow font-bold">
           Inicio
@@ -99,28 +84,23 @@ const WorkBar = () => {
             </Link>
           </>
         )}
-        {/* Botón para mostrar/ocultar el formulario */}
         <button
-          onClick={toggleUserForm}
+          onClick={() => toggleForm("user")}
           className="hover:text-orange font-bold"
         >
-          {showUserForm
-            ? "Ocultar Formulario"
+          {activeForm === "user"
+            ? "Ocultar Formulario de Usuarios"
             : "Formulario de Registro de Usuarios"}
         </button>
-
-        {/* Botón para mostrar/ocultar el formulario */}
         <button
-          onClick={toggleBookForm}
+          onClick={() => toggleForm("book")}
           className="hover:text-orange font-bold"
         >
-          {showBookForm
-            ? "Ocultar Formulario"
+          {activeForm === "book"
+            ? "Ocultar Formulario de Libros"
             : "Formulario de Registro de Libros"}
         </button>
-
-        {/* Renderizar el componente BookForm solo si showBookForm es true */}
-        {showBookForm && (
+        {activeForm === "book" && (
           <div className="flex flex-col items-center mt-4">
             <h2 className="text-lg font-bold text-gold">
               Formulario de Libros
@@ -128,12 +108,17 @@ const WorkBar = () => {
             <BookForm />
           </div>
         )}
-
+        {activeForm === "user" && (
+          <div className="flex flex-col items-center mt-4">
+            <h2 className="text-lg font-bold text-gold">
+              Formulario de Usuarios
+            </h2>
+            <UserForm />
+          </div>
+        )}
         <Link href="/dashboard" className="hover:text-yellow font-bold">
           Volver al Dashboard
         </Link>
-
-        {/* Botón para cerrar sesión */}
         <button onClick={handleLogout} className="hover:text-red-700 font-bold">
           Cerrar Sesión
         </button>
