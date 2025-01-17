@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
-import { data } from "autoprefixer";
 
 const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
   const {
@@ -212,6 +211,8 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
             />
           </div>
           {/* Agrega más campos según sea necesario */}
+
+          {/* Botones para guardar cambios y cancelar */}
           <button
             type="submit"
             className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-700"

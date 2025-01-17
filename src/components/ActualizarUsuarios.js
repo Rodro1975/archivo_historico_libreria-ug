@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import { useEffect, useState } from "react"; // Solo una vez
 import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";

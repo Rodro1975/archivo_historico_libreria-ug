@@ -4,13 +4,18 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const MostrarLibrosPage = () => {
   const [libros, setLibros] = useState([]);
+  const [filteredLibros, setFilteredLibros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentLibro, setCurrentLibro] = useState(null);
+
+  const searchParams = useSearchParams();
+  const searchTerm = searchParams.get("search") || "";
 
   // Función para obtener los datos de la tabla
   const fetchLibros = async () => {
@@ -21,9 +26,32 @@ const MostrarLibrosPage = () => {
       setError(error.message);
     } else {
       setLibros(data);
+      setFilteredLibros(data);
     }
     setLoading(false);
   };
+
+  // Funcion para buscar libros en la tabla
+  const handleSearch = (searchTerm) => {
+    const lowerCaseTerm = searchTerm.toLowerCase();
+    const results = libros.filter((libro) =>
+      libro.titulo.toLowerCase().includes(lowerCaseTerm)
+    );
+    setFilteredLibros(results);
+  };
+
+  // Efecto para cargar los datos al montar el componente
+  useEffect(() => {
+    fetchLibros();
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      handleSearch(searchTerm);
+    } else {
+      setFilteredLibros(libros); // Mostrar todos los libros si no hay término de búsqueda
+    }
+  }, [searchTerm, libros]);
 
   // Función para eliminar un registro
   const handleDelete = async (codigoRegistro) => {
@@ -38,11 +66,6 @@ const MostrarLibrosPage = () => {
       fetchLibros();
     }
   };
-
-  // Efecto para cargar los datos al montar el componente
-  useEffect(() => {
-    fetchLibros();
-  }, []);
 
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -93,7 +116,7 @@ const MostrarLibrosPage = () => {
             </tr>
           </thead>
           <tbody>
-            {libros.map((libro) => (
+            {filteredLibros.map((libro) => (
               <tr key={libro.id_libro}>
                 <td className="border px-4 py-2">{libro.id_libro}</td>
                 <td className="border px-4 py-2">{libro.codigoRegistro}</td>

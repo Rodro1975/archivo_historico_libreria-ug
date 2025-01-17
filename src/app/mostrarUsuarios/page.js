@@ -4,13 +4,18 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios"; // Asegúrate de importar el componente correcto
+import { useRouter, useSearchParams } from "next/navigation";
 
 const MostrarUsuariosPage = () => {
   const [usuarios, setUsuarios] = useState([]);
+  const [filteredUsuarios, setFilteredUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentUsuario, setCurrentUsuario] = useState(null); // Corregido
+
+  const searchParams = useSearchParams();
+  const searchTerm = searchParams.get("search") || "";
 
   // Función para obtener los datos de la tabla
   const fetchUsuarios = async () => {
@@ -21,9 +26,32 @@ const MostrarUsuariosPage = () => {
       setError(error.message);
     } else {
       setUsuarios(data);
+      setFilteredUsuarios(data);
     }
     setLoading(false);
   };
+
+  // Funcion para buscar libros en la tabla
+  const handleSearch = (searchTerm) => {
+    const lowerCaseTerm = searchTerm.toLowerCase();
+    const results = usuarios.filter((usuario) =>
+      usuario.apellido_paterno.toLowerCase().includes(lowerCaseTerm)
+    );
+    setFilteredUsuarios(results);
+  };
+
+  // Efecto para cargar los datos al montar el componente
+  useEffect(() => {
+    fetchUsuarios();
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      handleSearch(searchTerm);
+    } else {
+      setFilteredUsuarios(usuarios); // Mostrar todos los libros si no hay término de búsqueda
+    }
+  }, [searchTerm, usuarios]);
 
   // Función para eliminar un registro
   const handleDelete = async (id_usuario) => {
@@ -38,11 +66,6 @@ const MostrarUsuariosPage = () => {
       fetchUsuarios();
     }
   };
-
-  // Efecto para cargar los datos al montar el componente
-  useEffect(() => {
-    fetchUsuarios();
-  }, []);
 
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -72,7 +95,7 @@ const MostrarUsuariosPage = () => {
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((usuario) => (
+            {filteredUsuarios.map((usuario) => (
               <tr key={usuario.id_usuario}>
                 <td className="border px-4 py-2">{usuario.id_usuario}</td>
                 <td className="border px-4 py-2">{usuario.primer_nombre}</td>

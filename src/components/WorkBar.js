@@ -1,128 +1,244 @@
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { decode } from "jsonwebtoken";
-import BookForm from "./BookForm";
-import UserForm from "./UserForm";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import supabase from "@/lib/supabase";
+import {
+  AiOutlineHome,
+  AiOutlineLogout,
+  AiOutlineBook,
+  AiOutlineDashboard,
+} from "react-icons/ai";
+import ActualizarLibros from "@/components/ActualizarLibros";
+import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 
 const WorkBar = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isEditor, setIsEditor] = useState(false);
-  const [activeForm, setActiveForm] = useState(null); // 'book' | 'user' | null
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeForm, setActiveForm] = useState(null);
+  const [searchBooks, setSearchBooks] = useState(""); // Estado para buscar libros
+  const [searchUsers, setSearchUsers] = useState(""); // Estado para buscar usuarios
+  const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = decode(token);
-        if (decoded.rol === "Administrador") {
-          setIsAdmin(true);
-        } else if (decoded.rol === "Editor") {
-          setIsEditor(true);
-        }
-      } catch (error) {
-        console.error("Error al decodificar el token:", error);
+    const checkSession = async () => {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (error || !session) {
+        console.log("Sesión no válida, redirigiendo a /login");
+        router.push("/login");
+      } else {
+        fetchUserData(session.user.id);
       }
+      setLoading(false);
+    };
+
+    checkSession();
+  }, [router]);
+
+  const fetchUserData = async (userId) => {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("primer_nombre, apellido_paterno, role, foto")
+      .eq("id_auth", userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user data:", error.message);
+    } else {
+      setUserData(data);
     }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
   };
 
-  const toggleForm = (formType) => {
-    setActiveForm((prev) => (prev === formType ? null : formType));
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut(); // Cerrar sesión en Supabase
+
+    if (error) {
+      console.error("Error al cerrar sesión:", error.message);
+    } else {
+      localStorage.removeItem("token"); // Eliminar el token del almacenamiento local
+      router.push("/login"); // Redirigir a la página de inicio de sesión
+    }
   };
+
+  const toggleForm = (formName) => {
+    setActiveForm((prevForm) => (prevForm === formName ? null : formName));
+  };
+
+  const handleSearchBooks = () => {
+    router.push(`/mostrarLibros?search=${searchBooks}`);
+  };
+
+  const handleSearchUsers = () => {
+    router.push(`/mostrarUsuarios?search=${searchUsers}`);
+  };
+
+  if (loading) {
+    return <h1 className="text-center mt-10">Cargando...</h1>;
+  }
+
+  const toggleSidebar = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const userRole = userData?.role;
 
   return (
-    <div className="bg-white shadow-lg border-[#E5E7EB] dark:bg-[#111827] text-[#1E3A8A] flex flex-col items-center py-8 space-y-4">
-      <div>
+    <div className="relative">
+      {/**Barra superior */}
+      <button
+        className="fixed top-4 left-4 z-50 text-3xl text-white bg-[var(--color-blue)] p-2 rounded-md shadow-md"
+        onClick={toggleSidebar}
+        aria-label="Abrir menú"
+      >
+        ☰
+      </button>
+
+      <div
+        className={`bg-white shadow-lg border-[#E5E7EB] dark:bg-[#111827] text-[#1E3A8A] flex items-center justify-center py-4 fixed top-0 left-0 w-full z-30 ${
+          isOpen ? "hidden" : "block"
+        }`}
+      >
         <Image
           src="/images/editorial-ug.png"
           alt="Logo editorial GTO"
-          width={150}
-          height={150}
+          width={200}
+          height={200}
         />
       </div>
-      <div className="flex flex-col items-center space-y-2">
-        <Link href="/" className="hover:text-yellow font-bold">
-          Inicio
-        </Link>
-        {isAdmin && (
-          <>
-            <Link href="/admin/users" className="hover:text-yellow font-bold">
-              Gestionar Usuarios
+
+      {/**Barra lateral */}
+      <div
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-100 shadow-lg ] transform ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform duration-300 z-40`}
+      >
+        <div className="h-24 flex items-center justify-center border-b border-[var(--color-gray-300)] p-4 rounded-md mt-40">
+          <Image
+            src="/images/editorial-ug.png"
+            alt="Logo Librería UG"
+            width={200}
+            height={100}
+            className="object-contain rounded-md"
+          />
+        </div>
+
+        {/**Menú */}
+        <ul className="flex flex-col gap-6 p-6 text-[var(--color-blue)]">
+          <li>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Buscar libros..."
+                value={searchBooks}
+                onChange={(e) => setSearchBooks(e.target.value)}
+                className="border rounded-md px-3 py-1 text-sm w-full"
+              />
+              <button
+                onClick={handleSearchBooks}
+                className="bg-[var(--color-orange)] text-white px-4 py-1 rounded-md flex-shrink-0"
+              >
+                Buscar
+              </button>
+            </div>
+          </li>
+
+          {userRole === "Administrador" && (
+            <>
+              <li>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Buscar usuarios..."
+                    value={searchUsers}
+                    onChange={(e) => setSearchUsers(e.target.value)}
+                    className="border rounded-md px-3 py-1 text-sm w-full"
+                  />
+                  <button
+                    onClick={handleSearchUsers}
+                    className="bg-[var(--color-orange)] text-white px-4 py-1 rounded-md flex-shrink-0"
+                  >
+                    Buscar
+                  </button>
+                </div>
+              </li>
+            </>
+          )}
+
+          <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+            <AiOutlineHome size={24} />
+            <Link href="/" className="block text-lg">
+              Inicio
             </Link>
-            <Link
-              href="/admin/books"
-              className="hover:text-[#FFD700] font-bold"
-            >
-              Gestionar Libros
+          </li>
+
+          {/* Botón para la Galería del Editor */}
+          <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+            <AiOutlineBook size={24} />
+            <Link href="/catalogoCompleto" className="block text-lg">
+              Galería del Editor
             </Link>
-            <Link href="/admin/reports" className="hover:text-yellow font-bold">
-              Reporte 1
+          </li>
+
+          {userRole === "Administrador" && (
+            <>
+              <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                <AiOutlineBook size={24} />
+                <Link href="/mostrarLibros" className="block text-lg">
+                  Lista de Libros
+                </Link>
+              </li>
+              <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                <AiOutlineBook size={24} />
+                <Link href="/mostrarUsuarios" className="block text-lg">
+                  Lista de Usuarios
+                </Link>
+              </li>
+            </>
+          )}
+
+          {userRole === "Editor" && (
+            <>
+              <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                <AiOutlineBook size={24} />
+                <Link href="/mostrarLibros" className="block text-lg">
+                  Lista de Libros
+                </Link>
+              </li>
+            </>
+          )}
+
+          <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+            <AiOutlineDashboard size={24} />
+            <Link href="/dashboard" className="block text-lg">
+              Volver al Dashboard
             </Link>
-            <Link
-              href="/admin/reports2"
-              className="hover:text-yellow font-bold"
-            >
-              Reporte 2
-            </Link>
-          </>
-        )}
-        {isEditor && (
-          <>
-            <Link href="/editor/books" className="hover:text-yellow font-bold">
-              Modificar Libros
-            </Link>
-            <Link
-              href="/editor/reports"
-              className="hover:text-[#FFD700] font-bold"
-            >
-              Descargar Reportes
-            </Link>
-          </>
-        )}
-        <button
-          onClick={() => toggleForm("user")}
-          className="hover:text-orange font-bold"
-        >
-          {activeForm === "user"
-            ? "Ocultar Formulario de Usuarios"
-            : "Formulario de Registro de Usuarios"}
-        </button>
-        <button
-          onClick={() => toggleForm("book")}
-          className="hover:text-orange font-bold"
-        >
-          {activeForm === "book"
-            ? "Ocultar Formulario de Libros"
-            : "Formulario de Registro de Libros"}
-        </button>
-        {activeForm === "book" && (
-          <div className="flex flex-col items-center mt-4">
-            <h2 className="text-lg font-bold text-gold">
-              Formulario de Libros
-            </h2>
-            <BookForm />
-          </div>
-        )}
-        {activeForm === "user" && (
-          <div className="flex flex-col items-center mt-4">
-            <h2 className="text-lg font-bold text-gold">
-              Formulario de Usuarios
-            </h2>
-            <UserForm />
-          </div>
-        )}
-        <Link href="/dashboard" className="hover:text-yellow font-bold">
-          Volver al Dashboard
-        </Link>
-        <button onClick={handleLogout} className="hover:text-red-700 font-bold">
-          Cerrar Sesión
-        </button>
+          </li>
+
+          <li className="flex items-center gap-4 hover:text-red-700">
+            <AiOutlineLogout size={24} />
+            <button onClick={handleLogout} className="block text-lg">
+              Cerrar Sesión
+            </button>
+          </li>
+        </ul>
       </div>
+
+      {activeForm === "actualizarLibros" && (
+        <div className="mt-20 p-6">
+          <ActualizarLibros onCancel={() => setActiveForm(null)} />
+        </div>
+      )}
+
+      {activeForm === "actualizarUsuarios" && (
+        <div className="mt-20 p-6">
+          <ActualizarUsuarios onCancel={() => setActiveForm(null)} />
+        </div>
+      )}
     </div>
   );
 };

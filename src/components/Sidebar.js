@@ -50,7 +50,7 @@ const Sidebar = () => {
         } transition-transform duration-300 z-40 shadow-lg`}
       >
         {/* Sección superior con el logo */}
-        <div className="h-24 flex items-center justify-center border-b border-[var(--color-orange)] p-4 rounded-md mt-40">
+        <div className="h-24 flex items-center justify-center border-b border-[var(--color-gray-300)] p-4 rounded-md mt-40">
           <Image
             src="/images/editorial-ug.png"
             alt="Logo Librería UG"
