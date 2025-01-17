@@ -1,11 +1,11 @@
 import { FlatCompat } from "@eslint/eslintrc";
 
 const compat = new FlatCompat({
-  baseDirectory: process.cwd(),
+  baseDirectory: process.cwd(), // Cambia a tu directorio base si es necesario
 });
 
 const eslintConfig = {
-  extends: ["next/core-web-vitals"], // Extensión directa sin usar compat
+  ...compat.extends("next/core-web-vitals"),
   rules: {
     // Aquí puedes agregar reglas personalizadas si es necesario
   },
