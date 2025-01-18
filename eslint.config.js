@@ -16,7 +16,15 @@ const eslintConfig = [
   },
   pluginJs.configs.recommended,
   pluginReact.configs.flat.recommended,
-  pluginNext.configs.recommended, // Configuración específica para Next.js
+  {
+    // Configuración específica para Next.js
+    files: ["**/*.{js,mjs,cjs,jsx}"],
+    plugins: ["next"],
+    rules: {
+      // Puedes agregar reglas personalizadas para Next.js aquí
+    },
+  },
+  pluginNext.configs.recommended, // Asegúrate de incluir esta línea
 ];
 
 export default eslintConfig;
