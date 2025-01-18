@@ -1,72 +1,72 @@
 {
-    "name": "archivo_historico_libreria-ug",
-    "version": "0.1.0",
-    "type": "module",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "validate": "npm run lint && npm audit"
-    },
-    "dependencies": {
-        "@chakra-ui/react": "^2.10.2",
-        "@emotion/react": "^11.13.3",
-        "@emotion/styled": "^11.13.0",
-        "@fortawesome/fontawesome-free": "^6.6.0",
-        "@fortawesome/fontawesome-svg-core": "^6.6.0",
-        "@fortawesome/free-solid-svg-icons": "^6.6.0",
-        "@fortawesome/react-fontawesome": "^0.2.2",
-        "@hookform/resolvers": "^3.10.0",
-        "@nextui-org/react": "^2.4.8",
-        "@supabase/auth-helpers-nextjs": "^0.10.0",
-        "@supabase/supabase-js": "^2.47.5",
-        "animate.css": "^4.1.1",
-        "axios": "^1.7.7",
-        "bcrypt": "^5.1.1",
-        "bcryptjs": "^2.4.3",
-        "embla-carousel-react": "^8.5.1",
-        "font-awesome": "^4.7.0",
-        "framer-motion": "^11.15.0",
-        "jsonwebtoken": "^9.0.2",
-        "jwt-decode": "^4.0.0",
-        "next": "^15.1.3",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
-        "react-hook-form": "^7.54.2",
-        "react-icons": "^5.4.0",
-        "velocityjs": "^2.0.6",
-        "zod": "^3.24.1"
-    },
-    "devDependencies": {
-        "@eslint/eslintrc": "^3",
-        "@eslint/js": "^9.18.0",
-        "@types/estree": "^1.0.6",
-        "@types/json-schema": "^7.0.15",
-        "@types/node": "^22.10.2",
-        "@types/parse-json": "^4.0.2",
-        "@types/phoenix": "^1.6.6",
-        "@types/ws": "^8.5.13",
-        "autoprefixer": "^10.4.20",
-        "eslint": "^9.18.0",
-        "eslint-config-next": "^15.1.5",
-        "eslint-plugin-next": "^0.0.0",
-        "eslint-plugin-react": "^7.37.4",
-        "globals": "^15.14.0",
-        "postcss": "^8.4.49",
-        "tailwindcss": "^3.4.17",
-        "typescript": "^5.7.2"
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            ">0%"
-        ]
-    }
+  "name": "archivo_historico_libreria-ug",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "validate": "npm run lint && npm audit"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.10.2",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@hookform/resolvers": "^3.10.0",
+    "@nextui-org/react": "^2.4.8",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/supabase-js": "^2.47.5",
+    "animate.css": "^4.1.1",
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "embla-carousel-react": "^8.5.1",
+    "font-awesome": "^4.7.0",
+    "framer-motion": "^11.15.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "next": "^15.1.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "react-icons": "^5.4.0",
+    "velocityjs": "^2.0.6",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@eslint/js": "^9.18.0",
+    "@types/estree": "^1.0.6",
+    "@types/json-schema": "^7.0.15",
+    "@types/node": "^22.10.2",
+    "@types/parse-json": "^4.0.2",
+    "@types/phoenix": "^1.6.6",
+    "@types/ws": "^8.5.13",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.x",
+    "eslint-config-next": "^15.x",
+    "eslint-plugin-next": "^0.0.0",
+    "eslint-plugin-react": "^7.x",
+    "globals": "^15.x",
+    "postcss": "^8.x",
+    "tailwindcss": "^3.x",
+    "typescript": "^5.x"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      ">0%"
+    ]
+  }
 }
