@@ -1,7 +1,9 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState, Suspense } from "react";
-import supabase from "@/lib/supabase"; // Asegúrate de que esta configuración esté correctamente configurada.
+import supabase from "@/lib/supabase"; // Asegúrate de configurar correctamente Supabase
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import { useSearchParams } from "next/navigation";
@@ -37,7 +39,6 @@ const MostrarLibrosPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentLibro, setCurrentLibro] = useState(null);
 
-  // Función para obtener los datos de la tabla
   const fetchLibros = async () => {
     try {
       setLoading(true);
@@ -57,12 +58,10 @@ const MostrarLibrosPage = () => {
     }
   };
 
-  // Efecto para cargar los datos al montar el componente
   useEffect(() => {
     fetchLibros();
   }, []);
 
-  // Función para eliminar un registro
   const handleDelete = async (codigoRegistro) => {
     try {
       const { error } = await supabase
@@ -87,7 +86,6 @@ const MostrarLibrosPage = () => {
         Lista de libros
       </h1>
 
-      {/* Envolviendo SearchBar en Suspense */}
       <Suspense fallback={<div>Cargando barra de búsqueda...</div>}>
         <SearchBar libros={libros} setFilteredLibros={setFilteredLibros} />
       </Suspense>
@@ -96,13 +94,11 @@ const MostrarLibrosPage = () => {
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
           <thead>
             <tr>
-              {/* Encabezados de la tabla */}
               <th className="border px-4 py-2">Id Libro</th>
               <th className="border px-4 py-2">Código de Registro</th>
               <th className="border px-4 py-2">ISBN</th>
               <th className="border px-4 py-2">DOI</th>
               <th className="border px-4 py-2">Titulo</th>
-              {/* Agrega más encabezados según sea necesario */}
             </tr>
           </thead>
           <tbody>
@@ -113,7 +109,6 @@ const MostrarLibrosPage = () => {
                 <td className="border px-4 py-2">{libro.isbn}</td>
                 <td className="border px-4 py-2">{libro.doi}</td>
                 <td className="border px-4 py-2">{libro.titulo}</td>
-                {/* Agrega más celdas según sea necesario */}
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => handleDelete(libro.codigoRegistro)}
@@ -137,18 +132,17 @@ const MostrarLibrosPage = () => {
         </table>
       </div>
 
-      {/* Modal para editar libro */}
       {isEditing && currentLibro && (
         <ActualizarLibros
           libro={currentLibro}
           onClose={() => {
-            setIsEditing(false); // Cierra el formulario al actualizar
-            setCurrentLibro(null); // Limpia el libro actual
+            setIsEditing(false);
+            setCurrentLibro(null);
           }}
           onUpdate={() => {
-            fetchLibros(); // Refresca la lista de libros después de actualizar
-            setIsEditing(false); // Cierra el formulario después de actualizar
-            setCurrentLibro(null); // Limpia el libro actual
+            fetchLibros();
+            setIsEditing(false);
+            setCurrentLibro(null);
           }}
         />
       )}
