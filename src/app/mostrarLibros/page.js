@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 
 const SearchBar = ({ libros, setFilteredLibros }) => {
   const searchParams = useSearchParams();
-  const searchTerm = searchParams?.get("search") || "";
+  const searchTerm = searchParams.get("search") || "";
 
   useEffect(() => {
     const handleSearch = (term) => {
@@ -102,7 +102,7 @@ const MostrarLibrosPage = () => {
               <th className="border px-4 py-2">ISBN</th>
               <th className="border px-4 py-2">DOI</th>
               <th className="border px-4 py-2">Titulo</th>
-              {/* Otras columnas según sea necesario */}
+              {/* Agrega más encabezados según sea necesario */}
             </tr>
           </thead>
           <tbody>
@@ -113,7 +113,7 @@ const MostrarLibrosPage = () => {
                 <td className="border px-4 py-2">{libro.isbn}</td>
                 <td className="border px-4 py-2">{libro.doi}</td>
                 <td className="border px-4 py-2">{libro.titulo}</td>
-                {/* Otras celdas según sea necesario */}
+                {/* Agrega más celdas según sea necesario */}
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => handleDelete(libro.codigoRegistro)}
