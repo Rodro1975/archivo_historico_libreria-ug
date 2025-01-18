@@ -26,10 +26,10 @@ const SearchBar = ({ libros, setFilteredLibros }) => {
     handleSearch(searchTerm);
   }, [searchTerm, libros, setFilteredLibros]);
 
-  return null;
+  return null; // Este componente no renderiza nada directamente
 };
 
-const MostrarLibrosPage = async () => {
+const MostrarLibrosPage = () => {
   const [libros, setLibros] = useState([]);
   const [filteredLibros, setFilteredLibros] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +86,12 @@ const MostrarLibrosPage = async () => {
       <h1 className="text-4xl text-yellow text-center font-bold mt-8 mb-8">
         Lista de libros
       </h1>
+
+      {/* Envolviendo SearchBar en Suspense */}
+      <Suspense fallback={<div>Cargando barra de búsqueda...</div>}>
+        <SearchBar libros={libros} setFilteredLibros={setFilteredLibros} />
+      </Suspense>
+
       <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
           <thead>
@@ -93,8 +99,10 @@ const MostrarLibrosPage = async () => {
               {/* Encabezados de la tabla */}
               <th className="border px-4 py-2">Id Libro</th>
               <th className="border px-4 py-2">Código de Registro</th>
-              {/* Resto de columnas */}
-              <th className="border px-4 py-2">Acciones</th>
+              <th className="border px-4 py-2">ISBN</th>
+              <th className="border px-4 py-2">DOI</th>
+              <th className="border px-4 py-2">Titulo</th>
+              {/* Otras columnas según sea necesario */}
             </tr>
           </thead>
           <tbody>
@@ -102,7 +110,10 @@ const MostrarLibrosPage = async () => {
               <tr key={libro.id_libro}>
                 <td className="border px-4 py-2">{libro.id_libro}</td>
                 <td className="border px-4 py-2">{libro.codigoRegistro}</td>
-                {/* Resto de datos */}
+                <td className="border px-4 py-2">{libro.isbn}</td>
+                <td className="border px-4 py-2">{libro.doi}</td>
+                <td className="border px-4 py-2">{libro.titulo}</td>
+                {/* Otras celdas según sea necesario */}
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => handleDelete(libro.codigoRegistro)}
@@ -110,12 +121,37 @@ const MostrarLibrosPage = async () => {
                   >
                     Eliminar
                   </button>
+                  <button
+                    onClick={() => {
+                      setCurrentLibro(libro);
+                      setIsEditing(true);
+                    }}
+                    className="bg-yellow text-white px-4 py-1 rounded mt-2"
+                  >
+                    Modificar
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Modal para editar libro */}
+      {isEditing && currentLibro && (
+        <ActualizarLibros
+          libro={currentLibro}
+          onClose={() => {
+            setIsEditing(false); // Cierra el formulario al actualizar
+            setCurrentLibro(null); // Limpia el libro actual
+          }}
+          onUpdate={() => {
+            fetchLibros(); // Refresca la lista de libros después de actualizar
+            setIsEditing(false); // Cierra el formulario después de actualizar
+            setCurrentLibro(null); // Limpia el libro actual
+          }}
+        />
+      )}
     </div>
   );
 };
