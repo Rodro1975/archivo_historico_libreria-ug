@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import supabase from "@/lib/supabase";
+import supabase from "@/lib/supabase"; // Asegúrate de que esta configuración esté correctamente configurada.
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,27 +15,37 @@ const MostrarLibrosPage = () => {
   const [currentLibro, setCurrentLibro] = useState(null);
 
   const searchParams = useSearchParams();
-  const searchTerm = searchParams.get("search") || "";
+  const searchTerm = searchParams?.get("search") || "";
 
   // Función para obtener los datos de la tabla
   const fetchLibros = async () => {
-    setLoading(true);
-    const { data, error } = await supabase.from("libros").select("*");
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.from("libros").select("*");
 
-    if (error) {
-      setError(error.message);
-    } else {
+      if (error) throw new Error(error.message);
+      if (!data)
+        throw new Error("No se encontraron datos en la tabla 'libros'.");
+
       setLibros(data);
       setFilteredLibros(data);
+    } catch (err) {
+      console.error("Error al obtener libros:", err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  // Funcion para buscar libros en la tabla
-  const handleSearch = (searchTerm) => {
-    const lowerCaseTerm = searchTerm.toLowerCase();
+  // Función para filtrar libros
+  const handleSearch = (term) => {
+    if (!term) {
+      setFilteredLibros(libros); // Mostrar todos si no hay término de búsqueda
+      return;
+    }
+    const lowerCaseTerm = term.toLowerCase();
     const results = libros.filter((libro) =>
-      libro.titulo.toLowerCase().includes(lowerCaseTerm)
+      libro.titulo?.toLowerCase().includes(lowerCaseTerm)
     );
     setFilteredLibros(results);
   };
@@ -45,25 +55,23 @@ const MostrarLibrosPage = () => {
     fetchLibros();
   }, []);
 
+  // Efecto para actualizar la búsqueda
   useEffect(() => {
-    if (searchTerm) {
-      handleSearch(searchTerm);
-    } else {
-      setFilteredLibros(libros); // Mostrar todos los libros si no hay término de búsqueda
-    }
+    handleSearch(searchTerm);
   }, [searchTerm, libros]);
 
   // Función para eliminar un registro
   const handleDelete = async (codigoRegistro) => {
-    const { error } = await supabase
-      .from("libros")
-      .delete()
-      .eq("codigoRegistro", codigoRegistro);
+    try {
+      const { error } = await supabase
+        .from("libros")
+        .delete()
+        .eq("codigoRegistro", codigoRegistro);
 
-    if (error) {
-      console.error("Error al eliminar: ", error.message);
-    } else {
-      fetchLibros();
+      if (error) throw new Error(error.message);
+      await fetchLibros();
+    } catch (err) {
+      console.error("Error al eliminar el libro:", err.message);
     }
   };
 
