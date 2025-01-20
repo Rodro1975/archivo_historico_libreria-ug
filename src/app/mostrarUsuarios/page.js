@@ -17,6 +17,7 @@ const MostrarUsuariosPage = () => {
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get("search") || "";
 
+  // Función para obtener los usuarios desde Supabase
   const fetchUsuarios = async () => {
     setLoading(true);
     const { data, error } = await supabase.from("usuarios").select("*");
@@ -30,6 +31,7 @@ const MostrarUsuariosPage = () => {
     setLoading(false);
   };
 
+  // Función de búsqueda que filtra los usuarios por apellido paterno
   const handleSearch = useCallback((searchTerm) => {
     const lowerCaseTerm = searchTerm.toLowerCase();
     const results = usuarios.filter((usuario) =>
@@ -38,10 +40,12 @@ const MostrarUsuariosPage = () => {
     setFilteredUsuarios(results);
   }, [usuarios]); 
 
+  // Cargar usuarios cuando se monta el componente
   useEffect(() => {
     fetchUsuarios();
   }, []);
 
+  // Actualizar los resultados de la búsqueda cuando cambia el término de búsqueda
   useEffect(() => {
     if (searchTerm) {
       handleSearch(searchTerm);
@@ -50,6 +54,7 @@ const MostrarUsuariosPage = () => {
     }
   }, [searchTerm, usuarios, handleSearch]);
 
+  // Función para eliminar un usuario
   const handleDelete = async (id_usuario) => {
     const { error } = await supabase
       .from("usuarios")
@@ -148,6 +153,7 @@ const MostrarUsuariosPage = () => {
 };
 
 export default MostrarUsuariosPage;
+
 
 
 
