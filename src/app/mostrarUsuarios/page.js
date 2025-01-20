@@ -1,10 +1,10 @@
-"use client";
+"use client"; // Asegúrate de que el componente se ejecute solo en el cliente
 
-import { useEffect, useState, useCallback } from "react"; // Asegúrate de importar useCallback
+import { useEffect, useState, useCallback } from "react"; 
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
-import ActualizarUsuarios from "@/components/ActualizarUsuarios"; // Asegúrate de importar el componente correcto
-import { useRouter, useSearchParams } from "next/navigation";
+import ActualizarUsuarios from "@/components/ActualizarUsuarios"; 
+import { useSearchParams } from "next/navigation";
 
 const MostrarUsuariosPage = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -12,12 +12,11 @@ const MostrarUsuariosPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentUsuario, setCurrentUsuario] = useState(null); // Corregido
+  const [currentUsuario, setCurrentUsuario] = useState(null); 
 
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get("search") || "";
 
-  // Función para obtener los datos de la tabla
   const fetchUsuarios = async () => {
     setLoading(true);
     const { data, error } = await supabase.from("usuarios").select("*");
@@ -31,30 +30,26 @@ const MostrarUsuariosPage = () => {
     setLoading(false);
   };
 
-  // Función para buscar usuarios en la tabla
   const handleSearch = useCallback((searchTerm) => {
     const lowerCaseTerm = searchTerm.toLowerCase();
     const results = usuarios.filter((usuario) =>
       usuario.apellido_paterno.toLowerCase().includes(lowerCaseTerm)
     );
     setFilteredUsuarios(results);
-  }, [usuarios]); // Agrega usuarios como dependencia
+  }, [usuarios]); 
 
-  // Efecto para cargar los datos al montar el componente
   useEffect(() => {
     fetchUsuarios();
   }, []);
 
-  // Efecto para manejar la búsqueda
   useEffect(() => {
     if (searchTerm) {
       handleSearch(searchTerm);
     } else {
-      setFilteredUsuarios(usuarios); // Mostrar todos los usuarios si no hay término de búsqueda
+      setFilteredUsuarios(usuarios); 
     }
-  }, [searchTerm, usuarios, handleSearch]); // Agrega handleSearch aquí
+  }, [searchTerm, usuarios, handleSearch]);
 
-  // Función para eliminar un registro
   const handleDelete = async (id_usuario) => {
     const { error } = await supabase
       .from("usuarios")
@@ -118,7 +113,7 @@ const MostrarUsuariosPage = () => {
                   </button>
                   <button
                     onClick={() => {
-                      setCurrentUsuario(usuario); // Corregido
+                      setCurrentUsuario(usuario); 
                       setIsEditing(true);
                     }}
                     className="bg-yellow text-white px-4 py-1 rounded mt-2"
@@ -132,7 +127,6 @@ const MostrarUsuariosPage = () => {
         </table>
       </div>
 
-      {/* Modal para editar Usuario */}
       {isEditing && currentUsuario && (
         <ActualizarUsuarios
           usuario={currentUsuario}
@@ -152,4 +146,5 @@ const MostrarUsuariosPage = () => {
 };
 
 export default MostrarUsuariosPage;
+
 
