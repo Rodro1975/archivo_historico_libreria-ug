@@ -7,8 +7,6 @@ import Footer from "@/components/Footer";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
-import { set } from "react-hook-form";
-import Head from "next/head";
 import ModalGalery from "@/components/ModalGalery";
 import "animate.css";
 
@@ -17,18 +15,17 @@ const CatalogoPage = () => {
   const [loading, setLoading] = useState(true);
   const [libros, setLibros] = useState([]);
   const [pagina, setPagina] = useState(0);
-  const librosPorPagina = 6;
-  const totalPaginas = Math.ceil(libros.length / librosPorPagina);
   const [error, setError] = useState(null);
   const [isInfoBarVisible, setIsInfoBarVisible] = useState(true);
   const [isAnimatingX, setIsAnimatingX] = useState(false);
   const [isAnimatingText, setIsAnimatingText] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
+  const librosPorPagina = 6;
   const router = useRouter();
 
   // Función para obtener los datos de la tabla
   const fetchLibros = async () => {
-    setLoading("true");
+    setLoading(true); // Establecer a true mientras se obtienen los libros
     const { data, error } = await supabase.from("libros").select("*");
 
     if (error) {
@@ -36,15 +33,15 @@ const CatalogoPage = () => {
     } else {
       setLibros(data);
     }
-    setLoading(false);
+    setLoading(false); // Establecer a false una vez que se terminan de cargar
   };
 
   const manejarCerrarBarra = () => {
-    setIsAnimatingX(true); // Inicia la animación de la x
+    setIsAnimatingX(true);
     setTimeout(() => {
-      setIsInfoBarVisible(false); // Oculta la barra después de la animación
-      setIsAnimatingX(false); // Resetea el estado de animación
-    }, 2000); // Duración de la animación (ajusta según sea necesario)
+      setIsInfoBarVisible(false);
+      setIsAnimatingX(false);
+    }, 2000);
   };
 
   const librosAmostrar = libros.slice(
@@ -57,18 +54,18 @@ const CatalogoPage = () => {
   };
 
   const manejarPaginaSiguiente = () => {
-    if (pagina < totalPaginas - 1) setPagina(pagina + 1);
+    if (pagina < Math.ceil(libros.length / librosPorPagina) - 1)
+      setPagina(pagina + 1);
   };
 
   const manejarClickTitulo = (libro) => {
-    setSelectedBook(libro); // Establece el libro seleccionado
+    setSelectedBook(libro);
   };
 
   const cerrarModal = () => {
-    setSelectedBook(null); // Restablece el libro seleccionado al cerrar el modal
+    setSelectedBook(null);
   };
 
-  //efecto para cargar los datos al montar el componente
   useEffect(() => {
     fetchLibros();
   }, []);
@@ -88,23 +85,25 @@ const CatalogoPage = () => {
             <p className="mb-6 text-sm font-semibold lg:text-base">
               Encuentra libros que te inspiren y enriquezcan tu conocimiento.
             </p>
-            
 
-<Link href="https://www.ugto.mx/editorial/" target="_blank" rel="noreferrer" className="w-full text-blue border border-blue bg-transparent hover:bg-blue hover:text-white transition duration-200 shadow-lg py-2 px-4 rounded-full text-center sm:w-auto">
-  ¡Visita nuestra página!
-</Link>
-
+            <Link
+              href="https://www.ugto.mx/editorial/"
+              target="_blank"
+              rel="noreferrer"
+              className="w-full text-blue border border-blue bg-transparent hover:bg-blue hover:text-white transition duration-200 shadow-lg py-2 px-4 rounded-full text-center sm:w-auto"
+            >
+              ¡Visita nuestra página!
+            </Link>
           </div>
           <div className="col-span-1 md:col-span-3 md:flex md:justify-center">
             <div className="relative w-full h-auto ml-6">
-              {""}
               <Image
                 src="/images/libreriaUg.png"
                 alt="Interior Libreria"
                 className="w-full h-auto object-cover transition-transform duration-300 transform hover:scale-105 rounded-lg"
                 width={500}
                 height={300}
-              ></Image>
+              />
             </div>
           </div>
         </div>
@@ -121,11 +120,9 @@ const CatalogoPage = () => {
                 }`}
                 onMouseEnter={() => {
                   setIsAnimatingText(true);
-                  console.log("Mouse enter: animación activa");
                 }}
                 onMouseLeave={() => {
                   setIsAnimatingText(false);
-                  console.log("Mouse leave: animación detenida");
                 }}
               >
                 PONTE ABEJA
@@ -139,12 +136,15 @@ const CatalogoPage = () => {
               </svg>
               Visita la Librería UG y encuentra tu próxima lectura favorita.
             </div>
-            
 
-<Link href="https://libreriaug.ugto.mx/" target="_blank" rel="noreferrer" className="flex-none rounded-full inline-block bg-gray-900 px-3.5 py-1 text-sm font-medium text-gold shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">
-  ¡Comprar Ahora! <span aria-hidden="true">&rarr;</span>
-</Link>
-
+            <Link
+              href="https://libreriaug.ugto.mx/"
+              target="_blank"
+              rel="noreferrer"
+              className="flex-none rounded-full inline-block bg-gray-900 px-3.5 py-1 text-sm font-medium text-gold shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+            >
+              ¡Comprar Ahora! <span aria-hidden="true">&rarr;</span>
+            </Link>
           </div>
           <div className="flex flex-1 justify-end">
             <button
@@ -171,6 +171,7 @@ const CatalogoPage = () => {
           </div>
         </div>
       )}
+
       {/* Catálogo */}
       <div className="catalogo-container">
         <section className="px-4 py-24 mx-auto max-w-7xl">
@@ -186,7 +187,7 @@ const CatalogoPage = () => {
               >
                 <div className="flex justify-center mb-4">
                   <Image
-                    src={libro.portada || "/default-image.jpg"} // Imagen predeterminada en caso de que no haya URL
+                    src={libro.portada || "/default-image.jpg"} // Imagen predeterminada
                     alt={libro.titulo}
                     className="rounded-lg shadow-md"
                     width={240}
@@ -195,58 +196,43 @@ const CatalogoPage = () => {
                   />
                 </div>
 
-                <h1 className="mb-2 text-xl font-extrabold text-gray-900 text-center hover:text-white transition-colors duration-300">
-                  <span
-                    className="hover:underline cursor-pointer"
-                    onClick={() => manejarClickTitulo(libro)} // Pasa el libro al hacer clic
-                  >
-                    {libro.titulo}
-                  </span>
-                </h1>
-                <p className="mb-3 text-sm font-normal text-gray-700 text-center">
-                  {libro.contraPortada}
-                </p>
-                <p className="mb-3 text-sm font-normal text-gray-600 text-center">
-                <Link href="#" className="font-medium text-gray-900 hover:text-purple-700 transition-colors duration-300">
-  {libro.autor}
-</Link>
-                  <span> - {libro.fecha_registro}</span>
-                </p>
+                <h3
+                  onClick={() => manejarClickTitulo(libro)}
+                  className="text-xl font-semibold cursor-pointer text-gray-800"
+                >
+                  {libro.titulo}
+                </h3>
+
+                <p className="mt-2 text-sm text-gray-600">{libro.autor}</p>
               </div>
             ))}
           </div>
-
-          {/* Modal para mostrar información del libro seleccionado */}
-          {selectedBook && (
-            <ModalGalery
-              isOpen={Boolean(selectedBook)}
-              onClose={cerrarModal}
-              libro={selectedBook}
-            />
-          )}
-
-          <div className="flex flex-col items-center justify-center mt-20 space-x-0 space-y-2 md:space-x-2 md:space-y-0 md:flex-row">
-            <button
-              onClick={manejarPaginaAnterior}
-              className="w-full rounded-full bg-yellow text-blue px-6 py-3 md:w-auto transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-md hover:bg-orange"
-              disabled={pagina === 0}
-            >
-              Página Anterior
-            </button>
-            <button
-              onClick={manejarPaginaSiguiente}
-              className="w-full rounded-full bg-yellow text-blue px-6 py-3 md:w-auto transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-md hover:bg-orange"
-              disabled={pagina === totalPaginas - 1}
-            >
-              Página Siguiente
-            </button>
-          </div>
         </section>
+
+        {/* Paginación */}
+        <div className="flex flex-col items-center justify-center mt-20 space-x-0 space-y-2 md:space-x-2 md:space-y-0 md:flex-row">
+          <button
+            onClick={manejarPaginaAnterior}
+            className="w-full rounded-full bg-yellow text-blue px-6 py-3 md:w-auto transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-md hover:bg-orange"
+          >
+            Anterior
+          </button>
+          <span className="px-4 py-2 text-xl">{pagina + 1}</span>
+          <button
+            onClick={manejarPaginaSiguiente}
+            className="w-full rounded-full bg-yellow text-blue px-6 py-3 md:w-auto transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-md hover:bg-orange"
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
-      {/* Footer */}
+
+      {/* Modal */}
+      {selectedBook && <ModalGalery libro={selectedBook} closeModal={cerrarModal} />}
       <Footer />
     </div>
   );
 };
 
 export default CatalogoPage;
+
