@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ignore-pattern .next/ --fix", 
+    "lint": "eslint . --ignore-pattern .next/ --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
     "validate": "npm run lint && npm audit"
   },
@@ -55,12 +55,12 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9.18.0",
     "eslint-config-next": "^15.x",
-    "eslint-plugin-next": "^0.x", 
-    "eslint-plugin-react": "^7.x", 
-    "globals": "^15.x", 
-    "postcss": "^8.x", 
-    "tailwindcss": "^3.x", 
-    "typescript": "^5.x" 
+    "eslint-plugin-next": "^0.x",
+    "eslint-plugin-react": "^7.x",
+    "globals": "^15.x",
+    "postcss": "^8.x",
+    "tailwindcss": "^3.x",
+    "typescript": "^5.x"
   },
   "browserslist": {
     "production": [
@@ -71,6 +71,10 @@
     "development": [
       ">0%"
     ]
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
+
 
