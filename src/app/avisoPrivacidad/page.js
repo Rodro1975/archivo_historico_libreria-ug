@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 const AvisoPrivacidadPage = () => {
   const [userData, setUserData] = useState(null);
@@ -147,13 +148,10 @@ const AvisoPrivacidadPage = () => {
           <span className="text-orange"> CLICK AQUÍ.</span>
         </p>
         <p>
-          <a
-            href="/"
-            className="text-2xl font-light text-center text-gold mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100"
-          >
-            Regresar al inicio
-          </a>
-        </p>
+  <Link href="/" className="text-2xl font-light text-center text-gold mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100">
+    Regresar al inicio
+  </Link>
+</p>
       </div>
       <Footer />
     </div>

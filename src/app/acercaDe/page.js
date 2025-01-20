@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Link from 'next/link';
 
 const AcercaDePage = () => {
   const [userData, setUserData] = useState(null);
@@ -53,16 +54,15 @@ const AcercaDePage = () => {
         <p className="text-gray-700 mb-4">
           Para más detalles sobre nuestras colecciones y actividades, visita
           nuestro sitio web en{" "}
-          <span className="text-orange">
-            {" "}
-            {/* Cambia 'text-yellow-500' por la clase correspondiente a tu color amarillo */}
-            <a
-              href="https://www.ugto.mx/editorial/"
-              className="hover:underline"
-            >
-              Editorial UG
-            </a>
-          </span>
+          
+
+<span className="text-orange">
+  {" "}
+  <Link href="https://www.ugto.mx/editorial/" target="_blank" rel="noopener noreferrer">
+    Editorial UG
+  </Link>
+</span>
+
           .
         </p>
       </div>

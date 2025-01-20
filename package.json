@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ignore-pattern .next/ --fix", 
     "test": "echo \"Error: no test specified\" && exit 1",
     "validate": "npm run lint && npm audit"
   },
@@ -45,19 +45,22 @@
     "@eslint/js": "^9.18.0",
     "@types/estree": "^1.0.6",
     "@types/json-schema": "^7.0.15",
+    "@types/lodash": "^4.17.14",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/lodash.mergewith": "^4.6.9",
     "@types/node": "^22.10.2",
     "@types/parse-json": "^4.0.2",
     "@types/phoenix": "^1.6.6",
     "@types/ws": "^8.5.13",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.x",
+    "eslint": "^9.18.0",
     "eslint-config-next": "^15.x",
-    "eslint-plugin-next": "^0.0.0",
-    "eslint-plugin-react": "^7.x",
-    "globals": "^15.x",
-    "postcss": "^8.x",
-    "tailwindcss": "^3.x",
-    "typescript": "^5.x"
+    "eslint-plugin-next": "^0.x", 
+    "eslint-plugin-react": "^7.x", 
+    "globals": "^15.x", 
+    "postcss": "^8.x", 
+    "tailwindcss": "^3.x", 
+    "typescript": "^5.x" 
   },
   "browserslist": {
     "production": [
@@ -70,3 +73,4 @@
     ]
   }
 }
+

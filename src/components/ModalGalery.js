@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 const ModalGalery = ({ isOpen, onClose, libro }) => {
   if (!isOpen || !libro) return null;
@@ -38,12 +39,12 @@ const ModalGalery = ({ isOpen, onClose, libro }) => {
             ¿Quieres leer un fragmento del libro? Regístrate con tu cuenta de
             Google o LinkedIn.
           </p>
-          <a
-            href="/login" // Enlace a la página de login
-            className="mt-2 inline-block px-4 py-2 bg-orange text-white rounded-full hover:bg-green-600 hover:text-white transition duration-200"
-          >
-            Iniciar sesión
-          </a>
+          <Link 
+  href="/login" // Enlace a la página de login
+  className="mt-2 inline-block px-4 py-2 bg-orange text-white rounded-full hover:bg-green-600 hover:text-white transition duration-200"
+>
+  Iniciar sesión
+</Link>
         </div>
       </div>
     </section>

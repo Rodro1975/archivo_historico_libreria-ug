@@ -88,13 +88,12 @@ const CatalogoPage = () => {
             <p className="mb-6 text-sm font-semibold lg:text-base">
               Encuentra libros que te inspiren y enriquezcan tu conocimiento.
             </p>
-            <a
-              href="https://www.ugto.mx/editorial/"
-              target="_blank" // Abre el enlace en una nueva pestaña
-              className="w-full text-blue border border-blue bg-transparent hover:bg-blue hover:text-white transition duration-200 shadow-lg py-2 px-4 rounded-full text-center sm:w-auto"
-            >
-              ¡Visita nuestra página!
-            </a>
+            
+
+<Link href="https://www.ugto.mx/editorial/" target="_blank" rel="noreferrer" className="w-full text-blue border border-blue bg-transparent hover:bg-blue hover:text-white transition duration-200 shadow-lg py-2 px-4 rounded-full text-center sm:w-auto">
+  ¡Visita nuestra página!
+</Link>
+
           </div>
           <div className="col-span-1 md:col-span-3 md:flex md:justify-center">
             <div className="relative w-full h-auto ml-6">
@@ -140,13 +139,12 @@ const CatalogoPage = () => {
               </svg>
               Visita la Librería UG y encuentra tu próxima lectura favorita.
             </div>
-            <a
-              href="https://libreriaug.ugto.mx/"
-              target="_blank" // Abre el enlace en una nueva pestaña
-              className="flex-none rounded-full inline-block bg-gray-900 px-3.5 py-1 text-sm font-medium text-gold shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-            >
-              ¡Comprar Ahora! <span aria-hidden="true">&rarr;</span>
-            </a>
+            
+
+<Link href="https://libreriaug.ugto.mx/" target="_blank" rel="noreferrer" className="flex-none rounded-full inline-block bg-gray-900 px-3.5 py-1 text-sm font-medium text-gold shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">
+  ¡Comprar Ahora! <span aria-hidden="true">&rarr;</span>
+</Link>
+
           </div>
           <div className="flex flex-1 justify-end">
             <button
@@ -209,12 +207,9 @@ const CatalogoPage = () => {
                   {libro.contraPortada}
                 </p>
                 <p className="mb-3 text-sm font-normal text-gray-600 text-center">
-                  <a
-                    href="#"
-                    className="font-medium text-gray-900 hover:text-purple-700 transition-colors duration-300"
-                  >
-                    {libro.autor}
-                  </a>
+                <Link href="#" className="font-medium text-gray-900 hover:text-purple-700 transition-colors duration-300">
+  {libro.autor}
+</Link>
                   <span> - {libro.fecha_registro}</span>
                 </p>
               </div>

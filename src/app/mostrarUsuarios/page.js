@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react"; // Asegúrate de importar useCallback
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios"; // Asegúrate de importar el componente correcto
@@ -31,27 +31,28 @@ const MostrarUsuariosPage = () => {
     setLoading(false);
   };
 
-  // Funcion para buscar libros en la tabla
-  const handleSearch = (searchTerm) => {
+  // Función para buscar usuarios en la tabla
+  const handleSearch = useCallback((searchTerm) => {
     const lowerCaseTerm = searchTerm.toLowerCase();
     const results = usuarios.filter((usuario) =>
       usuario.apellido_paterno.toLowerCase().includes(lowerCaseTerm)
     );
     setFilteredUsuarios(results);
-  };
+  }, [usuarios]); // Agrega usuarios como dependencia
 
   // Efecto para cargar los datos al montar el componente
   useEffect(() => {
     fetchUsuarios();
   }, []);
 
+  // Efecto para manejar la búsqueda
   useEffect(() => {
     if (searchTerm) {
       handleSearch(searchTerm);
     } else {
-      setFilteredUsuarios(usuarios); // Mostrar todos los libros si no hay término de búsqueda
+      setFilteredUsuarios(usuarios); // Mostrar todos los usuarios si no hay término de búsqueda
     }
-  }, [searchTerm, usuarios]);
+  }, [searchTerm, usuarios, handleSearch]); // Agrega handleSearch aquí
 
   // Función para eliminar un registro
   const handleDelete = async (id_usuario) => {
@@ -86,7 +87,7 @@ const MostrarUsuariosPage = () => {
               <th className="border px-4 py-2">Apellido Paterno</th>
               <th className="border px-4 py-2">Apellido Materno</th>
               <th className="border px-4 py-2">Email</th>
-              <th className="border px-4 py-2">Télefono</th>
+              <th className="border px-4 py-2">Teléfono</th>
               <th className="border px-4 py-2">Justificación</th>
               <th className="border px-4 py-2">Password</th>
               <th className="border px-4 py-2">Rol</th>
@@ -130,6 +131,7 @@ const MostrarUsuariosPage = () => {
           </tbody>
         </table>
       </div>
+
       {/* Modal para editar Usuario */}
       {isEditing && currentUsuario && (
         <ActualizarUsuarios
@@ -150,3 +152,4 @@ const MostrarUsuariosPage = () => {
 };
 
 export default MostrarUsuariosPage;
+

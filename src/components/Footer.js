@@ -3,6 +3,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -46,75 +47,76 @@ const Footer = () => {
           <div className="text-center md:text-left md:order-1 flex-grow md:flex-none">
             <ul className="space-y-2 text-blue">
               <li>
-                <a
-                  href="/avisoPrivacidad" // Cambia el href aquí para que apunte a la página de aviso de privacidad
-                  className="hover:text-white transition duration-300"
-                >
-                  Aviso de privacidad
-                </a>
+              <Link href="/avisoPrivacidad" className="hover:text-white transition duration-300">
+  Aviso de privacidad
+</Link>
               </li>
 
               <li>
-                <a
-                  href="/terminosCondiciones"
-                  onClick={() => {
-                    /* Lógica para abrir modal de Términos y condiciones */
-                  }}
-                  className="hover:text-white transition duration-300"
-                >
-                  Términos y condiciones
-                </a>
+              <Link 
+  href="/terminosCondiciones" 
+  onClick={(e) => {
+    e.preventDefault(); // Previene la navegación predeterminada
+    // Lógica para abrir modal de Términos y condiciones
+  }} 
+  className="hover:text-white transition duration-300"
+>
+  Términos y condiciones
+</Link>
               </li>
               <li>
-                <a
-                  href="/faqs"
-                  onClick={() => {
-                    /* Lógica para abrir modal de FAQs */
-                  }}
-                  className="hover:text-white transition duration-300"
-                >
-                  FAQs
-                </a>
+              <Link 
+  href="/faqs" 
+  onClick={(e) => {
+    e.preventDefault(); // Previene la navegación predeterminada
+    // Lógica para abrir modal de FAQs
+  }} 
+  className="hover:text-white transition duration-300"
+>
+  FAQs
+</Link>
               </li>
               <li>
-                <a
-                  href="https://www.ugto.mx/directorio-universidad-guanajuato/secretaria-academica-ug/programa-editorial-universitario"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition duration-300"
-                >
-                  Programa Editorial Universitario
-                </a>
+              <Link 
+  href="https://www.ugto.mx/directorio-universidad-guanajuato/secretaria-academica-ug/programa-editorial-universitario" 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  className="hover:text-white transition duration-300"
+>
+  Programa Editorial Universitario
+</Link>
               </li>
               <li>
-                <a
-                  href="/contribuciones"
-                  onClick={() => {
-                    /* Lógica para abrir modal de Agradecimientos y contribuciones */
-                  }}
-                  className="hover:text-white transition duration-300"
-                >
-                  Contribuciones
-                </a>
+              <Link 
+  href="/contribuciones" 
+  onClick={(e) => {
+    e.preventDefault(); // Previene la navegación predeterminada
+    // Lógica para abrir modal de Agradecimientos y contribuciones
+  }} 
+  className="hover:text-white transition duration-300"
+>
+  Contribuciones
+</Link>
               </li>
             </ul>
           </div>
 
           {/* Logo al centro */}
           <div className="flex-shrink-0 mb-6 md:mb-0 md:order-2 md:w-auto w-full flex justify-center">
-            <a
-              href="https://www.ugto.mx/editorial/"
-              target="_blank"
-              className="flex items-center space-x-3 rtl:space-x-reverse"
-            >
-              <Image
-                src="/images/editorial-ug.png"
-                alt="Librería Logo"
-                width={150}
-                height={50}
-                className="h-12 w-auto rounded-full"
-              />
-            </a>
+          <Link 
+  href="https://www.ugto.mx/editorial/" 
+  target="_blank" 
+  rel="noreferrer" 
+  className="flex items-center space-x-3 rtl:space-x-reverse"
+>
+  <Image
+    src="/images/editorial-ug.png"
+    alt="Librería Logo"
+    width={150}
+    height={50}
+    className="h-12 w-auto rounded-full"
+  />
+</Link>
           </div>
 
           {/* Sección de Suscripción a la derecha */}

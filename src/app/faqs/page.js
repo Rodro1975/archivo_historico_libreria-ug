@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 const FAQsPage = () => {
   const [userData, setUserData] = useState(null);
@@ -104,12 +105,9 @@ const FAQsPage = () => {
         </h2>
         <p className="text-gray-700 mb-4">
           Puedes contactar al equipo del archivo a través del correo electrónico{" "}
-          <a
-            href="mailto:archivo@ugto.mx"
-            className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100"
-          >
-            archivo@ugto.mx
-          </a>{" "}
+          <Link href="mailto:archivo@ugto.mx" className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100">
+  archivo@ugto.mx
+</Link>{" "}
           o al número telefónico (473) 732 0006.
         </p>
         <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
@@ -121,12 +119,9 @@ const FAQsPage = () => {
           la búsqueda o en la solicitud de un documento específico.
         </p>
         <p>
-          <a
-            href="/"
-            className="text-2xl font-light text-center text-gold mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100"
-          >
-            Regresar al inicio
-          </a>
+        <Link href="/" className="text-2xl font-light text-center text-gold mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100">
+  Regresar al inicio
+</Link>
         </p>
       </div>
       <Footer />

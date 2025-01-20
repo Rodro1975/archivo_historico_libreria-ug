@@ -7,6 +7,7 @@ import supabase from "@/lib/supabase";
 import NavBar from "@/components/NavBar"; // Asegúrate de que la ruta sea correcta
 import Footer from "@/components/Footer"; // Asegúrate de que la ruta sea correcta
 import Image from "next/image"; // Asegúrate de importar Image
+import Link from "next/link";
 
 const LoginForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -102,7 +103,9 @@ const LoginForm = () => {
               </form>
 
               <div className="text-center mt-4 text-sm">
-                <a href="#" className="text-blue hover:text-gold">¿Olvidaste tu contraseña?</a>
+              <Link href="#" className="text-blue hover:text-gold">
+  ¿Olvidaste tu contraseña?
+</Link>
               </div>
             </div>
 

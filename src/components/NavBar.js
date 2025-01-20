@@ -46,31 +46,35 @@ const NavBar = () => {
   return (
     <nav className="sticky top-0 z-50 bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a
-          href="https://www.ugto.mx/index.php"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
-          <Image
-            src="/images/escudo-horizontal-png.png"
-            alt="UGTO Logo"
-            width={150}
-            height={50}
-            className="h-12 w-auto"
-            priority
-          />
-        </a>
-        <a
-          href="https://libreriaug.ugto.mx/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
-          <Image
-            src="/images/Logo_libreria.png"
-            alt="Librería Logo"
-            width={150}
-            height={50}
-            className="h-12 w-auto"
-          />
-        </a>
+      <Link 
+  href="https://www.ugto.mx/index.php" 
+  className="flex items-center space-x-3 rtl:space-x-reverse"
+  target="_blank" 
+  rel="noopener noreferrer"
+>
+  <Image
+    src="/images/escudo-horizontal-png.png"
+    alt="UGTO Logo"
+    width={150}
+    height={50}
+    className="h-12 w-auto"
+    priority
+  />
+</Link>
+<Link 
+  href="https://libreriaug.ugto.mx/" 
+  className="flex items-center space-x-3 rtl:space-x-reverse"
+  target="_blank" 
+  rel="noopener noreferrer"
+>
+  <Image
+    src="/images/Logo_libreria.png"
+    alt="Librería Logo"
+    width={150}
+    height={50}
+    className="h-12 w-auto"
+  />
+</Link>
 
         <div className="flex md:order-2">
           <button

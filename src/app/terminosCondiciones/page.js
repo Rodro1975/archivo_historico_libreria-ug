@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 const AvisoPrivacidadPage = () => {
   const [userData, setUserData] = useState(null);
@@ -50,26 +51,18 @@ const AvisoPrivacidadPage = () => {
           NETIZEN DIGITAL SOLUTIONS, con número de R.F.C. NDS150225SZ1, con
           domicilio en calle Tlacotalpan, nº 13, interior 02-A, Colonia Roma Sur
           Delegación Cuauhtémoc C.P. 06760, Ciudad de México, página web{" "}
-          <a
-            href="http://www.hipertexto.com.co"
-            className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            www.hipertexto.com.co
-          </a>{" "}
+          <Link href="http://www.hipertexto.com.co" target="_blank" rel="noopener noreferrer" className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100">
+  www.hipertexto.com.co
+</Link>{" "}
           <span style={{ whiteSpace: "nowrap" }}>
             y co-administrada por parte de la Universidad de Guanajuato,
           </span>
           con domicilio en Lascurain de Retana 5, Colonia Centro, C.P. 36000 en
           Guanajuato, Gto. México; con número de R.F.C. UGU450325KY2 y número de
           teléfono (473) 732 0006 ext. 2078 y correo electrónico de contacto{" "}
-          <a
-            href="mailto:libreriaug@ugto.mx"
-            className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100"
-          >
-            libreriaug@ugto.mx
-          </a>
+          <Link href="mailto:libreriaug@ugto.mx" className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100">
+  libreriaug@ugto.mx
+</Link>
           .
         </p>
         <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
@@ -125,12 +118,9 @@ const AvisoPrivacidadPage = () => {
           situación que corresponda al funcionamiento de LA PÁGINA o de
           cualquiera de sus servidores. El soporte se brindará vía correo
           electrónico a{" "}
-          <a
-            href="mailto:libreriaug@ugto.mx"
-            className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100"
-          >
-            libreriaug@ugto.mx
-          </a>
+          <Link href="mailto:libreriaug@ugto.mx" className="mb-4 text-orange mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100">
+  libreriaug@ugto.mx
+</Link>
           , y no se brindará en cuanto al mal funcionamiento de los dispositivos
           que esté usando el USUARIO y/o USUARIO ACTIVO y/o CLIENTE. El soporte
           es según criterio exclusivo de LIBRERÍA UG VIRTUAL, y puede cancelar
@@ -370,12 +360,9 @@ const AvisoPrivacidadPage = () => {
           competentes en Guanajuato, Gto.
         </p>
         <p>
-          <a
-            href="/"
-            className="text-2xl font-light text-center text-gold mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100"
-          >
-            Regresar al inicio
-          </a>
+        <Link href="/" className="text-2xl font-light text-center text-gold mb-6 relative inline-block hover:font-bold after:content-[''] after:block after:w-full after:h-[2px] after:bg-yellow after:scale-x-0 after:transition-transform after:duration-300 after:origin-left hover:after:scale-x-100">
+  Regresar al inicio
+</Link>
         </p>
       </div>
       <Footer />
