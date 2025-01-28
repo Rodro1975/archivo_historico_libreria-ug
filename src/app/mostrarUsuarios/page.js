@@ -1,10 +1,9 @@
 "use client"; // Asegúrate de que el componente se ejecute solo en el cliente
 
-import { useEffect, useState, useCallback, Suspense } from "react"; 
+import { useEffect, useState, useCallback, Suspense } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
-import ActualizarUsuarios from "@/components/ActualizarUsuarios"; 
-import { useSearchParams } from "next/navigation";
+import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 
 const MostrarUsuariosPage = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -12,10 +11,8 @@ const MostrarUsuariosPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentUsuario, setCurrentUsuario] = useState(null); 
-
-  const searchParams = useSearchParams();
-  const searchTerm = searchParams.get("search") || "";
+  const [currentUsuario, setCurrentUsuario] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
 
   // Función para obtener los usuarios desde Supabase
   const fetchUsuarios = async () => {
@@ -32,27 +29,26 @@ const MostrarUsuariosPage = () => {
   };
 
   // Función de búsqueda que filtra los usuarios por apellido paterno
-  const handleSearch = useCallback((searchTerm) => {
-    const lowerCaseTerm = searchTerm.toLowerCase();
-    const results = usuarios.filter((usuario) =>
-      usuario.apellido_paterno.toLowerCase().includes(lowerCaseTerm)
-    );
-    setFilteredUsuarios(results);
-  }, [usuarios]); 
+  const handleSearch = useCallback(
+    (term) => {
+      const lowerCaseTerm = term.toLowerCase();
+      const results = usuarios.filter((usuario) =>
+        usuario.apellido_paterno.toLowerCase().includes(lowerCaseTerm)
+      );
+      setFilteredUsuarios(results);
+    },
+    [usuarios]
+  );
+
+  // Actualizar los resultados de la búsqueda cuando cambia el término
+  useEffect(() => {
+    handleSearch(searchTerm);
+  }, [searchTerm, handleSearch]);
 
   // Cargar usuarios cuando se monta el componente
   useEffect(() => {
     fetchUsuarios();
   }, []);
-
-  // Actualizar los resultados de la búsqueda cuando cambia el término de búsqueda
-  useEffect(() => {
-    if (searchTerm) {
-      handleSearch(searchTerm);
-    } else {
-      setFilteredUsuarios(usuarios); 
-    }
-  }, [searchTerm, usuarios, handleSearch]);
 
   // Función para eliminar un usuario
   const handleDelete = async (id_usuario) => {
@@ -78,6 +74,18 @@ const MostrarUsuariosPage = () => {
         <h1 className="text-4xl text-yellow text-center font-bold mt-8 mb-8">
           Lista de Usuarios
         </h1>
+
+        {/* Barra de búsqueda */}
+        <div className="max-w-screen-lg mx-auto px-4 mb-4">
+          <input
+            type="text"
+            placeholder="Buscar por apellido paterno"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
         <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
           <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
             <thead>
@@ -119,7 +127,7 @@ const MostrarUsuariosPage = () => {
                     </button>
                     <button
                       onClick={() => {
-                        setCurrentUsuario(usuario); 
+                        setCurrentUsuario(usuario);
                         setIsEditing(true);
                       }}
                       className="bg-yellow text-white px-4 py-1 rounded mt-2"
@@ -153,6 +161,7 @@ const MostrarUsuariosPage = () => {
 };
 
 export default MostrarUsuariosPage;
+
 
 
 

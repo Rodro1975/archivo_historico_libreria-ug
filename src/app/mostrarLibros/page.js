@@ -2,34 +2,10 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase"; // Asegúrate de configurar correctamente Supabase
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
-import { useSearchParams } from "next/navigation";
-
-const SearchBar = ({ libros, setFilteredLibros }) => {
-  const searchParams = useSearchParams();
-  const searchTerm = searchParams.get("search") || "";
-
-  useEffect(() => {
-    const handleSearch = (term) => {
-      if (!term) {
-        setFilteredLibros(libros); // Mostrar todos si no hay término de búsqueda
-        return;
-      }
-      const lowerCaseTerm = term.toLowerCase();
-      const results = libros.filter((libro) =>
-        libro.titulo?.toLowerCase().includes(lowerCaseTerm)
-      );
-      setFilteredLibros(results);
-    };
-
-    handleSearch(searchTerm);
-  }, [searchTerm, libros, setFilteredLibros]);
-
-  return null; // Este componente no renderiza nada directamente
-};
 
 const MostrarLibrosPage = () => {
   const [libros, setLibros] = useState([]);
@@ -38,6 +14,7 @@ const MostrarLibrosPage = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentLibro, setCurrentLibro] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para la barra de búsqueda
 
   const fetchLibros = async () => {
     try {
@@ -61,6 +38,19 @@ const MostrarLibrosPage = () => {
   useEffect(() => {
     fetchLibros();
   }, []);
+
+  // Filtrar los libros al cambiar el término de búsqueda
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredLibros(libros); // Mostrar todos si no hay término de búsqueda
+    } else {
+      const lowerCaseTerm = searchTerm.toLowerCase();
+      const results = libros.filter((libro) =>
+        libro.titulo?.toLowerCase().includes(lowerCaseTerm)
+      );
+      setFilteredLibros(results);
+    }
+  }, [searchTerm, libros]);
 
   const handleDelete = async (codigoRegistro) => {
     try {
@@ -86,9 +76,16 @@ const MostrarLibrosPage = () => {
         Lista de libros
       </h1>
 
-      <Suspense fallback={<div>Cargando barra de búsqueda...</div>}>
-        <SearchBar libros={libros} setFilteredLibros={setFilteredLibros} />
-      </Suspense>
+      {/* Barra de búsqueda */}
+      <div className="max-w-screen-lg mx-auto px-4 mb-4">
+        <input
+          type="text"
+          placeholder="Buscar por título..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded"
+        />
+      </div>
 
       <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
@@ -151,3 +148,4 @@ const MostrarLibrosPage = () => {
 };
 
 export default MostrarLibrosPage;
+

@@ -17,8 +17,6 @@ const WorkBar = () => {
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [activeForm, setActiveForm] = useState(null);
-  const [searchBooks, setSearchBooks] = useState(""); // Estado para buscar libros
-  const [searchUsers, setSearchUsers] = useState(""); // Estado para buscar usuarios
   const router = useRouter();
 
   useEffect(() => {
@@ -69,14 +67,6 @@ const WorkBar = () => {
     setActiveForm((prevForm) => (prevForm === formName ? null : formName));
   };
 
-  const handleSearchBooks = () => {
-    router.push(`/mostrarLibros?search=${searchBooks}`);
-  };
-
-  const handleSearchUsers = () => {
-    router.push(`/mostrarUsuarios?search=${searchUsers}`);
-  };
-
   if (loading) {
     return <h1 className="text-center mt-10">Cargando...</h1>;
   }
@@ -113,7 +103,7 @@ const WorkBar = () => {
 
       {/**Barra lateral */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-100 shadow-lg ] transform ${
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-100 shadow-lg transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 z-40`}
       >
@@ -129,46 +119,6 @@ const WorkBar = () => {
 
         {/**Menú */}
         <ul className="flex flex-col gap-6 p-6 text-[var(--color-blue)]">
-          <li>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Buscar libros..."
-                value={searchBooks}
-                onChange={(e) => setSearchBooks(e.target.value)}
-                className="border rounded-md px-3 py-1 text-sm w-full"
-              />
-              <button
-                onClick={handleSearchBooks}
-                className="bg-[var(--color-orange)] text-white px-4 py-1 rounded-md flex-shrink-0"
-              >
-                Buscar
-              </button>
-            </div>
-          </li>
-
-          {userRole === "Administrador" && (
-            <>
-              <li>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Buscar usuarios..."
-                    value={searchUsers}
-                    onChange={(e) => setSearchUsers(e.target.value)}
-                    className="border rounded-md px-3 py-1 text-sm w-full"
-                  />
-                  <button
-                    onClick={handleSearchUsers}
-                    className="bg-[var(--color-orange)] text-white px-4 py-1 rounded-md flex-shrink-0"
-                  >
-                    Buscar
-                  </button>
-                </div>
-              </li>
-            </>
-          )}
-
           <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
             <AiOutlineHome size={24} />
             <Link href="/" className="block text-lg">
@@ -244,3 +194,6 @@ const WorkBar = () => {
 };
 
 export default WorkBar;
+
+
+
