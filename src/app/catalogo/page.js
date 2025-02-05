@@ -36,6 +36,16 @@ const CatalogoPage = () => {
     setLoading(false); // Establecer a false una vez que se terminan de cargar
   };
 
+  // Función para validar si la URL es válida
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
   const manejarCerrarBarra = () => {
     setIsAnimatingX(true);
     setTimeout(() => {
@@ -187,7 +197,7 @@ const CatalogoPage = () => {
               >
                 <div className="flex justify-center mb-4">
                   <Image
-                    src={libro.portada || "/default-image.jpg"} // Imagen predeterminada
+                    src={isValidUrl(libro.portada)? libro.portada:"/images/default-placeholder.jpg"}
                     alt={libro.titulo}
                     className="rounded-lg shadow-md"
                     width={240}
