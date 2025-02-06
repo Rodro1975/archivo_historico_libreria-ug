@@ -83,9 +83,10 @@ const MostrarLibrosPage = () => {
           placeholder="Buscar por título..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded"
+          className="w-full px-4 py-2 border border-gray-300 rounded text-black bg-white" // Asegura que el texto sea negro y el fondo blanco
         />
       </div>
+
 
       <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">

@@ -82,9 +82,10 @@ const MostrarUsuariosPage = () => {
             placeholder="Buscar por apellido paterno"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded text-black bg-white placeholder-gray-400" // Asegura que el texto sea negro, el fondo blanco, y el placeholder tenga un color gris
           />
         </div>
+
 
         <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
           <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">

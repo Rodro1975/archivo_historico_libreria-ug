@@ -19,7 +19,9 @@ const CatalogoCompleto = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const { data, error } = await supabase.from("libros").select("id_libro, titulo, sinopsis, isbn, portada");
+        const { data, error } = await supabase
+          .from("libros")
+          .select("id_libro, titulo, sinopsis, isbn, portada");
         if (error) throw error;
         console.log("Datos recibidos:", data); // Verifica los datos aquí
         setBooks(data);
@@ -37,9 +39,14 @@ const CatalogoCompleto = () => {
       new URL(url);
       return true;
     } catch (_) {
-      return false;  
+      return false;
     }
   };
+
+  // Filtrar los libros con el término de búsqueda
+  const filteredBooks = books.filter((book) =>
+    book.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -104,10 +111,10 @@ const CatalogoCompleto = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-        {books.length === 0 ? (
+        {filteredBooks.length === 0 ? (
           <p>No hay libros disponibles.</p>
         ) : (
-          books.map((book) => (
+          filteredBooks.map((book) => (
             <div
               key={book.id_libro}
               className="bg-white shadow-md rounded-lg overflow-hidden transition-transform transform hover:scale-105"
@@ -163,6 +170,7 @@ const CatalogoCompleto = () => {
 };
 
 export default CatalogoCompleto;
+
 
 
 
