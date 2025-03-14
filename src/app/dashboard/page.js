@@ -36,7 +36,7 @@ const DashboardPage = () => {
     const { data, error } = await supabase
       .from("usuarios")
       .select("primer_nombre, apellido_paterno, role, foto")
-      .eq("id_auth", userId)
+      .eq("id", userId)
       .single();
 
     if (error) {

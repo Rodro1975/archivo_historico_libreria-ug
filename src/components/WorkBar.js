@@ -42,7 +42,7 @@ const WorkBar = () => {
     const { data, error } = await supabase
       .from("usuarios")
       .select("primer_nombre, apellido_paterno, role, foto")
-      .eq("id_auth", userId)
+      .eq("id", userId)
       .single();
 
     if (error) {
@@ -144,8 +144,20 @@ const WorkBar = () => {
               </li>
               <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
                 <AiOutlineBook size={24} />
+                <Link href="/registerBook" className="block text-lg">
+                  Registrar Libros
+                </Link>
+              </li>
+              <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                <AiOutlineBook size={24} />
                 <Link href="/mostrarUsuarios" className="block text-lg">
                   Lista de Usuarios
+                </Link>
+              </li>
+              <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                <AiOutlineBook size={24} />
+                <Link href="/register" className="block text-lg">
+                  Registrar Usuarios
                 </Link>
               </li>
             </>
@@ -157,6 +169,12 @@ const WorkBar = () => {
                 <AiOutlineBook size={24} />
                 <Link href="/mostrarLibros" className="block text-lg">
                   Lista de Libros
+                </Link>
+              </li>
+              <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                <AiOutlineBook size={24} />
+                <Link href="/registerBook" className="block text-lg">
+                  Registrar Libros
                 </Link>
               </li>
             </>
@@ -194,6 +212,3 @@ const WorkBar = () => {
 };
 
 export default WorkBar;
-
-
-

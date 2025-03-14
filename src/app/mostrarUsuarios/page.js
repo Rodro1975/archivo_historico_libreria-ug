@@ -1,4 +1,4 @@
-"use client"; // Asegúrate de que el componente se ejecute solo en el cliente
+"use client";
 
 import { useEffect, useState, useCallback, Suspense } from "react";
 import supabase from "@/lib/supabase";
@@ -52,16 +52,26 @@ const MostrarUsuariosPage = () => {
 
   // Función para eliminar un usuario
   const handleDelete = async (id_usuario) => {
-    const { error } = await supabase
-      .from("usuarios")
-      .delete()
-      .eq("id_usuario", id_usuario);
+    const confirmar = window.confirm(
+      `¿Estás seguro de que deseas eliminar al usuario con ID: ${id_usuario}?`
+    );
+
+    if (!confirmar) return;
+
+    // Llamar al procedimiento almacenado en Supabase (RPC)
+    const { error } = await supabase.rpc("eliminar_usuario", {
+      user_id: id_usuario,
+    });
 
     if (error) {
-      console.error("Error al eliminar: ", error.message);
-    } else {
-      fetchUsuarios();
+      console.error("Error al eliminar usuario:", error.message);
+      return;
     }
+
+    console.log("Usuario eliminado correctamente de ambas tablas.");
+
+    // Recargar la lista de usuarios
+    fetchUsuarios();
   };
 
   if (loading) return <p>Cargando...</p>;
@@ -86,7 +96,6 @@ const MostrarUsuariosPage = () => {
           />
         </div>
 
-
         <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
           <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
             <thead>
@@ -99,7 +108,7 @@ const MostrarUsuariosPage = () => {
                 <th className="border px-4 py-2">Email</th>
                 <th className="border px-4 py-2">Teléfono</th>
                 <th className="border px-4 py-2">Justificación</th>
-                <th className="border px-4 py-2">Password</th>
+
                 <th className="border px-4 py-2">Rol</th>
                 <th className="border px-4 py-2">Foto</th>
                 <th className="border px-4 py-2">Acciones</th>
@@ -107,21 +116,25 @@ const MostrarUsuariosPage = () => {
             </thead>
             <tbody>
               {filteredUsuarios.map((usuario) => (
-                <tr key={usuario.id_usuario}>
-                  <td className="border px-4 py-2">{usuario.id_usuario}</td>
+                <tr key={usuario.id}>
+                  <td className="border px-4 py-2">{usuario.id}</td>
                   <td className="border px-4 py-2">{usuario.primer_nombre}</td>
                   <td className="border px-4 py-2">{usuario.segundo_nombre}</td>
-                  <td className="border px-4 py-2">{usuario.apellido_paterno}</td>
-                  <td className="border px-4 py-2">{usuario.apellido_materno}</td>
+                  <td className="border px-4 py-2">
+                    {usuario.apellido_paterno}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {usuario.apellido_materno}
+                  </td>
                   <td className="border px-4 py-2">{usuario.email}</td>
                   <td className="border px-4 py-2">{usuario.telefono}</td>
                   <td className="border px-4 py-2">{usuario.justificacion}</td>
-                  <td className="border px-4 py-2">{usuario.password}</td>
+
                   <td className="border px-4 py-2">{usuario.role}</td>
                   <td className="border px-4 py-2">{usuario.foto}</td>
                   <td className="border px-4 py-2">
                     <button
-                      onClick={() => handleDelete(usuario.id_usuario)}
+                      onClick={() => handleDelete(usuario.id)}
                       className="bg-red-500 text-white px-4 py-1 rounded"
                     >
                       Eliminar
@@ -162,9 +175,3 @@ const MostrarUsuariosPage = () => {
 };
 
 export default MostrarUsuariosPage;
-
-
-
-
-
-
