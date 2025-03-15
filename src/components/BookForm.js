@@ -1,9 +1,9 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 
@@ -54,17 +54,20 @@ const RegisterBookSchema = z.object({
   esTraduccion: z.boolean(),
   sinopsis: z.string().min(1, { message: "La sinopsis es requerida" }),
   depositoLegal: z.boolean(),
-  portada: z.string().min(1, { message: "La portada es requerida" }),
-  archivo_pdf: z.string().min(1, { message: "El documento PDF es requerido" }),
+  portada: z.string().optional(), // Se asignará después de la carga
+  archivo_pdf: z.string().optional(),
   depositoLegal_pdf: z.string().optional(),
 });
 
 export default function BookForm() {
   const [successMessage, setSuccessMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedPDF, setSelectedPDF] = useState(null);
+  const [selectedDLPDF, setSelectedDLPDF] = useState(null);
 
   const {
     register,
-    handleSubmit, // Corrige aquí el nombre de la función
+    handleSubmit,
     reset,
     formState: { errors },
   } = useForm({
@@ -75,8 +78,87 @@ export default function BookForm() {
     },
   });
 
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handlePDFChange = (event) => {
+    setSelectedPDF(event.target.files[0]);
+  };
+
+  const handleDLPDFChange = (event) => {
+    setSelectedDLPDF(event.target.files[0]);
+  };
+
   const onSubmit = async (data) => {
-    console.log("Datos antes de enviar:", data);
+    console.log("Datos enviados:", data);
+    let imageUrl = "";
+    let pdfUrl = "";
+    let dlpdfUrl = "";
+
+    // Si hay un archivo foto seleccionado, subirlo a Supabase
+    if (selectedFile) {
+      const fileName = `portadas/${Date.now()}-${selectedFile.name}`;
+      const { data: storageData, error: storageError } = await supabase.storage
+        .from("portadas")
+        .upload(fileName, selectedFile, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (storageError) {
+        console.error("Error al subir la portada:", storageError);
+        return;
+      }
+
+      // Obtener la URL pública de la imagen subida
+      const { data: publicUrlData } = supabase.storage
+        .from("portadas")
+        .getPublicUrl(fileName);
+      imageUrl = publicUrlData.publicUrl;
+    }
+
+    // Subir el PDF a Supabase
+    if (selectedPDF) {
+      const pdfFileName = `libros/${Date.now()}-${selectedPDF.name}`;
+      const { data: pdfStorageData, error: pdfStorageError } =
+        await supabase.storage.from("libros").upload(pdfFileName, selectedPDF, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (pdfStorageError) {
+        console.error("Error al subir el PDF:", pdfStorageError);
+        return;
+      }
+
+      const { data: pdfPublicUrlData } = supabase.storage
+        .from("libros")
+        .getPublicUrl(pdfFileName);
+      pdfUrl = pdfPublicUrlData.publicUrl;
+    }
+
+    // Subir el Depostito Legal PDF a Supabase
+    if (selectedDLPDF) {
+      const dlpdfFileName = `depositolegal/${Date.now()}-${selectedDLPDF.name}`;
+      const { data: pdfStorageData, error: dlpdfStorageError } =
+        await supabase.storage
+          .from("depositolegal")
+          .upload(dlpdfFileName, selectedDLPDF, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+      if (dlpdfStorageError) {
+        console.error("Error al subir el PDF:", dlpdfStorageError);
+        return;
+      }
+
+      const { data: dlpdfPublicUrlData } = supabase.storage
+        .from("depositolegal")
+        .getPublicUrl(dlpdfFileName);
+      dlpdfUrl = dlpdfPublicUrlData.publicUrl;
+    }
 
     // Sanitizar datos antes de enviar a Supabase
     const sanitizedData = {
@@ -85,22 +167,26 @@ export default function BookForm() {
       anioPublicacion: parseInt(data.anioPublicacion, 10),
       numeroPaginas: parseInt(data.numeroPaginas, 10),
       pesoGramos: parseInt(data.pesoGramos, 10),
+      portada: imageUrl, // Asignar la URL de la portada
+      archivo_pdf: pdfUrl, // Asignar la URL del PDF
+      depositoLegal_pdf: dlpdfUrl, //Asignar la URL del DL PDF
     };
 
-    console.log("Datos preparados para Supabase:", sanitizedData);
-
-    // Enviar los datos a Supabase
+    // Insertar en la base de datos
     const { data: insertDataResponse, error } = await supabase
       .from("libros")
       .insert([sanitizedData]);
 
     if (error) {
-      console.error("Error al insertar datos:", error.message, error.details);
+      console.error("Error al insertar datos:", error.message);
       setSuccessMessage("");
     } else {
-      console.log("Datos insertados:", insertDataResponse);
+      console.log("Datos insertados correctamente:", insertDataResponse);
       setSuccessMessage("Datos registrados correctamente.");
       reset();
+      setSelectedFile(null);
+      setSelectedPDF(null);
+      setSelectedDLPDF(null);
     }
   };
 
@@ -699,72 +785,48 @@ export default function BookForm() {
               </label>
             </div>
 
+            {/* Campos para seleccionar archivos */}
             <div className="mb-4">
               <label
                 htmlFor="portada"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                URL de la Portada
+                Portada
               </label>
               <input
-                type="text"
+                type="file"
                 id="portada"
-                {...register("portada")} // Registra el campo con react-hook-form
-                required
+                onChange={handleFileChange} // Se cambia a manejar el archivo directamente
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa la URL de la portada"
+                accept=".jpg, .jpeg, .png"
               />
-              {errors.portada && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.portada.message}
-                </p>
-              )}
             </div>
 
             <div className="mb-4">
-              <label
-                htmlFor="archivo_pdf"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                URL del Archivo PDF
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Archivo PDF
               </label>
               <input
-                type="text"
-                id="archivo_pdf"
-                {...register("archivo_pdf")} // Registra el campo con react-hook-form
-                required
+                type="file"
+                onChange={handlePDFChange}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa la URL del Archivo PDF"
+                accept=".pdf"
               />
-              {errors.archivo_pdf && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.archivo_pdf.message}
-                </p>
-              )}
             </div>
 
             <div className="mb-4">
-              <label
-                htmlFor="depositoLegal_pdf"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                URL del Archivo Deposito Legal PDF
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Archivo Deposito Legal PDF
               </label>
               <input
-                type="text"
-                id="depositoLegal_pdf"
-                {...register("depositoLegal_pdf")} // Registra el campo con react-hook-form
-                required
+                type="file"
+                onChange={handleDLPDFChange}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa la URL del Archivo Deposito Legal PDF"
+                accept=".pdf"
               />
-              {errors.depositoLegal_pdf && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.depositoLegal_pdf.message}
-                </p>
-              )}
             </div>
 
+            {/* Botón de registro*/}
             <div className="flex justify-center">
               <button
                 type="submit"

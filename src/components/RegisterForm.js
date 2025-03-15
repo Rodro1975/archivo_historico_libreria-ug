@@ -6,7 +6,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import supabase from "@/lib/supabase";
-import Head from "next/head";
 import Image from "next/image";
 
 // Esquema de validación con Zod
