@@ -14,7 +14,7 @@ const AvisoPrivacidadPage = () => {
   return (
     <div className="min-h-screen bg-blue">
       <NavBar />
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md mt-20 mb-20 mr-10 ml-10">
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8 mb-8">
         <h1 className="text-4xl font-bold text-center text-[#003c71] mb-6">
           Aviso de privacidad Integral del Archivo Histórico de la Editorial de
           la Universidad de Guanajuato
