@@ -53,28 +53,26 @@ const CatalogoCompleto = () => {
       <div className="sticky top-0 z-50">
         <WorkBar />
       </div>
-
+      {/* Hero */}
       <div
-        className="relative flex flex-col items-center justify-center mb-8 mt-8 h-screen"
+        className="relative flex flex-col items-center justify-center w-full 
+        pt-16 pb-8 
+        min-h-[calc(100vh-4rem)] 
+        bg-cover bg-center mb-8 mt-8"
         style={{
           backgroundImage: "url('/images/biblioteca.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
         }}
       >
         <div
-          className="absolute inset-0 bg-gradient-to-r from-red-700 via-transparent to-[#D2B48C] z-0"
+          className="absolute inset-0 bg-gradient-to-r from-red-700 via-transparent to-[#D2B48C]"
           style={{ opacity: 0.85 }}
-        ></div>
+        />
 
-        <div
-          className="flex flex-col items-center justify-center text-gold text-center z-10 px-8 md:px-16 lg:w-3/4"
-          style={{ marginTop: "-250px" }}
-        >
-          <h1 className="text-6xl md:text-8xl font-extrabold leading-tight drop-shadow-xl">
+        <div className="relative z-10 text-center px-6 md:px-12 lg:w-3/4">
+          <h1 className="text-6xl md:text-6xl lg:text-8xl font-extrabold leading-tight text-white drop-shadow-xl">
             Archivo Histórico Editorial UG
           </h1>
-          <p className="mt-4 text-xl md:text-2xl text-white drop-shadow-lg">
+          <p className="mt-4 text-lg md:text-xl text-white drop-shadow-lg">
             Accede a una vasta colección de libros históricos. Colabora, edita y
             enriquece el legado editorial que define nuestra historia.
           </p>
@@ -120,7 +118,11 @@ const CatalogoCompleto = () => {
               className="bg-white shadow-md rounded-lg overflow-hidden transition-transform transform hover:scale-105"
             >
               <Image
-                src={isValidUrl(book.portada) ? book.portada : "/images/default-placeholder.jpg"} // Placeholder si la URL no es válida
+                src={
+                  isValidUrl(book.portada)
+                    ? book.portada
+                    : "/images/default-placeholder.jpg"
+                } // Placeholder si la URL no es válida
                 alt={book.titulo}
                 layout="responsive"
                 width={300}
@@ -170,10 +172,3 @@ const CatalogoCompleto = () => {
 };
 
 export default CatalogoCompleto;
-
-
-
-
-
-
-
