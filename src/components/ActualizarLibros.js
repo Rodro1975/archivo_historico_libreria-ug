@@ -18,7 +18,7 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
   const [selectedPDF, setSelectedPDF] = useState(null);
   const [selectedDLPDF, setSelectedDLPDF] = useState(null);
 
-  //efecto para reiniciar el formulario cuando se actualiza un libro
+  // Efecto para reiniciar el formulario cuando se actualiza un libro
   useEffect(() => {
     reset(libro);
   }, [libro, reset]);
@@ -57,10 +57,8 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
       }
 
       // Obtener la URL pública de la imagen subida
-      const { data: publicUrlData } = supabase.storage
-        .from("portadas")
-        .getPublicUrl(fileName);
-      imageUrl = publicUrlData.publicUrl;
+      imageUrl = supabase.storage.from("portadas").getPublicUrl(fileName)
+        .data.publicUrl;
     }
 
     // Subir el PDF a Supabase
@@ -77,13 +75,11 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
         return;
       }
 
-      const { data: pdfPublicUrlData } = supabase.storage
-        .from("libros")
-        .getPublicUrl(pdfFileName);
-      pdfUrl = pdfPublicUrlData.publicUrl;
+      pdfUrl = supabase.storage.from("libros").getPublicUrl(pdfFileName)
+        .data.publicUrl;
     }
 
-    // Subir el Deposito Legal PDF a Supabase
+    // Subir el Depósito Legal PDF a Supabase
     if (selectedDLPDF) {
       const dlpdfFileName = `depositolegal/${Date.now()}-${selectedDLPDF.name}`;
       const { data: pdfStorageData, error: dlpdfStorageError } =
@@ -99,10 +95,9 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
         return;
       }
 
-      const { data: dlpdfPublicUrlData } = supabase.storage
+      dlpdfUrl = supabase.storage
         .from("depositolegal")
-        .getPublicUrl(dlpdfFileName);
-      dlpdfUrl = dlpdfPublicUrlData.publicUrl;
+        .getPublicUrl(dlpdfFileName).data.publicUrl;
     }
 
     // Actualizar en la base de datos

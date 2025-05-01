@@ -48,7 +48,7 @@ h3 {
   color: var(--color-blue);
 }
 
-.text-yellow-500 {  
+.text-yellow-500 {
   color: var(--color-yellow);
 }
 
@@ -117,11 +117,15 @@ h3 {
 
 /* Cambia la rotación de las imágenes al desplazarse */
 .embla__slide:nth-child(even) {
-  transform: rotateY(15deg); /* Rotación hacia la derecha para las imágenes pares */
+  transform: rotateY(
+    15deg
+  ); /* Rotación hacia la derecha para las imágenes pares */
 }
 
 .embla__slide:nth-child(odd) {
-  transform: rotateY(-15deg); /* Rotación hacia la izquierda para las imágenes impares */
+  transform: rotateY(
+    -15deg
+  ); /* Rotación hacia la izquierda para las imágenes impares */
 }
 
 /* Estilos de los botones */
@@ -165,3 +169,19 @@ h3 {
   color: yellow; /* Flecha amarilla al hacer hover */
 }
 
+/*Efecto contador notificaciones*/
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
