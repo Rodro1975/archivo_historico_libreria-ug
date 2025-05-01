@@ -72,7 +72,7 @@ const NotificacionesDropdown = ({ show, onClose }) => {
               {!n.read && (
                 <button
                   onClick={() => marcarComoLeida(n.id)}
-                  className="ml-2 text-blue-500 text-xs"
+                  className="ml-2 text-blue text-xs"
                 >
                   Marcar como leída
                 </button>
