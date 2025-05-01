@@ -6,37 +6,38 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import {
-  AiOutlineHome,
+  AiOutlineBell,
   AiOutlineLogout,
   AiOutlineBook,
   AiOutlineDashboard,
 } from "react-icons/ai";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
+import NotificacionesDropdown from "./NotificacionesDropdown"; // ajuste la ruta si es necesario
 
 const WorkBar = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [activeForm, setActiveForm] = useState(null);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
 
+  // Sesión y datos de usuario
   useEffect(() => {
     const checkSession = async () => {
       const {
         data: { session },
         error,
       } = await supabase.auth.getSession();
-
       if (error || !session) {
-        console.log("Sesión no válida, redirigiendo a /login");
         router.push("/login");
       } else {
         fetchUserData(session.user.id);
       }
       setLoading(false);
     };
-
     checkSession();
   }, [router]);
 
@@ -46,35 +47,70 @@ const WorkBar = () => {
       .select("primer_nombre, apellido_paterno, role, foto")
       .eq("id", userId)
       .single();
-
-    if (error) {
-      console.error("Error fetching user data:", error.message);
-    } else {
-      setUserData(data);
-    }
+    if (!error) setUserData(data);
   };
 
+  // Contar notificaciones no leídas tras cargar userData
+  useEffect(() => {
+    if (!userData) return;
+    const fetchCount = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      let query = supabase
+        .from("notificaciones")
+        .select("*")
+        .eq("read", false)
+        .eq("user_id", user.id);
+      // filtro según rol
+      if (userData.role === "Editor") {
+        query = query.eq("type", "libros");
+      }
+      const { data, error } = await query;
+      if (!error) setNotificationCount(data.length);
+    };
+    fetchCount();
+  }, [userData]);
+
+  // Suscripción a nuevas notificaciones
+  useEffect(() => {
+    if (!userData) return;
+    const handleNew = (payload) => setNotificationCount((prev) => prev + 1);
+    const filter =
+      userData.role === "Administrador"
+        ? "type.eq.usuarios,type.eq.libros"
+        : "type.eq.libros";
+    const channel = supabase
+      .channel("notificaciones")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notificaciones",
+          filter,
+        },
+        handleNew
+      )
+      .subscribe();
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [userData]);
+
+  // Cerrar sesión
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error al cerrar sesión:", error.message);
-    } else {
-      localStorage.removeItem("token");
-      router.push("/login");
-    }
+    await supabase.auth.signOut();
+    localStorage.removeItem("token");
+    router.push("/login");
   };
 
-  const toggleForm = (formName) => {
-    setActiveForm((prevForm) => (prevForm === formName ? null : formName));
-  };
+  // Cambio de formulario y sidebar
+  const toggleForm = (formName) =>
+    setActiveForm((prev) => (prev === formName ? null : formName));
+  const toggleSidebar = () => setIsOpen((prev) => !prev);
 
-  const toggleSidebar = () => {
-    setIsOpen((prev) => !prev);
-  };
-
-  if (loading) {
-    return <h1 className="text-center mt-10">Cargando...</h1>;
-  }
+  if (loading) return <h1 className="text-center mt-10">Cargando...</h1>;
 
   const userRole = userData?.role;
 
@@ -123,13 +159,27 @@ const WorkBar = () => {
         {/* Menú con scroll */}
         <div className="flex-1 overflow-y-auto">
           <ul className="flex flex-col gap-4 p-6 text-blue dark:text-blue">
-            <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-              <AiOutlineHome size={24} />
-              <Link href="/" className="block text-lg">
-                Inicio
-              </Link>
+            {/* Notificaciones (reemplaza Inicio) */}
+            <li className="relative flex items-center gap-4 hover:text-[var(--color-orange)]">
+              <button
+                onClick={() => setShowDropdown((prev) => !prev)}
+                className="flex items-center gap-4 text-lg"
+              >
+                <AiOutlineBell size={24} />
+                Notificaciones
+              </button>
+              {notificationCount > 0 && (
+                <span className="absolute -top-2 left-6 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {notificationCount}
+                </span>
+              )}
+              <NotificacionesDropdown
+                show={showDropdown}
+                onClose={() => setShowDropdown(false)}
+              />
             </li>
 
+            {/* Galería del Editor */}
             <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
               <AiOutlineBook size={24} />
               <Link href="/catalogoCompleto" className="block text-lg">
@@ -137,6 +187,7 @@ const WorkBar = () => {
               </Link>
             </li>
 
+            {/* Opciones según rol */}
             {userRole === "Administrador" && (
               <>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
@@ -183,6 +234,7 @@ const WorkBar = () => {
               </>
             )}
 
+            {/* Dashboard */}
             <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
               <AiOutlineDashboard size={24} />
               <Link href="/dashboard" className="block text-lg">

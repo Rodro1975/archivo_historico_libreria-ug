@@ -87,7 +87,6 @@ const MostrarLibrosPage = () => {
         />
       </div>
 
-
       <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
           <thead>
@@ -149,4 +148,3 @@ const MostrarLibrosPage = () => {
 };
 
 export default MostrarLibrosPage;
-
