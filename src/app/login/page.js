@@ -10,7 +10,11 @@ import Image from "next/image"; // Asegúrate de importar Image
 import Link from "next/link";
 
 const LoginForm = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -38,7 +42,7 @@ const LoginForm = () => {
   return (
     <>
       <NavBar />
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen mt-10 mb-10">
         <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-3xl rounded-lg shadow-lg">
           <div className="p-10 xs:p-0 mx-auto w-full">
             <div className="px-5 py-7 text-center">
@@ -53,45 +57,63 @@ const LoginForm = () => {
                 />
               </div>
 
-              <h1 className="font-black text-3xl mb-5 text-gold">Iniciar Sesión</h1>
+              <h1 className="font-black text-3xl mb-5 text-gold">
+                Iniciar Sesión
+              </h1>
 
               <form
                 className="flex flex-col items-center"
                 onSubmit={handleSubmit(onSubmit)}
                 autoComplete="on"
               >
-                <label htmlFor="email" className="font-semibold text-sm text-blue pb-1 block text-left w-full">
+                <label
+                  htmlFor="email"
+                  className="font-semibold text-sm text-blue pb-1 block text-left w-full"
+                >
                   Correo Electrónico
                 </label>
                 <input
                   type="email"
                   id="email"
                   name="email"
-                  {...register("email", { required: "El correo es obligatorio" })}
+                  {...register("email", {
+                    required: "El correo es obligatorio",
+                  })}
                   autoComplete="email"
                   className="border border-yellow rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none"
                   required
                 />
-                {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-red-500">{errors.email.message}</p>
+                )}
 
-                <label htmlFor="login-password" className="font-semibold text-sm text-blue pb-1 block text-left w-full">
+                <label
+                  htmlFor="login-password"
+                  className="font-semibold text-sm text-blue pb-1 block text-left w-full"
+                >
                   Contraseña
                 </label>
                 <input
                   type="password"
                   id="login-password"
                   name="password"
-                  {...register("password", { required: "La contraseña es obligatoria" })}
+                  {...register("password", {
+                    required: "La contraseña es obligatoria",
+                  })}
                   autoComplete="current-password"
                   className="border border-yellow rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none"
                   required
                 />
-                {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="text-red-500">{errors.password.message}</p>
+                )}
 
                 {error && <p className="text-red-500">{error}</p>}
                 <button
                   type="submit"
-                  className={`transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block ${
+                    loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   disabled={loading}
                 >
                   {loading ? (
@@ -103,9 +125,9 @@ const LoginForm = () => {
               </form>
 
               <div className="text-center mt-4 text-sm">
-              <Link href="#" className="text-blue hover:text-gold">
-  ¿Olvidaste tu contraseña?
-</Link>
+                <Link href="#" className="text-blue hover:text-gold">
+                  ¿Olvidaste tu contraseña?
+                </Link>
               </div>
             </div>
 
@@ -135,5 +157,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-
-

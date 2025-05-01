@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import Link from 'next/link';
+import Link from "next/link";
 
 const AcercaDePage = () => {
   const [userData, setUserData] = useState(null);
@@ -15,7 +15,7 @@ const AcercaDePage = () => {
     <div className="min-h-screen bg-blue">
       <NavBar />
 
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8 mb-8">
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md mt-20 mb-20 mr-10 ml-10">
         <h1 className="text-4xl font-bold text-center text-[#003c71] mb-6">
           Acerca del Archivo Histórico de la Editorial de la Universidad de
           Guanajuato
@@ -54,15 +54,16 @@ const AcercaDePage = () => {
         <p className="text-gray-700 mb-4">
           Para más detalles sobre nuestras colecciones y actividades, visita
           nuestro sitio web en{" "}
-          
-
-<span className="text-orange">
-  {" "}
-  <Link href="https://www.ugto.mx/editorial/" target="_blank" rel="noopener noreferrer">
-    Editorial UG
-  </Link>
-</span>
-
+          <span className="text-orange">
+            {" "}
+            <Link
+              href="https://www.ugto.mx/editorial/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Editorial UG
+            </Link>
+          </span>
           .
         </p>
       </div>

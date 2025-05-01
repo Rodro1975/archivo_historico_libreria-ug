@@ -148,7 +148,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen pt-16 pb-16 mt-16">
+    <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
       {/* formulario de registro */}
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
