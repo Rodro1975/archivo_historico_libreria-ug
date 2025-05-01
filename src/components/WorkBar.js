@@ -158,7 +158,7 @@ const WorkBar = () => {
 
         {/* Menú con scroll */}
         <div className="flex-1 overflow-y-auto">
-          <ul className="flex flex-col gap-4 p-6 text-blue dark:text-blue">
+          <ul className="flex flex-col gap-6 p-6 text-[var(--color-blue)]">
             {/* Notificaciones (reemplaza Inicio) */}
             <li className="relative flex items-center gap-4 hover:text-[var(--color-orange)]">
               <button
@@ -173,11 +173,12 @@ const WorkBar = () => {
                   {notificationCount}
                 </span>
               )}
-              <NotificacionesDropdown
-                show={showDropdown}
-                onClose={() => setShowDropdown(false)}
-              />
             </li>
+            {/* Dropdown de Notificaciones (fuera del botón, como en Sidebar) */}
+            <NotificacionesDropdown
+              show={showDropdown}
+              onClose={() => setShowDropdown(false)}
+            />
 
             {/* Galería del Editor */}
             <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
