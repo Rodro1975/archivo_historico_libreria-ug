@@ -65,6 +65,31 @@ const PanelAdmin = () => {
 
       {/* Contenedor de tarjetas */}
       <div className="hexagon-container">
+        {/* Tarjeta para Gestión de Autores */}
+        <div
+          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          onClick={() => console.log("Gestión de Autores")}
+        >
+          <Image
+            src="/images/autores.png"
+            alt="Gestión de Autores"
+            width={80}
+            height={80}
+            className="mr-4"
+          />
+          <div>
+            {/* Enlace con href a /libros */}
+            <Link href="/mostrarAutores">
+              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
+                Autores
+              </h2>
+            </Link>
+            <p className="text-blue text-sm">
+              Administra los Autores y sus publicaciones del sistema.
+            </p>
+          </div>
+        </div>
+
         {/* Tarjeta para Generación de Informes */}
         <div
           className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"

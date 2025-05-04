@@ -14,6 +14,8 @@ import {
 import ActualizarLibros from "@/components/ActualizarLibros";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 import NotificacionesDropdown from "./NotificacionesDropdown"; // ajuste la ruta si es necesario
+import ActualizarAutores from "./ActualizarAutores";
+import AutorForm from "./AutorForm";
 
 const WorkBar = () => {
   const [userData, setUserData] = useState(null);
@@ -159,7 +161,7 @@ const WorkBar = () => {
         {/* Menú con scroll */}
         <div className="flex-1 overflow-y-auto">
           <ul className="flex flex-col gap-6 p-6 text-[var(--color-blue)]">
-            {/* Notificaciones (reemplaza Inicio) */}
+            {/* Notificaciones */}
             <li className="relative flex items-center gap-4 hover:text-[var(--color-orange)]">
               <button
                 onClick={() => setShowDropdown((prev) => !prev)}
@@ -193,6 +195,18 @@ const WorkBar = () => {
               <>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
                   <AiOutlineBook size={24} />
+                  <Link href="/mostrarAutores" className="block text-lg">
+                    Lista de Autores
+                  </Link>
+                </li>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineBook size={24} />
+                  <Link href="/registerAutor" className="block text-lg">
+                    Registrar Autores
+                  </Link>
+                </li>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineBook size={24} />
                   <Link href="/mostrarLibros" className="block text-lg">
                     Lista de Libros
                   </Link>
@@ -220,6 +234,18 @@ const WorkBar = () => {
 
             {userRole === "Editor" && (
               <>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineBook size={24} />
+                  <Link href="/mostrarAutores" className="block text-lg">
+                    Lista de Autores
+                  </Link>
+                </li>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineBook size={24} />
+                  <Link href="/registerAutor" className="block text-lg">
+                    Registrar Autores
+                  </Link>
+                </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
                   <AiOutlineBook size={24} />
                   <Link href="/mostrarLibros" className="block text-lg">
@@ -258,6 +284,11 @@ const WorkBar = () => {
       </div>
 
       {/* Formularios activos */}
+      {activeForm === "actualizarAutores" && (
+        <div className="mt-20 p-6">
+          <ActualizarAutores onCancel={() => setActiveForm(null)} />
+        </div>
+      )}
       {activeForm === "actualizarLibros" && (
         <div className="mt-20 p-6">
           <ActualizarLibros onCancel={() => setActiveForm(null)} />
