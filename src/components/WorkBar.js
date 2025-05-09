@@ -10,6 +10,12 @@ import {
   AiOutlineLogout,
   AiOutlineBook,
   AiOutlineDashboard,
+  AiOutlineAppstore,
+  AiOutlineUser,
+  AiOutlineTeam,
+  AiOutlineForm,
+  AiOutlinePlusSquare,
+  AiOutlineEdit,
 } from "react-icons/ai";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
@@ -184,7 +190,7 @@ const WorkBar = () => {
 
             {/* Galería del Editor */}
             <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-              <AiOutlineBook size={24} />
+              <AiOutlineAppstore size={24} />
               <Link href="/catalogoCompleto" className="block text-lg">
                 Galería del Editor
               </Link>
@@ -194,13 +200,13 @@ const WorkBar = () => {
             {userRole === "Administrador" && (
               <>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlineUser size={24} />
                   <Link href="/mostrarAutores" className="block text-lg">
                     Lista de Autores
                   </Link>
                 </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlinePlusSquare size={24} />
                   <Link href="/registerAutor" className="block text-lg">
                     Registrar Autores
                   </Link>
@@ -212,19 +218,19 @@ const WorkBar = () => {
                   </Link>
                 </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlineForm size={24} />
                   <Link href="/registerBook" className="block text-lg">
                     Registrar Libros
                   </Link>
                 </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlineTeam size={24} />
                   <Link href="/mostrarUsuarios" className="block text-lg">
                     Lista de Usuarios
                   </Link>
                 </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlineEdit size={24} />
                   <Link href="/register" className="block text-lg">
                     Registrar Usuarios
                   </Link>

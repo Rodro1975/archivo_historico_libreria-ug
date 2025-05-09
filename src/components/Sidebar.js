@@ -8,8 +8,8 @@ import {
   AiOutlineMail,
   AiOutlineUser,
   AiOutlineLogout,
-  AiOutlineBook,
   AiOutlineQuestionCircle,
+  AiOutlineAppstore,
 } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
@@ -221,7 +221,8 @@ const Sidebar = () => {
             />
 
             <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-              <AiOutlineBook size={24} />
+              <AiOutlineAppstore size={24} />
+
               <Link href="/catalogoCompleto" className="block text-lg">
                 Galería del Editor
               </Link>
