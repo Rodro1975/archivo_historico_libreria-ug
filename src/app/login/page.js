@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form"; // Importa useForm
+import { useForm } from "react-hook-form";
 import supabase from "@/lib/supabase";
-import NavBar from "@/components/NavBar"; // Asegúrate de que la ruta sea correcta
-import Footer from "@/components/Footer"; // Asegúrate de que la ruta sea correcta
-import Image from "next/image"; // Asegúrate de importar Image
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import Image from "next/image";
 import Link from "next/link";
+import { Toaster, toast } from "react-hot-toast";
 
 const LoginForm = () => {
   const {
@@ -23,16 +24,16 @@ const LoginForm = () => {
     setLoading(true);
     setError("");
 
-    // Lógica de inicio de sesión usando Supabase
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
 
     if (error) {
-      console.error("Error al iniciar sesión:", error.message);
-      setError(error.message); // Muestra el mensaje de error
+      toast.error(`Error: ${error.message}`);
+      setError(error.message);
     } else {
+      toast.success("Inicio de sesión exitoso");
       router.push("/dashboard");
     }
 
@@ -41,6 +42,7 @@ const LoginForm = () => {
 
   return (
     <>
+      <Toaster position="top-right" />
       <NavBar />
       <div className="flex items-center justify-center min-h-screen mt-10 mb-10">
         <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-3xl rounded-lg shadow-lg">
@@ -75,7 +77,6 @@ const LoginForm = () => {
                 <input
                   type="email"
                   id="email"
-                  name="email"
                   {...register("email", {
                     required: "El correo es obligatorio",
                   })}
@@ -96,7 +97,6 @@ const LoginForm = () => {
                 <input
                   type="password"
                   id="login-password"
-                  name="password"
                   {...register("password", {
                     required: "La contraseña es obligatoria",
                   })}
@@ -109,6 +109,7 @@ const LoginForm = () => {
                 )}
 
                 {error && <p className="text-red-500">{error}</p>}
+
                 <button
                   type="submit"
                   className={`transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block ${
@@ -116,11 +117,7 @@ const LoginForm = () => {
                   }`}
                   disabled={loading}
                 >
-                  {loading ? (
-                    <span className="inline-block">Cargando...</span>
-                  ) : (
-                    <span className="inline-block mr-2">Iniciar Sesión</span>
-                  )}
+                  {loading ? "Cargando..." : "Iniciar Sesión"}
                 </button>
               </form>
 
@@ -131,26 +128,23 @@ const LoginForm = () => {
               </div>
             </div>
 
-            {/* División o */}
             <div className="text-center py-4">
               <span className="text-blue-900">o</span>
             </div>
 
-            {/* Social media buttons */}
             <div className="p-5 flex justify-between space-x-3">
               <button className="transition duration-200 border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
                 <i className="fab fa-google mr-2 text-red-600"></i>
-                <span className="inline-block">Google</span>
+                <span>Google</span>
               </button>
               <button className="transition duration-200 border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
                 <i className="fab fa-linkedin mr-2 text-blue-700"></i>
-                <span className="inline-block">LinkedIn</span>
+                <span>LinkedIn</span>
               </button>
             </div>
           </div>
         </div>
       </div>
-      {/* Footer */}
       <Footer />
     </>
   );

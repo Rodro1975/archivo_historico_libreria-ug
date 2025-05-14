@@ -241,13 +241,13 @@ const WorkBar = () => {
             {userRole === "Editor" && (
               <>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlineUser size={24} />
                   <Link href="/mostrarAutores" className="block text-lg">
                     Lista de Autores
                   </Link>
                 </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlinePlusSquare size={24} />
                   <Link href="/registerAutor" className="block text-lg">
                     Registrar Autores
                   </Link>
@@ -259,7 +259,7 @@ const WorkBar = () => {
                   </Link>
                 </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-                  <AiOutlineBook size={24} />
+                  <AiOutlineForm size={24} />
                   <Link href="/registerBook" className="block text-lg">
                     Registrar Libros
                   </Link>

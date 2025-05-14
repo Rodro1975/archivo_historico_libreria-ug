@@ -164,7 +164,7 @@ export default function RegisterForm() {
               />
             </div>
             <h1 className="font-black text-3xl mb-5 text-gold">
-              Formato de Registro
+              Registro de Usuarios
             </h1>
           </div>
           <form
