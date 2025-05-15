@@ -74,7 +74,7 @@ export default function AutorForm() {
       return;
     }
     if (usersData) {
-      usuarioId = usersData.id; // UUID de usuarios.id
+      usuarioId = usersData.id;
       console.log("Autor coincide con usuario UUID:", usuarioId);
     } else {
       console.log(
@@ -84,7 +84,7 @@ export default function AutorForm() {
 
     // 2) Insertar el autor, usando usuarioId o null
     try {
-      const { error } = await supabase.from("autores").insert([
+      const { error: insertErr } = await supabase.from("autores").insert([
         {
           usuario_id: usuarioId,
           nombre_completo: formData.nombre_completo,
@@ -97,9 +97,29 @@ export default function AutorForm() {
           fecha_modificacion: new Date(),
         },
       ]);
-      if (error) throw error;
+      if (insertErr) throw insertErr;
+      console.log("Autor insertado con éxito.");
+
+      // 3) Si existe usuarioId, actualizar es_autor = true
+      if (usuarioId) {
+        const { error: updateErr } = await supabase
+          .from("usuarios")
+          .update({ es_autor: true })
+          .eq("id", usuarioId);
+        if (updateErr) {
+          console.error("Error actualizando es_autor en usuarios:", updateErr);
+          toast.error(
+            "Autor registrado, pero no se pudo actualizar el estado en usuarios."
+          );
+        } else {
+          console.log("Campo es_autor actualizado en usuarios:", usuarioId);
+        }
+      }
+
       toast.success("Autor registrado exitosamente.");
       reset();
+      // 4) recarga la lista de usuarios en el padre
+      refreshUsuarios();
     } catch (err) {
       console.error("Error registrando autor:", err);
       toast.error(`Error: ${err.message}`);

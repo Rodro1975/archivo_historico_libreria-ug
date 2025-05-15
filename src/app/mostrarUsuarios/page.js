@@ -12,13 +12,12 @@ const MostrarUsuariosPage = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentUsuario, setCurrentUsuario] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Función para obtener los usuarios desde Supabase
   const fetchUsuarios = async () => {
     setLoading(true);
     const { data, error } = await supabase.from("usuarios").select("*");
-
     if (error) {
       setError(error.message);
     } else {
@@ -28,49 +27,56 @@ const MostrarUsuariosPage = () => {
     setLoading(false);
   };
 
-  // Función de búsqueda que filtra los usuarios por apellido paterno
+  // Función de búsqueda
   const handleSearch = useCallback(
     (term) => {
-      const lowerCaseTerm = term.toLowerCase();
-      const results = usuarios.filter((usuario) =>
-        usuario.apellido_paterno.toLowerCase().includes(lowerCaseTerm)
+      const lower = term.toLowerCase();
+      setFilteredUsuarios(
+        usuarios.filter((u) => u.apellido_paterno.toLowerCase().includes(lower))
       );
-      setFilteredUsuarios(results);
     },
     [usuarios]
   );
 
-  // Actualizar los resultados de la búsqueda cuando cambia el término
+  // Filtrar al cambiar searchTerm
   useEffect(() => {
     handleSearch(searchTerm);
   }, [searchTerm, handleSearch]);
 
-  // Cargar usuarios cuando se monta el componente
+  // Carga inicial de usuarios
   useEffect(() => {
     fetchUsuarios();
+
+    // Suscripción Realtime a cambios en usuarios
+    const subscription = supabase
+      .channel("usuarios_changes")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "usuarios" },
+        () => {
+          console.log("Cambio en usuarios detectado, recargando lista...");
+          fetchUsuarios();
+        }
+      )
+      .subscribe();
+
+    // Cleanup al desmontar
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, []);
 
   // Función para eliminar un usuario
   const handleDelete = async (id_usuario) => {
-    const confirmar = window.confirm(
-      `¿Estás seguro de que deseas eliminar al usuario con ID: ${id_usuario}?`
-    );
-
-    if (!confirmar) return;
-
-    // Llamar al procedimiento almacenado en Supabase (RPC)
+    if (!window.confirm(`¿Eliminar usuario ${id_usuario}?`)) return;
     const { error } = await supabase.rpc("eliminar_usuario", {
       user_id: id_usuario,
     });
-
     if (error) {
       console.error("Error al eliminar usuario:", error.message);
       return;
     }
-
-    console.log("Usuario eliminado correctamente de ambas tablas.");
-
-    // Recargar la lista de usuarios
+    console.log("Usuario eliminado correctamente.");
     fetchUsuarios();
   };
 
@@ -81,21 +87,22 @@ const MostrarUsuariosPage = () => {
     <Suspense fallback={<p>Cargando...</p>}>
       <div className="min-h-screen bg-blue">
         <WorkBar />
-        <h1 className="text-4xl text-yellow text-center font-bold mt-8 mb-8">
+        <h1 className="text-4xl text-yellow text-center font-bold my-8">
           Lista de Usuarios
         </h1>
 
-        {/* Barra de búsqueda */}
+        {/* Búsqueda */}
         <div className="max-w-screen-lg mx-auto px-4 mb-4">
           <input
             type="text"
             placeholder="Buscar por apellido paterno"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border rounded text-black bg-white placeholder-gray-400" // Asegura que el texto sea negro, el fondo blanco, y el placeholder tenga un color gris
+            className="w-full p-2 border rounded text-black bg-white placeholder-gray-400"
           />
         </div>
 
+        {/* Tabla */}
         <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
           <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
             <thead>
@@ -108,8 +115,8 @@ const MostrarUsuariosPage = () => {
                 <th className="border px-4 py-2">Email</th>
                 <th className="border px-4 py-2">Teléfono</th>
                 <th className="border px-4 py-2">Justificación</th>
-
                 <th className="border px-4 py-2">Rol</th>
+                <th className="border px-4 py-2">Es Autor</th>
                 <th className="border px-4 py-2">Foto</th>
                 <th className="border px-4 py-2">Acciones</th>
               </tr>
@@ -129,10 +136,12 @@ const MostrarUsuariosPage = () => {
                   <td className="border px-4 py-2">{usuario.email}</td>
                   <td className="border px-4 py-2">{usuario.telefono}</td>
                   <td className="border px-4 py-2">{usuario.justificacion}</td>
-
                   <td className="border px-4 py-2">{usuario.role}</td>
-                  <td className="border px-4 py-2">{usuario.foto}</td>
                   <td className="border px-4 py-2">
+                    {usuario.es_autor ? "Sí" : "No"}
+                  </td>
+                  <td className="border px-4 py-2">{usuario.foto}</td>
+                  <td className="border px-4 py-2 space-y-2">
                     <button
                       onClick={() => handleDelete(usuario.id)}
                       className="bg-red-500 text-white px-4 py-1 rounded"
@@ -144,7 +153,7 @@ const MostrarUsuariosPage = () => {
                         setCurrentUsuario(usuario);
                         setIsEditing(true);
                       }}
-                      className="bg-yellow text-white px-4 py-1 rounded mt-2"
+                      className="bg-yellow text-white px-4 py-1 rounded"
                     >
                       Modificar
                     </button>
@@ -155,6 +164,7 @@ const MostrarUsuariosPage = () => {
           </table>
         </div>
 
+        {/* Modal de edición */}
         {isEditing && currentUsuario && (
           <ActualizarUsuarios
             usuario={currentUsuario}
