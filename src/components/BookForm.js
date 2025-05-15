@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
+import { toast, Toaster } from "react-hot-toast";
 
 // Esquema de validación con Zod
 const RegisterBookSchema = z.object({
@@ -92,96 +93,110 @@ export default function BookForm() {
 
   const onSubmit = async (data) => {
     console.log("Datos enviados:", data);
+
+    // 0) Recuperar el UUID del usuario autenticado
+    const {
+      data: { user },
+      error: userErr,
+    } = await supabase.auth.getUser();
+    if (userErr || !user) {
+      console.error("No hay usuario autenticado:", userErr);
+      toast.error("Debes iniciar sesión para registrar un libro.");
+      return;
+    }
+    const usuarioId = user.id;
+    console.log("Insertando libro por usuario:", usuarioId);
+
+    // 1) Subir archivos (portada, PDF, depósito legal)
     let imageUrl = "";
     let pdfUrl = "";
     let dlpdfUrl = "";
 
-    // Si hay un archivo foto seleccionado, subirlo a Supabase
-    if (selectedFile) {
-      const fileName = `portadas/${Date.now()}-${selectedFile.name}`;
-      const { data: storageData, error: storageError } = await supabase.storage
-        .from("portadas")
-        .upload(fileName, selectedFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (storageError) {
-        console.error("Error al subir la portada:", storageError);
-        return;
+    try {
+      // Portada
+      if (selectedFile) {
+        const fileName = `portadas/${Date.now()}-${selectedFile.name}`;
+        const { error: storageError } = await supabase.storage
+          .from("portadas")
+          .upload(fileName, selectedFile, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+        if (storageError) throw storageError;
+        const { data: publicUrlData } = supabase.storage
+          .from("portadas")
+          .getPublicUrl(fileName);
+        imageUrl = publicUrlData.publicUrl;
       }
 
-      // Obtener la URL pública de la imagen subida
-      const { data: publicUrlData } = supabase.storage
-        .from("portadas")
-        .getPublicUrl(fileName);
-      imageUrl = publicUrlData.publicUrl;
-    }
-
-    // Subir el PDF a Supabase
-    if (selectedPDF) {
-      const pdfFileName = `libros/${Date.now()}-${selectedPDF.name}`;
-      const { data: pdfStorageData, error: pdfStorageError } =
-        await supabase.storage.from("libros").upload(pdfFileName, selectedPDF, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (pdfStorageError) {
-        console.error("Error al subir el PDF:", pdfStorageError);
-        return;
+      // PDF
+      if (selectedPDF) {
+        const pdfFileName = `libros/${Date.now()}-${selectedPDF.name}`;
+        const { error: pdfStorageError } = await supabase.storage
+          .from("libros")
+          .upload(pdfFileName, selectedPDF, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+        if (pdfStorageError) throw pdfStorageError;
+        const { data: pdfPublicUrlData } = supabase.storage
+          .from("libros")
+          .getPublicUrl(pdfFileName);
+        pdfUrl = pdfPublicUrlData.publicUrl;
       }
 
-      const { data: pdfPublicUrlData } = supabase.storage
-        .from("libros")
-        .getPublicUrl(pdfFileName);
-      pdfUrl = pdfPublicUrlData.publicUrl;
-    }
-
-    // Subir el Depostito Legal PDF a Supabase
-    if (selectedDLPDF) {
-      const dlpdfFileName = `depositolegal/${Date.now()}-${selectedDLPDF.name}`;
-      const { data: pdfStorageData, error: dlpdfStorageError } =
-        await supabase.storage
+      // Depósito Legal PDF
+      if (selectedDLPDF) {
+        const dlpdfFileName = `depositolegal/${Date.now()}-${
+          selectedDLPDF.name
+        }`;
+        const { error: dlpdfStorageError } = await supabase.storage
           .from("depositolegal")
           .upload(dlpdfFileName, selectedDLPDF, {
             cacheControl: "3600",
             upsert: false,
           });
-
-      if (dlpdfStorageError) {
-        console.error("Error al subir el PDF:", dlpdfStorageError);
-        return;
+        if (dlpdfStorageError) throw dlpdfStorageError;
+        const { data: dlpdfPublicUrlData } = supabase.storage
+          .from("depositolegal")
+          .getPublicUrl(dlpdfFileName);
+        dlpdfUrl = dlpdfPublicUrlData.publicUrl;
       }
-
-      const { data: dlpdfPublicUrlData } = supabase.storage
-        .from("depositolegal")
-        .getPublicUrl(dlpdfFileName);
-      dlpdfUrl = dlpdfPublicUrlData.publicUrl;
+    } catch (uploadErr) {
+      console.error("Error al subir archivos:", uploadErr);
+      toast.error(
+        "Error al subir archivos. Revisa tu conexión e inténtalo de nuevo."
+      );
+      return;
     }
 
-    // Sanitizar datos antes de enviar a Supabase
+    // 2) Sanitizar datos antes de enviar a Supabase
     const sanitizedData = {
       ...data,
       numeroEdicion: parseInt(data.numeroEdicion, 10),
       anioPublicacion: parseInt(data.anioPublicacion, 10),
       numeroPaginas: parseInt(data.numeroPaginas, 10),
       pesoGramos: parseInt(data.pesoGramos, 10),
-      portada: imageUrl, // Asignar la URL de la portada
-      archivo_pdf: pdfUrl, // Asignar la URL del PDF
-      depositoLegal_pdf: dlpdfUrl, //Asignar la URL del DL PDF
+      portada: imageUrl,
+      archivo_pdf: pdfUrl,
+      depositoLegal_pdf: dlpdfUrl,
+      user_id: usuarioId,
+      dependencia_id: data.dependencia_id || null,
+      unidad_academica_id: data.unidad_academica_id || null,
     };
 
-    // Insertar en la base de datos
+    // 3) Insertar en la base de datos
     const { data: insertDataResponse, error } = await supabase
       .from("libros")
       .insert([sanitizedData]);
 
     if (error) {
       console.error("Error al insertar datos:", error.message);
+      toast.error("No se pudo registrar el libro. Intenta de nuevo.");
       setSuccessMessage("");
     } else {
       console.log("Datos insertados correctamente:", insertDataResponse);
+      toast.success("Libro registrado exitosamente.");
       setSuccessMessage("Datos registrados correctamente.");
       reset();
       setSelectedFile(null);
@@ -192,6 +207,7 @@ export default function BookForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
+      <Toaster position="top-right" />
       {/* formulario de registro de libros*/}
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
@@ -836,6 +852,7 @@ export default function BookForm() {
               </button>
             </div>
           </form>
+          {successMessage && <p className="text-green-600">{successMessage}</p>}
         </div>
       </div>
     </div>
