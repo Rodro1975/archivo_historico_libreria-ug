@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
+import { toast, Toaster } from "react-hot-toast";
 
 // Esquema de validación
 const AutorSchema = z.object({
@@ -26,24 +27,18 @@ export default function AutorForm() {
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors },
     reset,
   } = useForm({
     resolver: zodResolver(AutorSchema),
-    defaultValues: {
-      vigencia: true,
-    },
+    defaultValues: { vigencia: true },
   });
-
-  const dependenciaId = watch("dependencia_id");
 
   const [dependencias, setDependencias] = useState([]);
   const [unidades, setUnidades] = useState([]);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
 
-  // 1) Cargar dependencias
+  // Cargar dependencias
   useEffect(() => {
     supabase
       .from("dependencias")
@@ -53,7 +48,7 @@ export default function AutorForm() {
       });
   }, []);
 
-  // 2) Cargar TODAS las unidades académicas **sin filtrar**
+  // Cargar unidades académicas
   useEffect(() => {
     setLoadingUnidades(true);
     supabase
@@ -66,24 +61,54 @@ export default function AutorForm() {
   }, []);
 
   const onSubmit = async (formData) => {
+    // 1) Intentar buscar un usuario con ese email:
+    let usuarioId = null;
+    const { data: usersData, error: userErr } = await supabase
+      .from("usuarios")
+      .select("id")
+      .eq("email", formData.correo_institucional)
+      .maybeSingle();
+    if (userErr) {
+      console.error("Error buscando usuario por email:", userErr);
+      toast.error("Error verificando cuenta de usuario.");
+      return;
+    }
+    if (usersData) {
+      usuarioId = usersData.id; // UUID de usuarios.id
+      console.log("Autor coincide con usuario UUID:", usuarioId);
+    } else {
+      console.log(
+        "No existe usuario con ese email, se dejará usuario_id en NULL"
+      );
+    }
+
+    // 2) Insertar el autor, usando usuarioId o null
     try {
       const { error } = await supabase.from("autores").insert([
         {
-          ...formData,
-          usuario_id: null,
+          usuario_id: usuarioId,
+          nombre_completo: formData.nombre_completo,
+          cargo: formData.cargo,
+          correo_institucional: formData.correo_institucional,
+          dependencia_id: formData.dependencia_id,
+          unidad_academica_id: formData.unidad_academica_id,
+          vigencia: formData.vigencia,
+          fecha_creacion: new Date(),
+          fecha_modificacion: new Date(),
         },
       ]);
       if (error) throw error;
-      alert("Autor registrado exitosamente!");
+      toast.success("Autor registrado exitosamente.");
       reset();
-    } catch (error) {
-      console.error("Error registrando autor:", error.message);
-      alert(`Error: ${error.message}`);
+    } catch (err) {
+      console.error("Error registrando autor:", err);
+      toast.error(`Error: ${err.message}`);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
+      <Toaster position="top-right" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">
@@ -113,7 +138,8 @@ export default function AutorForm() {
               </label>
               <input
                 {...register("nombre_completo")}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-blue"
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                placeholder="Ingresa el nombre completo"
               />
               {errors.nombre_completo && (
                 <span className="text-red-500 text-sm">
@@ -127,10 +153,20 @@ export default function AutorForm() {
               <label className="block text-sm font-medium text-gray-700">
                 Cargo
               </label>
-              <input
+              <select
                 {...register("cargo")}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-blue"
-              />
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Selecciona un cargo
+                </option>
+                <option value="asistente">Asistente</option>
+                <option value="director">Director</option>
+                <option value="rector">Rector</option>
+                <option value="tecnico">Técnico</option>
+                <option value="investigador">Investigador</option>
+              </select>
               {errors.cargo && (
                 <span className="text-red-500 text-sm">
                   {errors.cargo.message}
@@ -145,7 +181,8 @@ export default function AutorForm() {
               </label>
               <input
                 {...register("correo_institucional")}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-blue"
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                placeholder="Ingresa el correo institucional"
               />
               {errors.correo_institucional && (
                 <span className="text-red-500 text-sm">
@@ -161,13 +198,9 @@ export default function AutorForm() {
               </label>
               <select
                 {...register("dependencia_id", {
-                  setValueAs: (value) => Number(value),
+                  setValueAs: (v) => Number(v),
                 })}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-blue"
-                onChange={(e) => {
-                  setValue("dependencia_id", Number(e.target.value));
-                  // note: ahora no vaciamos unidad porque todas están disponibles
-                }}
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               >
                 <option value="">Seleccionar dependencia</option>
                 {dependencias.map((dep) => (
@@ -190,9 +223,9 @@ export default function AutorForm() {
               </label>
               <select
                 {...register("unidad_academica_id", {
-                  setValueAs: (value) => (value ? Number(value) : null),
+                  setValueAs: (v) => (v ? Number(v) : null),
                 })}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-blue"
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               >
                 <option value="">
                   {loadingUnidades ? "Cargando..." : "Seleccionar unidad"}
@@ -207,14 +240,14 @@ export default function AutorForm() {
 
             {/* Vigencia */}
             <div className="flex items-center space-x-2 col-span-full">
-              <label className="block text-sm font-medium text-gray-700">
-                Autor Vigente
-              </label>
               <input
                 type="checkbox"
                 {...register("vigencia")}
                 className="form-checkbox h-5 w-5 text-blue-600"
               />
+              <label className="block text-sm font-medium text-gray-700">
+                Autor Vigente
+              </label>
             </div>
 
             {/* Botón de Registro */}
