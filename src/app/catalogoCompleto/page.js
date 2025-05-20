@@ -23,7 +23,6 @@ const CatalogoCompleto = () => {
           .from("libros")
           .select("id_libro, titulo, sinopsis, isbn, portada");
         if (error) throw error;
-        console.log("Datos recibidos:", data); // Verifica los datos aquí
         setBooks(data);
       } catch (error) {
         console.error("Error al cargar los libros:", error.message);
@@ -79,6 +78,7 @@ const CatalogoCompleto = () => {
         </div>
       </div>
 
+      {/* Barra de búsqueda con botón limpiar */}
       <div className="mb-4 flex items-center justify-center">
         <div className="w-full max-w-md flex items-center">
           <input
@@ -93,6 +93,15 @@ const CatalogoCompleto = () => {
               <FaSearch className="text-[#1E3A8A]" />
             </div>
           </button>
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="ml-2 bg-gray-500 hover:bg-gray-700 text-white font-bold px-4 py-2 rounded"
+              title="Limpiar búsqueda"
+            >
+              Limpiar
+            </button>
+          )}
         </div>
         <style jsx>{`
           .clip-hexagon {
@@ -107,6 +116,12 @@ const CatalogoCompleto = () => {
           }
         `}</style>
       </div>
+      {/* Mensaje contextual */}
+      {searchTerm && (
+        <p className="text-sm text-gray-500 text-center mb-2">
+          Haz clic en Limpiar para ver todos los libros.
+        </p>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
         {filteredBooks.length === 0 ? (
@@ -122,7 +137,7 @@ const CatalogoCompleto = () => {
                   isValidUrl(book.portada)
                     ? book.portada
                     : "/images/default-placeholder.jpg"
-                } // Placeholder si la URL no es válida
+                }
                 alt={book.titulo}
                 layout="responsive"
                 width={300}
