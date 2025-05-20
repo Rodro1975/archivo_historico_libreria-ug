@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase"; // Asegúrate de configurar correctamente Supabase
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
+import { toast, Toaster } from "react-hot-toast";
 
 const MostrarLibrosPage = () => {
   const [libros, setLibros] = useState([]);
@@ -15,6 +16,8 @@ const MostrarLibrosPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentLibro, setCurrentLibro] = useState(null);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para la barra de búsqueda
+  const [libroAEliminar, setLibroAEliminar] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const fetchLibros = async () => {
     try {
@@ -108,11 +111,15 @@ const MostrarLibrosPage = () => {
                 <td className="border px-4 py-2">{libro.titulo}</td>
                 <td className="border px-4 py-2">
                   <button
-                    onClick={() => handleDelete(libro.codigoRegistro)}
+                    onClick={() => {
+                      setLibroAEliminar(libro.codigoRegistro);
+                      setShowConfirm(true);
+                    }}
                     className="bg-red-500 text-white px-4 py-1 rounded"
                   >
                     Eliminar
                   </button>
+
                   <button
                     onClick={() => {
                       setCurrentLibro(libro);
@@ -142,6 +149,39 @@ const MostrarLibrosPage = () => {
             setCurrentLibro(null);
           }}
         />
+      )}
+      <Toaster position="top-right" />
+
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-xs w-full text-center">
+            <h2 className="text-lg font-bold mb-4 text-blue">
+              ¿Eliminar libro?
+            </h2>
+            <p className="mb-6 text-gray-700">
+              ¿Estás seguro de que deseas eliminar este libro? Esta acción no se
+              puede deshacer.
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={async () => {
+                  setShowConfirm(false);
+                  await handleDelete(libroAEliminar);
+                  toast.success("Libro eliminado correctamente");
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Sí, eliminar
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
