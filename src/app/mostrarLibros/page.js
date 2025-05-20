@@ -1,9 +1,7 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { useEffect, useState } from "react";
-import supabase from "@/lib/supabase"; // Asegúrate de configurar correctamente Supabase
+import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import { toast, Toaster } from "react-hot-toast";
@@ -15,7 +13,7 @@ const MostrarLibrosPage = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentLibro, setCurrentLibro] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // Estado para la barra de búsqueda
+  const [searchTerm, setSearchTerm] = useState("");
   const [libroAEliminar, setLibroAEliminar] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -79,16 +77,31 @@ const MostrarLibrosPage = () => {
         Lista de libros
       </h1>
 
-      {/* Barra de búsqueda */}
-      <div className="max-w-screen-lg mx-auto px-4 mb-4">
+      {/* Barra de búsqueda con botón limpiar */}
+      <div className="flex gap-2 max-w-screen-lg mx-auto px-4 mb-2">
         <input
           type="text"
           placeholder="Buscar por título..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded text-black bg-white" // Asegura que el texto sea negro y el fondo blanco
+          className="w-full px-4 py-2 border border-gray-300 rounded text-black bg-white"
         />
+        {searchTerm && (
+          <button
+            onClick={() => setSearchTerm("")}
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold px-4 py-2 rounded"
+            title="Limpiar búsqueda"
+          >
+            Limpiar
+          </button>
+        )}
       </div>
+      {/* Mensaje contextual */}
+      {searchTerm && (
+        <p className="text-sm text-gray-500 text-center mb-2">
+          Haz clic en Limpiar para ver todos los libros.
+        </p>
+      )}
 
       <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
@@ -99,6 +112,7 @@ const MostrarLibrosPage = () => {
               <th className="border px-4 py-2">ISBN</th>
               <th className="border px-4 py-2">DOI</th>
               <th className="border px-4 py-2">Titulo</th>
+              <th className="border px-4 py-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -119,7 +133,6 @@ const MostrarLibrosPage = () => {
                   >
                     Eliminar
                   </button>
-
                   <button
                     onClick={() => {
                       setCurrentLibro(libro);

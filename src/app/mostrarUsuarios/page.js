@@ -43,7 +43,7 @@ const MostrarUsuariosPage = () => {
     handleSearch(searchTerm);
   }, [searchTerm, handleSearch]);
 
-  // Carga inicial de usuarios
+  // Carga inicial de usuarios y suscripción realtime
   useEffect(() => {
     fetchUsuarios();
 
@@ -91,8 +91,8 @@ const MostrarUsuariosPage = () => {
           Lista de Usuarios
         </h1>
 
-        {/* Búsqueda */}
-        <div className="max-w-screen-lg mx-auto px-4 mb-4">
+        {/* Búsqueda con botón limpiar */}
+        <div className="flex gap-2 max-w-screen-lg mx-auto px-4 mb-2">
           <input
             type="text"
             placeholder="Buscar por apellido paterno"
@@ -100,7 +100,22 @@ const MostrarUsuariosPage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-2 border rounded text-black bg-white placeholder-gray-400"
           />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold px-4 py-2 rounded"
+              title="Limpiar búsqueda"
+            >
+              Limpiar
+            </button>
+          )}
         </div>
+        {/* Mensaje contextual */}
+        {searchTerm && (
+          <p className="text-sm text-gray-500 text-center mb-2">
+            Haz clic en Limpiar para ver todos los usuarios.
+          </p>
+        )}
 
         {/* Tabla */}
         <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
