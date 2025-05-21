@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ModalGalery from "@/components/ModalGalery";
 import "animate.css";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 const CatalogoPage = () => {
   const [userData, setUserData] = useState(null);
@@ -106,7 +107,7 @@ const CatalogoPage = () => {
               href="https://www.ugto.mx/editorial/"
               target="_blank"
               rel="noreferrer"
-              className="w-full sm:w-auto text-blue border border-blue bg-transparent hover:bg-blue hover:text-white transition duration-200 shadow-lg py-2 px-4 rounded-full text-center"
+              className="w-full sm:w-auto text-white border border-blue bg-blue hover:bg-blue hover:text-orange transition duration-200 shadow-lg py-2 px-4 rounded-full text-center"
             >
               ¡Visita nuestra página!
             </Link>
@@ -232,19 +233,28 @@ const CatalogoPage = () => {
         </section>
 
         {/* Paginación */}
-        <div className="flex flex-col items-center justify-center mt-20 space-x-0 space-y-2 md:space-x-2 md:space-y-0 md:flex-row mb-20">
+
+        <div className="flex flex-col items-center justify-center mt-20 space-x-0 space-y-2 md:space-x-4 md:space-y-0 md:flex-row mb-20">
           <button
             onClick={manejarPaginaAnterior}
-            className="w-full rounded-full bg-yellow text-blue px-6 py-3 md:w-auto transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-md hover:bg-orange"
+            className="flex items-center justify-center w-full md:w-auto rounded-full bg-gradient-to-r from-yellow to-orange text-blue px-6 py-3 shadow-lg hover:from-yellow hover:to-gold hover:shadow-xl transition transform duration-300 ease-in-out hover:scale-105 active:scale-95"
+            aria-label="Página anterior"
           >
+            <FaArrowLeft className="mr-2" />
             Anterior
           </button>
-          <span className="px-4 py-2 text-xl">{pagina + 1}</span>
+
+          <span className="px-6 py-3 text-xl font-semibold text-blue-900 select-none">
+            {pagina + 1}
+          </span>
+
           <button
             onClick={manejarPaginaSiguiente}
-            className="w-full rounded-full bg-yellow text-blue px-6 py-3 md:w-auto transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-md hover:bg-orange"
+            className="flex items-center justify-center w-full md:w-auto rounded-full bg-gradient-to-r from-orange to-yellow text-blue px-6 py-3 shadow-lg hover:from-gold hover:to-yellow hover:shadow-xl transition transform duration-300 ease-in-out hover:scale-105 active:scale-95"
+            aria-label="Página siguiente"
           >
             Siguiente
+            <FaArrowRight className="ml-2" />
           </button>
         </div>
       </div>

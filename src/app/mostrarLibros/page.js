@@ -5,6 +5,7 @@ import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import { toast, Toaster } from "react-hot-toast";
+import { FaTrash, FaEdit } from "react-icons/fa";
 
 const MostrarLibrosPage = () => {
   const [libros, setLibros] = useState([]);
@@ -129,8 +130,9 @@ const MostrarLibrosPage = () => {
                       setLibroAEliminar(libro.codigoRegistro);
                       setShowConfirm(true);
                     }}
-                    className="bg-red-500 text-white px-4 py-1 rounded"
+                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
                   >
+                    <FaTrash />
                     Eliminar
                   </button>
                   <button
@@ -138,8 +140,9 @@ const MostrarLibrosPage = () => {
                       setCurrentLibro(libro);
                       setIsEditing(true);
                     }}
-                    className="bg-yellow text-white px-4 py-1 rounded mt-2"
+                    className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
                   >
+                    <FaEdit />
                     Modificar
                   </button>
                 </td>

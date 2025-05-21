@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, Suspense } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarAutores from "@/components/ActualizarAutores";
+import { FaTrash, FaEdit } from "react-icons/fa";
 
 const MostrarAutoresPage = () => {
   const [autores, setAutores] = useState([]);
@@ -149,17 +150,22 @@ const MostrarAutoresPage = () => {
                     <td className="border px-4 py-2">
                       <button
                         onClick={() => handleDelete(autor.id)}
-                        className="bg-red-500 text-white px-4 py-1 rounded mr-2"
+                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
+                        title="Eliminar autor"
                       >
+                        <FaTrash />
                         Eliminar
                       </button>
+
                       <button
                         onClick={() => {
                           setCurrentAutor(autor);
                           setIsEditing(true);
                         }}
-                        className="bg-yellow text-white px-4 py-1 rounded"
+                        className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
+                        title="Modificar autor"
                       >
+                        <FaEdit />
                         Modificar
                       </button>
                     </td>

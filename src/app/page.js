@@ -65,7 +65,7 @@ export default function Home() {
             alt="Escudo UG"
             width={180}
             height={180}
-            className="w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 mb-4 sm:mb-6"
+            className="w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 mb-4 mt-12 sm:mb-6"
           />
         </div>
 
