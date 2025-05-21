@@ -48,34 +48,32 @@ const LoginForm = () => {
         <div className="flex flex-1 items-center justify-center py-10">
           {/* Contenedor principal */}
           <div
-            className="bg-gray-100 w-full max-w-md rounded-lg shadow-lg p-6 sm:p-8"
+            className="bg-gray-100 w-full max-w-sm rounded-lg shadow-lg p-4 sm:p-6 mx-auto"
             style={{ maxHeight: "90vh" }}
           >
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
               <div className="flex justify-center mb-5">
                 <Image
                   src="/images/escudo-png.png"
                   alt="Escudo"
                   className="h-20"
-                  width={100}
-                  height={100}
+                  width={80}
+                  height={80}
                   priority
                 />
               </div>
 
-              <h1 className="font-black text-3xl mb-5 text-blue">
-                Iniciar Sesión
-              </h1>
+              <h1 className="font-black text-2xl text-blue">Iniciar Sesión</h1>
             </div>
 
             <form
-              className="flex flex-col items-center"
+              className="space-y-4"
               onSubmit={handleSubmit(onSubmit)}
               autoComplete="on"
             >
               <label
                 htmlFor="email"
-                className="font-semibold text-sm text-blue pb-1 block text-left w-full"
+                className="block text-sm font-semibold text-blue"
               >
                 Correo Electrónico
               </label>
@@ -86,16 +84,18 @@ const LoginForm = () => {
                   required: "El correo es obligatorio",
                 })}
                 autoComplete="email"
-                className="border border-yellow rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none"
+                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm focus:border-blue focus:ring-gold focus:ring-2"
                 required
               />
               {errors.email && (
-                <p className="text-red-500">{errors.email.message}</p>
+                <p className="mt-1 text-red-500 text-xs">
+                  {errors.email.message}
+                </p>
               )}
 
               <label
                 htmlFor="login-password"
-                className="font-semibold text-sm text-blue pb-1 block text-left w-full"
+                className="block text-sm font-semibold text-blue"
               >
                 Contraseña
               </label>
@@ -106,14 +106,16 @@ const LoginForm = () => {
                   required: "La contraseña es obligatoria",
                 })}
                 autoComplete="current-password"
-                className="border border-yellow rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none"
+                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm focus:border-blue focus:ring-gold focus:ring-2"
                 required
               />
               {errors.password && (
-                <p className="text-red-500">{errors.password.message}</p>
+                <p className="mt-1 text-red-500 text-xs">
+                  {errors.password.message}
+                </p>
               )}
 
-              {error && <p className="text-red-500">{error}</p>}
+              {error && <p className="mt-1 text-red-500 text-xs">{error}</p>}
 
               <button
                 type="submit"
@@ -127,21 +129,17 @@ const LoginForm = () => {
             </form>
 
             <div className="text-center mt-4 text-sm">
-              <Link href="#" className="text-blue hover:text-gold">
+              <Link href="#" className="text-sm text-blue hover:text-gold">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
-
-            <div className="text-center py-4">
-              <span className="text-blue-900">o</span>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-2">
-              <button className="transition duration-200 border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
+            {/* Botones sociales en una sola fila */}
+            <div className="mt-4 flex gap-2">
+              <button className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
                 <i className="fab fa-google mr-2 text-red-600"></i>
                 <span>Google</span>
               </button>
-              <button className="transition duration-200 border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
+              <button className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
                 <i className="fab fa-linkedin mr-2 text-blue-700"></i>
                 <span>LinkedIn</span>
               </button>
