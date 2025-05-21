@@ -38,11 +38,15 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
+    <div className="flex flex-col min-h-screen w-full">
       <Head>
         <title>Página Principal - Archivo Histórico Editorial UG</title>
       </Head>
+
+      {/* Barra Social */}
       <SocialBar />
+
+      {/* Hero*/}
       <section
         className="
     relative flex flex-col justify-center items-center
@@ -95,7 +99,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Barra de navegación */}
       <NavBar />
+
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
       <section className="news-events relative py-48 text-center bg-fixed bg-cover bg-center">
