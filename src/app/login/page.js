@@ -84,7 +84,7 @@ const LoginForm = () => {
                   required: "El correo es obligatorio",
                 })}
                 autoComplete="email"
-                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm focus:border-blue focus:ring-gold focus:ring-2"
+                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2"
                 required
               />
               {errors.email && (
@@ -106,9 +106,10 @@ const LoginForm = () => {
                   required: "La contraseña es obligatoria",
                 })}
                 autoComplete="current-password"
-                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm focus:border-blue focus:ring-gold focus:ring-2"
+                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2"
                 required
               />
+
               {errors.password && (
                 <p className="mt-1 text-red-500 text-xs">
                   {errors.password.message}

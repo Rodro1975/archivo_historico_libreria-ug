@@ -11,9 +11,6 @@ import Link from "next/link";
 import Modal from "../components/Modal";
 import { useEffect, useState, useCallback } from "react";
 
-
-
-
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -47,10 +44,13 @@ export default function Home() {
       </Head>
       <SocialBar />
       <section
-        className="relative py-48 text-center bg-fixed bg-cover bg-center"
+        className="relative text-center bg-fixed bg-cover bg-center min-h-[90vh]"
         style={{ backgroundImage: "url('/images/guanajuato.jpg')" }}
       >
+        {/* Overlay oscuro */}
         <div className="absolute inset-0 bg-black opacity-40"></div>
+
+        {/* Escudo */}
         <Image
           src="/images/escudo-png.png"
           alt="Escudo UG"
@@ -58,7 +58,9 @@ export default function Home() {
           height={256}
           className="mx-auto w-64 h-64 mb-6"
         />
-        <div className="relative z-10 container mx-auto">
+
+        {/* Contenedor de texto y botón */}
+        <div className="relative z-10 container mx-auto px-4">
           <h1 className="text-gold text-6xl md:text-8xl font-extrabold leading-tight drop-shadow-lg">
             Archivo Histórico de la Editorial UG
           </h1>
@@ -171,28 +173,29 @@ export default function Home() {
       </section>
 
       <section className="featured-month py-8">
-  <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
-    Colección Destacada del Mes
-  </h2>
-  <div className="p-6 bg-gray-100 rounded-lg shadow-md mx-auto max-w-3xl"> {/* Limitar el ancho del contenedor */}
-    <Image
-      src="/images/libroUg.jpg"
-      alt="Colección Destacada"
-      width={600}
-      height={400}
-      className="w-full h-auto object-cover rounded-lg mb-4" // Mantener proporciones
-    />
-    <p className="text-gray-700 mb-2">
-      Este mes, exploramos la colección sobre [Tema de la Colección]. Esta
-      colección incluye documentos, fotografías y testimonios que destacan
-      su importancia histórica.
-    </p>
-    <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600">
-      Una cita inspiradora o un testimonio relevante sobre la colección.
-    </blockquote>
-  </div>
-</section>
-
+        <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
+          Colección Destacada del Mes
+        </h2>
+        <div className="p-6 bg-gray-100 rounded-lg shadow-md mx-auto max-w-3xl">
+          {" "}
+          {/* Limitar el ancho del contenedor */}
+          <Image
+            src="/images/libroUg.jpg"
+            alt="Colección Destacada"
+            width={600}
+            height={400}
+            className="w-full h-auto object-cover rounded-lg mb-4" // Mantener proporciones
+          />
+          <p className="text-gray-700 mb-2">
+            Este mes, exploramos la colección sobre [Tema de la Colección]. Esta
+            colección incluye documentos, fotografías y testimonios que destacan
+            su importancia histórica.
+          </p>
+          <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600">
+            Una cita inspiradora o un testimonio relevante sobre la colección.
+          </blockquote>
+        </div>
+      </section>
 
       <section className="personal-stories py-8">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
@@ -224,4 +227,3 @@ export default function Home() {
     </div>
   );
 }
-
