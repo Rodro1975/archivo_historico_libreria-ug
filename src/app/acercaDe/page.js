@@ -90,7 +90,7 @@ export default function AcercaPage() {
         <Link
           href="https://www.ugto.mx/editorial/"
           target="_blank"
-          className="inline-block bg-yellow text-blue font-semibold py-3 px-8 sm:py-4 sm:px-10 md:py-5 md:px-12 rounded-full shadow hover:bg-orange transition"
+          className="inline-block bg-orange text-blue font-semibold py-3 px-8 sm:py-4 sm:px-10 md:py-5 md:px-12 rounded-full shadow hover:bg-yellow transition"
         >
           Visita Editorial UG
         </Link>
