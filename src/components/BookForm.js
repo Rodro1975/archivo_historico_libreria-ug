@@ -8,6 +8,49 @@ import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { toast, Toaster } from "react-hot-toast";
 
+// Funciones de validación y cálculo ISBN
+function isValidISBN(isbn) {
+  const digits = isbn.replace(/[-\s]/g, "");
+  if (/^\d{9}[\dXx]$/.test(digits)) {
+    // ISBN-10
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += (i + 1) * parseInt(digits[i], 10);
+    }
+    let check = digits[9].toUpperCase();
+    sum += check === "X" ? 10 * 10 : 10 * parseInt(check, 10);
+    return sum % 11 === 0;
+  } else if (/^\d{13}$/.test(digits)) {
+    // ISBN-13
+    let sum = 0;
+    for (let i = 0; i < 12; i++) {
+      sum += parseInt(digits[i], 10) * (i % 2 === 0 ? 1 : 3);
+    }
+    const check = (10 - (sum % 10)) % 10;
+    return check === parseInt(digits[12], 10);
+  }
+  return false;
+}
+
+function calculateISBN13CheckDigit(isbn12) {
+  if (!/^\d{12}$/.test(isbn12)) return "";
+  let sum = 0;
+  for (let i = 0; i < 12; i++) {
+    sum += parseInt(isbn12[i], 10) * (i % 2 === 0 ? 1 : 3);
+  }
+  return String((10 - (sum % 10)) % 10);
+}
+
+function calculateISBN10CheckDigit(isbn9) {
+  if (!/^\d{9}$/.test(isbn9)) return "";
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += (i + 1) * parseInt(isbn9[i], 10);
+  }
+  const remainder = sum % 11;
+  return remainder === 10 ? "X" : String(remainder);
+}
+
 // Esquema de validación con Zod
 const RegisterBookSchema = z.object({
   selectedAutorId: z.preprocess((val) => {
@@ -22,7 +65,12 @@ const RegisterBookSchema = z.object({
   }),
   isbn: z
     .string()
-    .min(2, { message: "El ISBN debe tener al menos 2 caracteres." }),
+    .min(10, { message: "El ISBN debe tener al menos 10 caracteres." })
+    .max(17, { message: "El ISBN no debe exceder los 17 caracteres." })
+    .refine((val) => isValidISBN(val), {
+      message:
+        "El ISBN debe ser válido (ISBN-10 o ISBN-13, con o sin guiones, y con dígito de control correcto). Ejemplo: 978-607-441-616-9 o 84-376-0494-1",
+    }),
   doi: z
     .string()
     .min(2, { message: "El DOI debe tener al menos 2 caracteres." }),
@@ -35,10 +83,20 @@ const RegisterBookSchema = z.object({
     (val) => parseInt(val, 10),
     z.number().int({ message: "El número de edición debe ser un entero." })
   ),
-  anioPublicacion: z.preprocess(
-    (val) => parseInt(val, 10),
-    z.number().int({ message: "El año de publicación debe ser un entero." })
-  ),
+  anioPublicacion: z
+    .string()
+    .regex(/^\d{4}$/, {
+      message: "El año debe tener exactamente 4 dígitos (ejemplo: 1980)",
+    })
+    .refine(
+      (val) => {
+        const num = Number(val);
+        return num >= 1000 && num <= new Date().getFullYear();
+      },
+      {
+        message: "El año debe ser válido y de 4 dígitos (ejemplo: 1980)",
+      }
+    ),
   formato: z.string().min(1, { message: "El formato es requerido" }),
   responsablePublicacion: z.string().optional(),
   correoResponsable: z.string().optional(),
@@ -75,21 +133,53 @@ export default function BookForm() {
   const [selectedPDF, setSelectedPDF] = useState(null);
   const [selectedDLPDF, setSelectedDLPDF] = useState(null);
   const [autoresOptions, setAutoresOptions] = useState([]);
+  const [isbnInput, setIsbnInput] = useState("");
+  const [isbnTouched, setIsbnTouched] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm({
     resolver: zodResolver(RegisterBookSchema),
     defaultValues: {
+      isbn: "",
       tipoAutoria: "individual",
       formato: "",
       idioma: "",
     },
+    mode: "onBlur", // solo al salir del input
+    reValidateMode: "onSubmit", // o al submit
   });
+
+  // Sincroniza el input controlado con react-hook-form
+  useEffect(() => {
+    setValue("isbn", isbnInput, { shouldValidate: true });
+  }, [isbnInput, setValue]);
+
+  // Manejo del formato ISBN
+  const handleIsbnChange = (e) => {
+    let value = e.target.value.replace(/[^0-9Xx\-]/g, "").slice(0, 17);
+    setIsbnInput(value);
+  };
+
+  // Botón que añade el dígito de control
+  const handleCalculateCheckDigit = () => {
+    const raw = isbnInput.replace(/-/g, "");
+    let suffix = "";
+    if (/^\d{12}$/.test(raw)) suffix = calculateISBN13CheckDigit(raw);
+    else if (/^\d{9}$/.test(raw)) suffix = calculateISBN10CheckDigit(raw);
+    else {
+      toast.error(
+        "Para calcular, ingresa primero 9 (ISBN-10) o 12 (ISBN-13) dígitos."
+      );
+      return;
+    }
+    setIsbnInput(isbnInput + suffix);
+  };
 
   const tipoAutoria = watch("tipoAutoria");
   const tieneDepositoLegal = watch("depositoLegal");
@@ -413,24 +503,42 @@ export default function BookForm() {
               )}
             </div>
 
-            {/* Repetir este bloque para cada campo */}
-            <div className="mb-4">
+            {/* Campo controlado para ISBN */}
+            <div className="mb-4 flex flex-col">
               <label
                 htmlFor="isbn"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 ISBN
               </label>
-              <input
-                type="text"
-                id="isbn"
-                {...register("isbn")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa tu ISBN"
-              />
-              {errors.isbn && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
+
+              <div className="flex items-center gap-2 w-full">
+                <input
+                  type="text"
+                  id="isbn"
+                  {...register("isbn")}
+                  value={isbnInput}
+                  onChange={handleIsbnChange}
+                  placeholder="Escribe hasta 9 o 12 dígitos"
+                  maxLength={17}
+                  autoComplete="off"
+                  required
+                  className="flex-grow border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleCalculateCheckDigit}
+                  className="inline-flex items-center bg-blue text-white font-medium px-3 py-2 rounded-md hover:bg-blue-600 transition"
+                  title="Autocompletar dígito de control"
+                >
+                  Calcular
+                </button>
+              </div>
+
+              {/* SOLO muestra el error si el campo fue tocado */}
+              {touchedFields.isbn && errors.isbn && (
+                <p className="text-red-500 text-xs italic mt-1">
                   {errors.isbn.message}
                 </p>
               )}
@@ -598,14 +706,18 @@ export default function BookForm() {
                 Año de Publicación
               </label>
               <input
-                type="number"
+                type="text"
                 id="anioPublicacion"
-                {...register("anioPublicacion")} // Registra el campo con react-hook-form
+                inputMode="numeric"
+                maxLength={4}
+                pattern="\d{4}"
+                {...register("anioPublicacion")}
                 required
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Año de Publicación"
+                placeholder="Ejemplo: 1980"
+                autoComplete="off"
               />
-              {errors.anioPublicacion && ( // Muestra el mensaje de error si existe
+              {errors.anioPublicacion && (
                 <p className="text-red-500 text-xs italic">
                   {errors.anioPublicacion.message}
                 </p>
