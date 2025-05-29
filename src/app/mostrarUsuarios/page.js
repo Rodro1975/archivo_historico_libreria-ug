@@ -192,7 +192,7 @@ const MostrarUsuariosPage = () => {
         {userToDelete && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
-              <h2 className="text-xl font-semibold mb-4 text-blue">
+              <h2 className="text-lg font-semibold mb-4 text-red-700">
                 ¿Eliminar usuario?
               </h2>
               <p className="text-gray-700 mb-4">

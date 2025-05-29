@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import { toast, Toaster } from "react-hot-toast";
 
 const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
   const {
@@ -19,12 +20,10 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
   const [selectedPDF, setSelectedPDF] = useState(null);
   const [selectedDLPDF, setSelectedDLPDF] = useState(null);
 
-  // Efecto para reiniciar el formulario cuando se actualiza un libro
   useEffect(() => {
     reset(libro);
   }, [libro, reset]);
 
-  // Funciones para manejar los archivos
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -38,91 +37,88 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
   };
 
   const handleSubmitForm = async (data) => {
-    let imageUrl = libro.portada;
-    let pdfUrl = libro.archivo_pdf;
-    let dlpdfUrl = libro.depositoLegal_pdf;
+    try {
+      let imageUrl = libro.portada;
+      let pdfUrl = libro.archivo_pdf;
+      let dlpdfUrl = libro.depositoLegal_pdf;
 
-    // Subir la foto de portada a Supabase
-    if (selectedFile) {
-      const fileName = `portadas/${Date.now()}-${selectedFile.name}`;
-      const { data: storageData, error: storageError } = await supabase.storage
-        .from("portadas")
-        .upload(fileName, selectedFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
+      // Subir la foto de portada
+      if (selectedFile) {
+        const fileName = `portadas/${Date.now()}-${selectedFile.name}`;
+        const { error: storageError } = await supabase.storage
+          .from("portadas")
+          .upload(fileName, selectedFile, {
+            cacheControl: "3600",
+            upsert: false,
+          });
 
-      if (storageError) {
-        console.error("Error al subir la portada:", storageError);
-        return;
+        if (storageError) throw new Error("Error al subir la portada.");
+        imageUrl = supabase.storage.from("portadas").getPublicUrl(fileName)
+          .data.publicUrl;
       }
 
-      imageUrl = supabase.storage.from("portadas").getPublicUrl(fileName)
-        .data.publicUrl;
-    }
+      // Subir el PDF
+      if (selectedPDF) {
+        const pdfFileName = `libros/${Date.now()}-${selectedPDF.name}`;
+        const { error: pdfStorageError } = await supabase.storage
+          .from("libros")
+          .upload(pdfFileName, selectedPDF, {
+            cacheControl: "3600",
+            upsert: false,
+          });
 
-    // Subir el PDF a Supabase
-    if (selectedPDF) {
-      const pdfFileName = `libros/${Date.now()}-${selectedPDF.name}`;
-      const { data: pdfStorageData, error: pdfStorageError } =
-        await supabase.storage.from("libros").upload(pdfFileName, selectedPDF, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (pdfStorageError) {
-        console.error("Error al subir el PDF:", pdfStorageError);
-        return;
+        if (pdfStorageError) throw new Error("Error al subir el PDF.");
+        pdfUrl = supabase.storage.from("libros").getPublicUrl(pdfFileName)
+          .data.publicUrl;
       }
 
-      pdfUrl = supabase.storage.from("libros").getPublicUrl(pdfFileName)
-        .data.publicUrl;
-    }
-
-    // Subir el Depósito Legal PDF a Supabase
-    if (selectedDLPDF) {
-      const dlpdfFileName = `depositolegal/${Date.now()}-${selectedDLPDF.name}`;
-      const { data: pdfStorageData, error: dlpdfStorageError } =
-        await supabase.storage
+      // Subir el Depósito Legal PDF
+      if (selectedDLPDF) {
+        const dlpdfFileName = `depositolegal/${Date.now()}-${
+          selectedDLPDF.name
+        }`;
+        const { error: dlpdfStorageError } = await supabase.storage
           .from("depositolegal")
           .upload(dlpdfFileName, selectedDLPDF, {
             cacheControl: "3600",
             upsert: false,
           });
 
-      if (dlpdfStorageError) {
-        console.error("Error al subir el PDF:", dlpdfStorageError);
+        if (dlpdfStorageError)
+          throw new Error("Error al subir el Depósito Legal PDF.");
+        dlpdfUrl = supabase.storage
+          .from("depositolegal")
+          .getPublicUrl(dlpdfFileName).data.publicUrl;
+      }
+
+      // Actualizar en la base de datos
+      const { error } = await supabase
+        .from("libros")
+        .update({
+          ...data,
+          portada: imageUrl,
+          archivo_pdf: pdfUrl,
+          depositoLegal_pdf: dlpdfUrl,
+        })
+        .eq("id_libro", libro.id_libro);
+
+      if (error) {
+        toast.error("Error al actualizar el libro.");
         return;
       }
 
-      dlpdfUrl = supabase.storage
-        .from("depositolegal")
-        .getPublicUrl(dlpdfFileName).data.publicUrl;
-    }
-
-    // Actualizar en la base de datos
-    const { error } = await supabase
-      .from("libros")
-      .update({
-        ...data,
-        portada: imageUrl,
-        archivo_pdf: pdfUrl,
-        depositoLegal_pdf: dlpdfUrl,
-      })
-      .eq("id_libro", libro.id_libro);
-
-    if (error) {
-      console.error("Error al actualizar el formulario:", error.message);
-      alert("Error al actualizar el formulario. Verifica tus permisos.");
-    } else {
-      alert("Libro actualizado correctamente.");
+      toast.success("Libro actualizado correctamente.");
       onUpdate();
       onClose();
+    } catch (err) {
+      toast.error(err.message || "Ocurrió un error inesperado.");
+      console.error(err);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <Toaster position="top-right" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">
@@ -136,8 +132,8 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
                 priority
               />
             </div>
-            <h1 className="font-black text-3xl mb-5 text-gold">
-              Actualizar Libro
+            <h1 className="font-black text-3xl mb-5 text-blue">
+              Modificar Libro
             </h1>
           </div>
           <form

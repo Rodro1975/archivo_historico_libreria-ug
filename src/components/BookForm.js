@@ -376,8 +376,8 @@ export default function BookForm() {
                 priority
               />
             </div>
-            <h1 className="font-black text-3xl mb-5 text-gold">
-              Registrar un nuevo libro
+            <h1 className="font-black text-3xl mb-5 text-blue">
+              Registro de Libros
             </h1>
           </div>
 
@@ -1098,10 +1098,10 @@ export default function BookForm() {
             </div>
 
             {/* Botón de registro*/}
-            <div className="flex justify-center">
+            <div className="col-span-full">
               <button
                 type="submit"
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-auto h-12"
+                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
               >
                 Registrar Libro
               </button>

@@ -163,7 +163,7 @@ export default function RegisterForm() {
                 priority
               />
             </div>
-            <h1 className="font-black text-3xl mb-5 text-gold">
+            <h1 className="font-black text-3xl mb-5 text-blue">
               Registro de Usuarios
             </h1>
           </div>

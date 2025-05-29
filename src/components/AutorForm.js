@@ -142,7 +142,7 @@ export default function AutorForm() {
                 priority
               />
             </div>
-            <h1 className="font-black text-3xl mb-5 text-gold">
+            <h1 className="font-black text-3xl mb-5 text-blue">
               Registro de Autores
             </h1>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import { toast, Toaster } from "react-hot-toast";
 
 const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
   const {
@@ -71,21 +72,33 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
         dependencia_id: data.dependencia_id,
         unidad_academica_id: data.unidad_academica_id,
       };
+
       const { error: updateError } = await supabase
         .from("autores")
         .update(payload)
         .eq("id", autor.id);
 
-      if (updateError) throw updateError;
-      onUpdate();
-      onClose();
+      if (updateError) {
+        toast.error("Error al actualizar autor.");
+        return;
+      }
+
+      toast.success("Autor actualizado correctamente.");
+
+      // Espera 1 segundo para que el toast se muestre antes de cerrar
+      setTimeout(() => {
+        onUpdate();
+        onClose();
+      }, 1000);
     } catch (err) {
-      setError(err.message);
+      toast.error("Ocurrió un error inesperado.");
+      console.error(err);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <Toaster position="top-right" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">
@@ -100,7 +113,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
               />
             </div>
 
-            <h1 className="font-black text-3xl mt-4 text-gold">
+            <h1 className="font-black text-3xl mt-4 text-blue">
               Modificar Autor
             </h1>
           </div>

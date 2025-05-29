@@ -172,7 +172,7 @@ const MostrarLibrosPage = () => {
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-xs w-full text-center">
-            <h2 className="text-lg font-bold mb-4 text-blue">
+            <h2 className="text-lg font-semibold mb-4 text-red-700">
               ¿Eliminar libro?
             </h2>
             <p className="mb-6 text-gray-700">
