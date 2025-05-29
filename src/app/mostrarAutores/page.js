@@ -5,6 +5,7 @@ import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarAutores from "@/components/ActualizarAutores";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import { toast, Toaster } from "react-hot-toast";
 
 const MostrarAutoresPage = () => {
   const [autores, setAutores] = useState([]);
@@ -14,6 +15,8 @@ const MostrarAutoresPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentAutor, setCurrentAutor] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [autorAEliminar, setAutorAEliminar] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // 1) Traer autores con FK + relación
   const fetchAutores = useCallback(async () => {
@@ -55,14 +58,21 @@ const MostrarAutoresPage = () => {
   );
 
   // 3) Eliminar autor
-  const handleDelete = async (id) => {
-    if (!window.confirm(`¿Eliminar autor ID: ${id}?`)) return;
+  const handleDelete = async () => {
+    if (!autorAEliminar) return;
     try {
-      const { error } = await supabase.from("autores").delete().eq("id", id);
+      const { error } = await supabase
+        .from("autores")
+        .delete()
+        .eq("id", autorAEliminar.id);
       if (error) throw error;
+      toast.success("Autor eliminado correctamente");
       fetchAutores();
     } catch (err) {
-      console.error("Error eliminando autor:", err.message);
+      toast.error("Error al eliminar autor: " + err.message);
+    } finally {
+      setAutorAEliminar(null);
+      setShowConfirm(false);
     }
   };
 
@@ -149,9 +159,11 @@ const MostrarAutoresPage = () => {
                     </td>
                     <td className="border px-4 py-2">
                       <button
-                        onClick={() => handleDelete(autor.id)}
-                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                        title="Eliminar autor"
+                        onClick={() => {
+                          setAutorAEliminar(autor);
+                          setShowConfirm(true);
+                        }}
+                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
                       >
                         <FaTrash />
                         Eliminar
@@ -181,6 +193,36 @@ const MostrarAutoresPage = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Modal de confirmación */}
+        {showConfirm && autorAEliminar && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl text-center max-w-md">
+              <h2 className="text-lg font-semibold mb-4 text-red-700">
+                ¿Eliminar autor?
+              </h2>
+              <p className="mb-6 text-gray-700">
+                ¿Estás seguro de que deseas eliminar al autor? Esta acción no se
+                puede deshacer.{" "}
+                <strong>{autorAEliminar.nombre_completo}</strong>?
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Formulario de edición */}
         {isEditing && currentAutor && (

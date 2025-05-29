@@ -127,7 +127,7 @@ const MostrarLibrosPage = () => {
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => {
-                      setLibroAEliminar(libro.codigoRegistro);
+                      setLibroAEliminar(libro);
                       setShowConfirm(true);
                     }}
                     className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
@@ -168,6 +168,7 @@ const MostrarLibrosPage = () => {
       )}
       <Toaster position="top-right" />
 
+      {/* Modal de confirmación */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-xs w-full text-center">
@@ -175,8 +176,9 @@ const MostrarLibrosPage = () => {
               ¿Eliminar libro?
             </h2>
             <p className="mb-6 text-gray-700">
-              ¿Estás seguro de que deseas eliminar este libro? Esta acción no se
-              puede deshacer.
+              ¿Estás seguro de que deseas eliminar el libro{" "}
+              <strong>{libroAEliminar?.titulo}</strong>? Esta acción no se puede
+              deshacer.
             </p>
             <div className="flex justify-center gap-4">
               <button

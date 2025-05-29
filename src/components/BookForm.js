@@ -147,7 +147,7 @@ export default function BookForm() {
     resolver: zodResolver(RegisterBookSchema),
     defaultValues: {
       isbn: "",
-      tipoAutoria: "individual",
+      tipoAutoria: "",
       formato: "",
       idioma: "",
     },

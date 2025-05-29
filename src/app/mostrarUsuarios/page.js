@@ -5,6 +5,7 @@ import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import { toast, Toaster } from "react-hot-toast";
 
 const MostrarUsuariosPage = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -14,6 +15,7 @@ const MostrarUsuariosPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentUsuario, setCurrentUsuario] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [userToDelete, setUserToDelete] = useState(null);
 
   // Función para obtener los usuarios desde Supabase
   const fetchUsuarios = async () => {
@@ -68,17 +70,21 @@ const MostrarUsuariosPage = () => {
   }, []);
 
   // Función para eliminar un usuario
-  const handleDelete = async (id_usuario) => {
-    if (!window.confirm(`¿Eliminar usuario ${id_usuario}?`)) return;
+  const handleDelete = async () => {
+    if (!userToDelete) return;
+
     const { error } = await supabase.rpc("eliminar_usuario", {
-      user_id: id_usuario,
+      user_id: userToDelete.id,
     });
+
     if (error) {
-      console.error("Error al eliminar usuario:", error.message);
-      return;
+      toast.error("Error al eliminar usuario.");
+    } else {
+      toast.success("Usuario eliminado correctamente.");
+      fetchUsuarios();
     }
-    console.log("Usuario eliminado correctamente.");
-    fetchUsuarios();
+
+    setUserToDelete(null);
   };
 
   if (loading) return <p>Cargando...</p>;
@@ -159,7 +165,7 @@ const MostrarUsuariosPage = () => {
                   <td className="border px-4 py-2">{usuario.foto}</td>
                   <td className="border px-4 py-2 space-y-2">
                     <button
-                      onClick={() => handleDelete(usuario.id)}
+                      onClick={() => setUserToDelete(usuario)}
                       className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
                     >
                       <FaTrash />
@@ -181,6 +187,38 @@ const MostrarUsuariosPage = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Modal de confirmacion */}
+        {userToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+              <h2 className="text-xl font-semibold mb-4 text-blue">
+                ¿Eliminar usuario?
+              </h2>
+              <p className="text-gray-700 mb-4">
+                ¿Estás seguro de que deseas eliminar al usuario{" "}
+                <strong>
+                  {userToDelete.primer_nombre} {userToDelete.apellido_paterno}
+                </strong>
+                ?
+              </p>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setUserToDelete(null)}
+                  className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal de edición */}
         {isEditing && currentUsuario && (
