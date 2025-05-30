@@ -22,6 +22,7 @@ import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 import NotificacionesDropdown from "./NotificacionesDropdown"; // ajuste la ruta si es necesario
 import ActualizarAutores from "./ActualizarAutores";
 import AutorForm from "./AutorForm";
+import { toast, Toaster } from "react-hot-toast";
 
 const WorkBar = () => {
   const [userData, setUserData] = useState(null);
@@ -106,11 +107,46 @@ const WorkBar = () => {
     };
   }, [userData]);
 
-  // Cerrar sesión
+  // Cerrar sesión con confirmación
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    localStorage.removeItem("token");
-    router.push("/login");
+    toast(
+      (t) => (
+        <span className="flex flex-col gap-2">
+          <span>¿Estás seguro de que quieres cerrar sesión?</span>
+          <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id); // Cierra el toast
+                const { error } = await supabase.auth.signOut();
+
+                if (error) {
+                  toast.error("Error al cerrar sesión.");
+                  console.error("Error al cerrar sesión:", error);
+                } else {
+                  localStorage.removeItem("token");
+                  toast.success("Sesión cerrada exitosamente.");
+
+                  // Redirigir después de mostrar el mensaje
+                  setTimeout(() => {
+                    router.push("/login");
+                  }, 1500); // Espera 1.5 segundos antes de redirigir
+                }
+              }}
+              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+            >
+              Sí
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 transition"
+            >
+              No
+            </button>
+          </div>
+        </span>
+      ),
+      { duration: 10000 }
+    );
   };
 
   // Cambio de formulario y sidebar
@@ -124,6 +160,7 @@ const WorkBar = () => {
 
   return (
     <div className="relative">
+      <Toaster position="top-right" />
       {/* Botón hamburguesa */}
       <button
         className="fixed top-4 left-4 z-50 text-3xl text-white bg-[var(--color-blue)] p-2 rounded-md shadow-md"

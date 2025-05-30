@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import NotificacionesDropdown from "./NotificacionesDropdown";
+import { toast, Toaster } from "react-hot-toast";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -156,24 +157,44 @@ const Sidebar = () => {
 
   // Cerrar sesión
   const handleLogout = async () => {
-    try {
-      const confirmLogout = window.confirm(
-        "¿Estás seguro de que quieres cerrar sesión?"
-      );
-      if (!confirmLogout) return;
+    toast(
+      (t) => (
+        <span className="flex flex-col gap-2">
+          <span>¿Estás seguro de que quieres cerrar sesión?</span>
+          <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id); // Cierra el toast de confirmación
+                const { error } = await supabase.auth.signOut();
 
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
-      console.log("Sesión cerrada exitosamente");
-      router.push("/login");
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-    }
+                if (error) {
+                  toast.error("Error al cerrar sesión.");
+                  console.error("Error al cerrar sesión:", error);
+                } else {
+                  toast.success("Sesión cerrada exitosamente.");
+                  router.push("/login");
+                }
+              }}
+              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+            >
+              Sí
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 transition"
+            >
+              No
+            </button>
+          </div>
+        </span>
+      ),
+      { duration: 10000 }
+    ); // Toast se mantiene 10 segundos si no se responde
   };
 
   return (
     <div>
+      <Toaster position="top-right" />
       <button
         className="fixed top-4 left-4 z-50 text-3xl text-white bg-[var(--color-blue)] p-2 rounded-md shadow-md"
         onClick={toggleSidebar}
