@@ -79,14 +79,16 @@ const Sidebar = () => {
 
         console.log("Obteniendo notificaciones para user_id:", user.id);
 
-        const query = supabase
+        let query = supabase
           .from("notificaciones")
           .select("*")
           .eq("read", false)
           .eq("user_id", user.id);
 
-        if (role === "Editor") {
-          query.eq("type", "libros");
+        if (role === "Administrador") {
+          query = query.in("type", ["usuarios", "libros", "autores"]);
+        } else if (role === "Editor") {
+          query = query.in("type", ["libros", "autores"]);
         }
 
         const { data, error } = await query;
@@ -108,9 +110,37 @@ const Sidebar = () => {
 
   // Suscribirse a cambios en la tabla "notificaciones" con filtrado según el rol
   useEffect(() => {
-    const handleNewNotification = (payload) => {
+    let unsubscribe = null;
+
+    const handleNewNotification = async (payload) => {
       console.log("Nueva notificación recibida:", payload);
-      setNotificationCount((prev) => prev + 1);
+
+      // Refrescar el conteo completo para evitar desincronización
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || !role) return;
+
+      let query = supabase
+        .from("notificaciones")
+        .select("*")
+        .eq("read", false)
+        .eq("user_id", user.id);
+
+      if (role === "Administrador") {
+        query = query.in("type", ["usuarios", "libros", "autores"]);
+      } else if (role === "Editor") {
+        query = query.in("type", ["libros", "autores"]);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Error refrescando notificaciones:", error);
+      } else {
+        setNotificationCount(data.length);
+      }
     };
 
     const subscribeToNotifications = async () => {
@@ -120,10 +150,13 @@ const Sidebar = () => {
 
       if (!user || !role) return;
 
-      const filter =
-        role === "Administrador"
-          ? "type.eq.usuarios,type.eq.libros"
-          : "type.eq.libros";
+      let filter = "";
+
+      if (role === "Administrador") {
+        filter = "type.in.(usuarios,libros,autores)";
+      } else if (role === "Editor") {
+        filter = "type.in.(libros,autores)";
+      }
 
       const channel = supabase
         .channel("notificaciones")
@@ -139,7 +172,7 @@ const Sidebar = () => {
         )
         .subscribe();
 
-      return () => {
+      unsubscribe = () => {
         console.log("Desuscribiendo canal...");
         channel.unsubscribe();
       };
@@ -148,6 +181,10 @@ const Sidebar = () => {
     if (role) {
       subscribeToNotifications();
     }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [role]);
 
   // Botón de hamburguesa para abrir/cerrar el menú lateral

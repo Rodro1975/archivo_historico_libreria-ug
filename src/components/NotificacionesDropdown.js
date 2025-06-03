@@ -94,6 +94,53 @@ const NotificacionesDropdown = ({ show, onClose }) => {
         <p className="text-gray-500">No hay notificaciones</p>
       ) : (
         <>
+          {/* Selector global y botón para marcar como leídas */}
+          <div className="flex items-center justify-between mb-2">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={
+                  notificaciones.length > 0 &&
+                  selectedNotifications.length === notificaciones.length
+                }
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedNotifications(notificaciones.map((n) => n.id));
+                  } else {
+                    setSelectedNotifications([]);
+                  }
+                }}
+                className="form-checkbox h-4 w-4 text-gold rounded"
+              />
+              <span className="text-sm text-gray-600">Seleccionar todas</span>
+            </label>
+
+            {selectedNotifications.length > 0 && (
+              <button
+                onClick={async () => {
+                  const { error } = await supabase
+                    .from("notificaciones")
+                    .update({ read: true })
+                    .in("id", selectedNotifications);
+
+                  if (!error) {
+                    setNotificaciones((prev) =>
+                      prev.map((n) =>
+                        selectedNotifications.includes(n.id)
+                          ? { ...n, read: true }
+                          : n
+                      )
+                    );
+                  }
+                }}
+                className="text-xs text-gold hover:underline"
+              >
+                Marcar seleccionadas como leídas
+              </button>
+            )}
+          </div>
+
+          {/* Lista de notificaciones */}
           <ul className="mt-2 max-h-[100px] overflow-y-auto">
             {notificaciones.map((n) => (
               <li
@@ -123,6 +170,8 @@ const NotificacionesDropdown = ({ show, onClose }) => {
               </li>
             ))}
           </ul>
+
+          {/* Botón para eliminar seleccionadas */}
           <button
             onClick={eliminarSeleccionadas}
             className="mt-4 px-4 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-700 flex items-center space-x-2"
