@@ -72,9 +72,12 @@ const WorkBar = () => {
         .eq("read", false)
         .eq("user_id", user.id);
       // filtro según rol
-      if (userData.role === "Editor") {
-        query = query.eq("type", "libros");
+      if (userData.role === "Administrador") {
+        query = query.in("type", ["usuarios", "libros", "autores"]);
+      } else if (userData.role === "Editor") {
+        query = query.in("type", ["libros", "autores"]);
       }
+
       const { data, error } = await query;
       if (!error) setNotificationCount(data.length);
     };
@@ -85,10 +88,14 @@ const WorkBar = () => {
   useEffect(() => {
     if (!userData) return;
     const handleNew = (payload) => setNotificationCount((prev) => prev + 1);
-    const filter =
-      userData.role === "Administrador"
-        ? "type.eq.usuarios,type.eq.libros"
-        : "type.eq.libros";
+
+    let filter = "";
+    if (userData.role === "Administrador") {
+      filter = "type.in.(usuarios,libros,autores)";
+    } else if (userData.role === "Editor") {
+      filter = "type.in.(libros,autores)";
+    }
+
     const channel = supabase
       .channel("notificaciones")
       .on(
@@ -97,11 +104,34 @@ const WorkBar = () => {
           event: "INSERT",
           schema: "public",
           table: "notificaciones",
-          filter,
+          filter: filter,
         },
-        handleNew
+        async (payload) => {
+          console.log("Nueva notificación:", payload);
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+
+          if (!user || !userData?.role) return;
+
+          let query = supabase
+            .from("notificaciones")
+            .select("*")
+            .eq("read", false)
+            .eq("user_id", user.id);
+
+          if (userData.role === "Administrador") {
+            query = query.in("type", ["usuarios", "libros", "autores"]);
+          } else if (userData.role === "Editor") {
+            query = query.in("type", ["libros", "autores"]);
+          }
+
+          const { data, error } = await query;
+          if (!error) setNotificationCount(data.length);
+        }
       )
       .subscribe();
+
     return () => {
       channel.unsubscribe();
     };
