@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import NotificacionesDropdown from "./NotificacionesDropdown";
 import { toast, Toaster } from "react-hot-toast";
+import ModalCorreo from "./ModalCorreo";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +23,8 @@ const Sidebar = () => {
   const [loading, setLoading] = useState(true);
   const [notificationCount, setNotificationCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [modalCorreoOpen, setModalCorreoOpen] = useState(false);
   const router = useRouter();
 
   // Obtener el rol del usuario autenticado y su ID
@@ -187,6 +190,27 @@ const Sidebar = () => {
     };
   }, [role]);
 
+  //Obtener el correo del usuario autenticado
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user && user.email) setUserEmail(user.email);
+    };
+    fetchUserEmail();
+  }, []);
+
+  // Función para obtener la URL del webmail según el correo
+  const getWebmailUrl = (email) => {
+    if (!email) return "#";
+    const domain = email.split("@")[1]?.toLowerCase() || "";
+    if (domain === "ugto.mx") return "https://outlook.office.com/mail/";
+    if (domain === "gmail.com") return "https://mail.google.com/";
+    // Puedes agregar más dominios si lo necesitas
+    return "https://outlook.office.com/mail/";
+  };
+
   // Botón de hamburguesa para abrir/cerrar el menú lateral
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -285,11 +309,12 @@ const Sidebar = () => {
                 Galería del Editor
               </Link>
             </li>
-            <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+            <li
+              className="flex items-center gap-4 hover:text-[var(--color-orange)] cursor-pointer"
+              onClick={() => setModalCorreoOpen(true)}
+            >
               <AiOutlineMail size={24} />
-              <Link href="#" target="_blank" className="block text-lg">
-                Correo
-              </Link>
+              <span className="block text-lg">Correo</span>
             </li>
             <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
               <AiOutlineUser size={24} />
@@ -327,6 +352,13 @@ const Sidebar = () => {
           </button>
         </div>
       </div>
+      {/* Modal de Correo */}
+      <ModalCorreo
+        email={userEmail}
+        webmailUrl={getWebmailUrl(userEmail)}
+        isOpen={modalCorreoOpen}
+        onClose={() => setModalCorreoOpen(false)}
+      />
     </div>
   );
 };
