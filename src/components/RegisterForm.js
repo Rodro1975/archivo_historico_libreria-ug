@@ -7,6 +7,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
+import { toast, Toaster } from "react-hot-toast"; // Nuevo import
+
+// Estilos de toast consistentes con el proyecto
+const toastStyle = {
+  style: {
+    background: "#facc15", // yellow
+    color: "#1e3a8a", // blue
+    fontWeight: "bold",
+  },
+  iconTheme: {
+    primary: "#1e3a8a", // blue
+    secondary: "#facc15", // yellow
+  },
+};
 
 // Esquema de validación con Zod
 const RegisterSchema = z
@@ -68,87 +82,178 @@ export default function RegisterForm() {
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false); // Nuevo estado de loading
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
 
   const onSubmit = async (data) => {
-    console.log("Datos enviados:", data);
+    setLoading(true);
 
-    // Crear usuario en Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      // Validar que se haya seleccionado una foto antes de proceder
+      if (!selectedFile) {
+        toast.error(
+          "Por favor selecciona una foto antes de continuar",
+          toastStyle
+        );
+        setLoading(false);
+        return;
+      }
 
-    if (authError) {
-      console.error("Error al registrar en Auth:", authError);
-      return;
-    }
+      // Mostrar mensaje de inicio
+      toast.loading("Registrando usuario...", { id: "registro" });
 
-    const id = authData.user.id;
-    console.log("Usuario registrado en Auth con ID:", id);
-
-    //logica para el almacenamiento de la foto
-    if (!selectedFile) {
-      console.error("No se seleccionó ninguna foto.");
-      return;
-    }
-
-    const fileName = `private/${Date.now()}-${selectedFile.name}`;
-
-    const { data: storageData, error: storageError } = await supabase.storage
-      .from("fotos")
-      .upload(fileName, selectedFile, {
-        cacheControl: "3600",
-        upsert: false,
+      // 1. Crear usuario en Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
       });
 
-    if (storageError) {
-      console.error("Error al subir la foto:", storageError);
-      return;
+      if (authError) {
+        console.error("Error al registrar en Auth:", authError);
+
+        // Manejar errores específicos de autenticación
+        if (authError.message.includes("already registered")) {
+          toast.error("Este email ya está registrado", toastStyle);
+        } else if (authError.message.includes("Invalid email")) {
+          toast.error("El formato del email no es válido", toastStyle);
+        } else if (authError.message.includes("Password")) {
+          toast.error("La contraseña no cumple con los requisitos", toastStyle);
+        } else {
+          toast.error(
+            "Error al crear la cuenta: " + authError.message,
+            toastStyle
+          );
+        }
+
+        toast.dismiss("registro");
+        setLoading(false);
+        return;
+      }
+
+      const id = authData.user.id;
+      console.log("Usuario registrado en Auth con ID:", id);
+
+      // 2. Subir foto al storage
+      toast.loading("Subiendo foto...", { id: "registro" });
+
+      const fileName = `private/${Date.now()}-${selectedFile.name}`;
+
+      const { data: storageData, error: storageError } = await supabase.storage
+        .from("fotos")
+        .upload(fileName, selectedFile, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (storageError) {
+        console.error("Error al subir la foto:", storageError);
+
+        // Manejar errores específicos de storage
+        if (storageError.message.includes("size")) {
+          toast.error("La foto es demasiado grande. Máximo 5MB", toastStyle);
+        } else if (storageError.message.includes("format")) {
+          toast.error(
+            "Formato de foto no válido. Usa JPG, PNG o JPEG",
+            toastStyle
+          );
+        } else {
+          toast.error(
+            "Error al subir la foto: " + storageError.message,
+            toastStyle
+          );
+        }
+
+        toast.dismiss("registro");
+        setLoading(false);
+        return;
+      }
+
+      // Generar URL firmada para acceder a la imagen en la carpeta privada
+      const { data: publicUrlData } = supabase.storage
+        .from("fotos")
+        .getPublicUrl(fileName);
+
+      const imageUrl = publicUrlData.publicUrl;
+
+      // 3. Guardar usuario en la tabla
+      toast.loading("Guardando datos del usuario...", { id: "registro" });
+
+      const { data: usuarioData, error: usuarioError } = await supabase
+        .from("usuarios")
+        .insert([
+          {
+            id: id, // Utiliza el ID de Supabase Auth
+            primer_nombre: data.primer_nombre,
+            segundo_nombre: data.segundo_nombre,
+            apellido_paterno: data.apellido_paterno,
+            apellido_materno: data.apellido_materno,
+            email: data.email,
+            telefono: data.telefono,
+            role: data.role,
+            justificacion: data.justificacion,
+            foto: imageUrl,
+            fecha_creacion: new Date(),
+            fecha_modificacion: new Date(),
+          },
+        ]);
+
+      if (usuarioError) {
+        console.error("Error al guardar el usuario:", usuarioError);
+
+        // Manejar errores específicos de base de datos
+        if (usuarioError.message.includes("duplicate")) {
+          toast.error("Ya existe un usuario con este email", toastStyle);
+        } else if (usuarioError.message.includes("permission")) {
+          toast.error("No tienes permisos para crear usuarios", toastStyle);
+        } else {
+          toast.error(
+            "Error al guardar los datos: " + usuarioError.message,
+            toastStyle
+          );
+        }
+
+        toast.dismiss("registro");
+        setLoading(false);
+        return;
+      }
+
+      // 4. Éxito completo
+      console.log("Usuario creado con éxito:", usuarioData);
+
+      toast.dismiss("registro");
+      toast.success(
+        `✅ Usuario ${data.primer_nombre} ${data.apellido_paterno} registrado exitosamente`,
+        toastStyle
+      );
+
+      // Limpiar formulario y estado
+      reset();
+      setSelectedFile(null);
+
+      // Opcional: mostrar mensaje adicional con instrucciones
+      setTimeout(() => {
+        toast.success(
+          "El usuario puede iniciar sesión con su email y contraseña",
+          toastStyle
+        );
+      }, 2000);
+    } catch (error) {
+      console.error("Error inesperado:", error);
+      toast.dismiss("registro");
+      toast.error("Error inesperado al registrar usuario", toastStyle);
+    } finally {
+      setLoading(false);
     }
-
-    // Generar URL firmada para acceder a la imagen en la carpeta privada
-    const { data: publicUrlData } = supabase.storage
-      .from("fotos")
-      .getPublicUrl(fileName);
-
-    const imageUrl = publicUrlData.publicUrl;
-
-    //consulta a Supabase
-    const { data: usuarioData, error: usuarioError } = await supabase
-      .from("usuarios")
-      .insert([
-        {
-          id: id, // Utiliza el ID de Supabase Auth
-          primer_nombre: data.primer_nombre,
-          segundo_nombre: data.segundo_nombre,
-          apellido_paterno: data.apellido_paterno,
-          apellido_materno: data.apellido_materno,
-          email: data.email,
-          telefono: data.telefono,
-          role: data.role,
-          justificacion: data.justificacion,
-          foto: imageUrl,
-          fecha_creacion: new Date(),
-          fecha_modificacion: new Date(),
-        },
-      ]);
-
-    if (usuarioError) {
-      console.error("Error al guardar el usuario:", usuarioError);
-      return;
-    }
-
-    console.log("Usuario creado con éxito:", usuarioData);
-    reset(); //limpiar formulario
-    setSelectedFile(null); //limpiar el estado de la foto
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
+      {/* Toaster para mostrar notificaciones */}
+      <Toaster position="top-center" />
+
       {/* formulario de registro */}
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
@@ -187,6 +292,7 @@ export default function RegisterForm() {
                 })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el Primer Nombre"
+                disabled={loading} // Deshabilitar durante carga
               />
               {errors.primer_nombre && (
                 <p className="text-red-500 text-xs italic">
@@ -210,6 +316,7 @@ export default function RegisterForm() {
                 })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el Segundo Nombre"
+                disabled={loading}
               />
               {errors.segundo_nombre && (
                 <p className="text-red-500 text-xs italic">
@@ -234,6 +341,7 @@ export default function RegisterForm() {
                 })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el Apellido Paterno"
+                disabled={loading}
               />
               {errors.apellido_paterno && (
                 <p className="text-red-500 text-xs italic">
@@ -257,6 +365,7 @@ export default function RegisterForm() {
                 })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el Apellido Materno"
+                disabled={loading}
               />
               {errors.apellido_materno && (
                 <p className="text-red-500 text-xs italic">
@@ -281,6 +390,7 @@ export default function RegisterForm() {
                 })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el Email"
+                disabled={loading}
               />
               {errors.email && (
                 <p className="text-red-500 text-xs italic">
@@ -302,6 +412,7 @@ export default function RegisterForm() {
                 {...register("telefono", {})}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el Teléfono (Opcional)"
+                disabled={loading}
               />
               {errors.telefono && (
                 <p className="text-red-500 text-xs italic">
@@ -322,6 +433,7 @@ export default function RegisterForm() {
                 id="role"
                 {...register("role", { required: "Este campo es obligatorio" })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                disabled={loading}
               >
                 <option value="">Selecciona un rol</option>
                 {roles.map((rol) => (
@@ -339,14 +451,22 @@ export default function RegisterForm() {
 
             {/* Justificación */}
             <div className="mb-4 col-span-full">
+              <label
+                htmlFor="justificacion"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Justificación
+              </label>
               <textarea
                 id="justificacion"
                 {...register("justificacion", {
                   required: "Este campo es obligatorio",
                 })}
                 maxLength={300}
-                placeholder="Justificación"
+                placeholder="Explica por qué necesitas acceso a la plataforma"
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                disabled={loading}
+                rows={4}
               />
               {errors.justificacion && (
                 <span className="text-red-600">
@@ -372,7 +492,13 @@ export default function RegisterForm() {
                 required
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa una Contraseña"
+                disabled={loading}
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs italic">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -388,6 +514,7 @@ export default function RegisterForm() {
                 {...register("confirmar_password")}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Confirma la contraseña"
+                disabled={loading}
               />
               {errors.confirmar_password && (
                 <p className="text-red-500 text-xs italic">
@@ -402,24 +529,39 @@ export default function RegisterForm() {
                 htmlFor="foto"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Foto
+                Foto *
               </label>
               <input
                 type="file"
                 id="foto"
-                onChange={handleFileChange} // Se cambia a manejar el archivo directamente
+                onChange={handleFileChange}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 accept=".jpg, .jpeg, .png"
+                required
+                disabled={loading}
               />
+              {selectedFile && (
+                <p className="text-green-600 text-xs mt-1">
+                  ✅ Foto seleccionada: {selectedFile.name}
+                </p>
+              )}
             </div>
 
             {/* Botón de Registro */}
             <div className="col-span-full">
               <button
                 type="submit"
-                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
+                disabled={loading}
+                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Registrar Usuario
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue mr-2"></div>
+                    Registrando...
+                  </span>
+                ) : (
+                  "Registrar Usuario"
+                )}
               </button>
               <p className="text-center mt-4 text-sm text-blue">
                 Al hacer clic en &quot;Registrar Usuario&quot;, aceptas nuestros
