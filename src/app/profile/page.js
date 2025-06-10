@@ -3,11 +3,16 @@
 import React, { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import UserProfileCard from "@/components/UserProfileCard";
-import { AiOutlineDashboard, AiOutlinePlus } from "react-icons/ai";
+import {
+  AiOutlineDashboard,
+  AiOutlinePlus,
+  AiOutlineKey,
+} from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast, Toaster } from "react-hot-toast";
 import ModalSoporte from "@/components/ModalSoporte";
+import ModalCambioContrasena from "@/components/ModalCambioContrasena"; // ✅ nuevo import
 
 const toastStyle = {
   style: {
@@ -27,8 +32,8 @@ const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSupportModal, setShowSupportModal] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false); // ✅ nuevo estado
 
-  // Mostrar toast de éxito tras recargar la página si existe el mensaje
   useEffect(() => {
     const mensaje = localStorage.getItem("fotoSubidaExito");
     if (mensaje) {
@@ -126,7 +131,6 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 py-12 px-6">
       <Toaster />
       <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-lg border-l-8 border-yellow p-12 flex flex-col gap-12">
-        {/* Encabezado con logos */}
         <header className="flex justify-between items-center">
           <div className="w-44 sm:w-52 relative">
             <Image
@@ -152,7 +156,6 @@ const ProfilePage = () => {
 
         {/* Botones hexagonales */}
         <nav className="flex flex-wrap gap-6 justify-center sm:justify-start">
-          {/* Botón Volver al dashboard */}
           <button
             type="button"
             className="hexagon-button flex flex-col items-center justify-center"
@@ -165,7 +168,6 @@ const ProfilePage = () => {
             </span>
           </button>
 
-          {/* Botón Soporte */}
           <button
             type="button"
             className="hexagon-button flex flex-col items-center justify-center"
@@ -177,9 +179,21 @@ const ProfilePage = () => {
               Soporte
             </span>
           </button>
+
+          {/* ✅ Nuevo botón de cambio de contraseña */}
+          <button
+            type="button"
+            className="hexagon-button flex flex-col items-center justify-center"
+            aria-label="Cambiar contraseña"
+            onClick={() => setShowChangePasswordModal(true)}
+          >
+            <AiOutlineKey className="text-3xl mb-1" />
+            <span className="text-xs font-semibold tracking-wide uppercase">
+              Contraseña
+            </span>
+          </button>
         </nav>
 
-        {/* Título moderno y elegante */}
         <section className="text-center">
           <h1 className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue to-gold tracking-widest drop-shadow-lg uppercase select-none">
             Mi Perfil
@@ -190,12 +204,10 @@ const ProfilePage = () => {
           <div className="mt-5 mx-auto w-28 h-1 rounded-full bg-gold shadow-md" />
         </section>
 
-        {/* Contenido principal: tarjeta de usuario */}
         <main className="animate-fade-in">
           <UserProfileCard userData={userData} />
         </main>
 
-        {/* Sección de permisos del usuario */}
         <section className="mt-12 bg-white rounded-xl shadow p-6">
           <h2 className="text-2xl font-bold text-blue mb-4 text-center">
             Permisos según tu rol
@@ -241,11 +253,20 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* MODAL DE SOPORTE */}
+        {/* Modal soporte */}
         {showSupportModal && (
           <ModalSoporte
             isOpen={showSupportModal}
             onClose={() => setShowSupportModal(false)}
+            userId={userData.id}
+          />
+        )}
+
+        {/* ✅ Modal cambio contraseña */}
+        {showChangePasswordModal && (
+          <ModalCambioContrasena
+            isOpen={showChangePasswordModal}
+            onClose={() => setShowChangePasswordModal(false)}
             userId={userData.id}
           />
         )}
@@ -275,7 +296,7 @@ const ProfilePage = () => {
             7% 75%,
             7% 25%
           );
-          background-color: #facc15; /* Yellow */
+          background-color: #facc15;
           transition: all 0.3s ease;
           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
           cursor: pointer;
@@ -287,7 +308,7 @@ const ProfilePage = () => {
         .hexagon-button:hover,
         .hexagon-button:focus-visible {
           transform: translateY(-4px);
-          background-color: #003366; /* Blue */
+          background-color: #003366;
           color: white;
           box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
         }
