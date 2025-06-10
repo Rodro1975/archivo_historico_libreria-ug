@@ -212,12 +212,13 @@ export default function BookForm() {
     setCoautores(arr);
   };
 
+  //manejo de archivos
   const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
   const handlePDFChange = (e) => setSelectedPDF(e.target.files[0]);
   const handleDLPDFChange = (e) => setSelectedDLPDF(e.target.files[0]);
 
+  // Validación depósito legal
   const onSubmit = async (data) => {
-    // Validación depósito legal
     if (data.depositoLegal && !selectedDLPDF) {
       toast.error("Debes subir el archivo de Depósito Legal.");
       return;
