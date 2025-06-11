@@ -136,10 +136,27 @@ const LoginForm = () => {
             </div>
             {/* Botones sociales en una sola fila */}
             <div className="mt-4 flex gap-2">
-              <button className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
+              <button
+                onClick={async () => {
+                  const { error } = await supabase.auth.signInWithOAuth({
+                    provider: "google",
+                    options: {
+                      redirectTo:
+                        "https://archivo-historico-libreria-ug-supabase.vercel.app/dashboard",
+                    },
+                  });
+                  if (error) {
+                    toast.error(
+                      "Error al iniciar con Google: " + error.message
+                    );
+                  }
+                }}
+                className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg"
+              >
                 <i className="fab fa-google mr-2 text-red-600"></i>
                 <span>Google</span>
               </button>
+
               <button className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
                 <i className="fab fa-linkedin mr-2 text-blue-700"></i>
                 <span>LinkedIn</span>
