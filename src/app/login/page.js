@@ -138,13 +138,18 @@ const LoginForm = () => {
             <div className="mt-4 flex gap-2">
               <button
                 onClick={async () => {
+                  const redirectUrl = `${window.location.origin}/dashboardReader`; // se adapta a local y producción
+
                   const { error } = await supabase.auth.signInWithOAuth({
                     provider: "google",
                     options: {
-                      redirectTo:
-                        "https://archivo-historico-libreria-ug-supabase.vercel.app/dashboard",
+                      redirectTo: redirectUrl,
+                      queryParams: {
+                        prompt: "select_account", // Forzar selector de cuenta Google
+                      },
                     },
                   });
+
                   if (error) {
                     toast.error(
                       "Error al iniciar con Google: " + error.message
@@ -155,11 +160,6 @@ const LoginForm = () => {
               >
                 <i className="fab fa-google mr-2 text-red-600"></i>
                 <span>Google</span>
-              </button>
-
-              <button className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg flex items-center justify-center">
-                <i className="fab fa-linkedin mr-2 text-blue-700"></i>
-                <span>LinkedIn</span>
               </button>
             </div>
           </div>
