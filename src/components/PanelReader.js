@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 import { toast, Toaster } from "react-hot-toast";
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import ModalInformacion from "@/components/ModalInformacion"; // Importa tu modal
 
 const toastStyle = {
   style: {
@@ -19,9 +21,9 @@ const toastStyle = {
 
 const PanelReader = ({ userData }) => {
   const router = useRouter();
+  const [modalOpen, setModalOpen] = useState(false); // Estado para controlar el modal
 
   const handleLogout = async () => {
-    // Mostrar toast de confirmación con botones personalizados
     const confirmId = toast(
       (t) => (
         <div className="flex flex-col gap-4 p-4">
@@ -80,14 +82,15 @@ const PanelReader = ({ userData }) => {
     <div className="min-h-screen bg-gray-50 p-4 relative">
       <Toaster position="top-right" />
       <div className="bg-gradient-to-br from-blue to-white rounded-2xl shadow-lg p-8 max-w-5xl mx-auto mt-4 border border-blue">
-        {/* Encabezado */}
+        {/* Encabezado con logo */}
         <div className="text-center mb-10">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-orange to-yellow bg-clip-text text-transparent mb-3">
-            Panel del Lector
-          </h2>
-          <p className="text-gold text-lg">
-            Bienvenido, {userData?.primer_nombre}
-          </p>
+          <Image
+            src="/images/editorial-ug.png"
+            alt="Editorial UG Logo"
+            width={200}
+            height={200}
+            className="mx-auto mb-6 rounded-xl"
+          />
         </div>
 
         {/* Botones */}
@@ -125,8 +128,11 @@ const PanelReader = ({ userData }) => {
             <div className="absolute inset-0 bg-yellow/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
           </button>
 
-          {/* Botón 4 */}
-          <button className="group relative overflow-hidden rounded-xl bg-yellow p-6 transition-all hover:shadow-lg hover:scale-105">
+          {/* Botón 4 - Aquí abrimos el modal */}
+          <button
+            onClick={() => setModalOpen(true)}
+            className="group relative overflow-hidden rounded-xl bg-yellow p-6 transition-all hover:shadow-lg hover:scale-105"
+          >
             <div className="flex flex-col items-center gap-4">
               <span className="text-4xl text-blue group-hover:rotate-12 transition-transform">
                 ❓
@@ -167,6 +173,14 @@ const PanelReader = ({ userData }) => {
           </svg>
         </div>
       </div>
+
+      {/* Renderizar modal solo si está abierto */}
+      {modalOpen && (
+        <ModalInformacion
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
