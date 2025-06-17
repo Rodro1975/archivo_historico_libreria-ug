@@ -56,7 +56,7 @@ const ModalInformacion = ({ open, onClose }) => {
           ×
         </button>
 
-        <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
+        <h2 className="text-2xl font-bold text-blue mb-4 text-center">
           ¿Necesitas más información?
         </h2>
 
@@ -225,11 +225,13 @@ const ModalInformacion = ({ open, onClose }) => {
                   rel="noopener noreferrer"
                   className="flex items-center justify-center bg-blue text-yellow px-4 py-3 rounded-lg 
                  font-semibold hover:bg-yellow hover:text-blue transition 
-                 w-full h-14" // Altura fija para uniformidad
+                 w-full h-14 min-w-[150px] max-w-[250px]" // Ancho controlado
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 truncate">
                     {icon}
-                    {label}
+                    <span className="text-ellipsis whitespace-nowrap overflow-hidden">
+                      {label}
+                    </span>
                   </span>
                 </a>
               ))}

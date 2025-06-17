@@ -90,7 +90,7 @@ const CatalogoCompleto = () => {
             placeholder="Buscar libros..."
             value={searchTerm}
             onChange={handleSearch}
-            className="border rounded-l p-2 flex-grow bg-gradient-to-r from-[#FFD700] to-[#FFFFFF] placeholder-[#1E3A8A]"
+            className="border rounded-l p-2 flex-grow bg-gradient-to-r from-[#FFD700] to-[#FFFFFF] placeholder-[#1E3A8A] text-gray-500"
           />
           <button className="ml-2 w-12 h-12 bg-[#FFC107] text-[#1E3A8A] flex items-center justify-center transform rotate-30 clip-hexagon">
             <div className="w-full h-full flex items-center justify-center -rotate-30">
