@@ -7,6 +7,7 @@ import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import ModalInformacion from "@/components/ModalInformacion";
 import ModalBuscarLibros from "@/components/ModalBuscarLibros";
+import ModalSolicitudes from "./ModalSolicitudes";
 
 const toastStyle = {
   style: {
@@ -24,7 +25,8 @@ const PanelReader = ({ userData }) => {
   const router = useRouter();
   const [modalInfoOpen, setModalInfoOpen] = useState(false);
   const [modalBuscarOpen, setModalBuscarOpen] = useState(false);
-  const hasShownToast = useRef(false); // 🚀 Bandera para evitar múltiples toasts
+  const [ModalSolicitudesOpen, setModalSolicitudesOpen] = useState(false);
+  const hasShownToast = useRef(false);
 
   const handleLogout = async () => {
     toast(
@@ -81,6 +83,22 @@ const PanelReader = ({ userData }) => {
     );
   };
 
+  const handleOpenBuscarLibros = () => {
+    setModalBuscarOpen(true);
+    if (!hasShownToast.current) {
+      toast.success("Libros cargados correctamente", toastStyle);
+      hasShownToast.current = true;
+    }
+  };
+
+  const handleOpenSolicitudes = () => {
+    setModalSolicitudesOpen(true);
+    if (!hasShownToast.current) {
+      toast.success("Crea tu solicitud", toastStyle);
+      hasShownToast.current = true;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 relative">
       <Toaster position="top-right" />
@@ -97,7 +115,7 @@ const PanelReader = ({ userData }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <button
-            onClick={() => setModalBuscarOpen(true)}
+            onClick={handleOpenBuscarLibros}
             className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
@@ -119,7 +137,10 @@ const PanelReader = ({ userData }) => {
             <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
           </button>
 
-          <button className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105">
+          <button
+            onClick={() => setModalSolicitudesOpen(true)}
+            className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105"
+          >
             <div className="flex flex-col items-center gap-4">
               <span className="text-4xl text-yellow group-hover:rotate-12 transition-transform">
                 📝
@@ -137,7 +158,7 @@ const PanelReader = ({ userData }) => {
               <span className="text-4xl text-blue group-hover:rotate-12 transition-transform">
                 ❓
               </span>
-              <span className="text-blue font-medium">Pedir información</span>
+              <span className="text-blue font-medium">Información</span>
             </div>
             <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
           </button>
@@ -167,13 +188,21 @@ const PanelReader = ({ userData }) => {
       </div>
 
       {/* Modales */}
+      {/* Modal buscar libros */}
       {modalBuscarOpen && (
         <ModalBuscarLibros
           open={modalBuscarOpen}
           onClose={() => setModalBuscarOpen(false)}
-          hasShownToast={hasShownToast}
         />
       )}
+      {/* Modal crear solicitudes */}
+      {ModalSolicitudesOpen && (
+        <ModalSolicitudes
+          open={ModalSolicitudesOpen}
+          onClose={() => setModalSolicitudesOpen(false)}
+        />
+      )}
+      {/* Modal Informacion */}
       {modalInfoOpen && (
         <ModalInformacion
           open={modalInfoOpen}

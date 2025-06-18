@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import supabase from "@/lib/supabase";
 import { FaSearch } from "react-icons/fa";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 const toastStyle = {
   style: {
@@ -18,7 +18,7 @@ const toastStyle = {
   },
 };
 
-const ModalBuscarLibros = ({ open, onClose, hasShownToast }) => {
+const ModalBuscarLibros = ({ open, onClose }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,12 +34,7 @@ const ModalBuscarLibros = ({ open, onClose, hasShownToast }) => {
           .select("id_libro, titulo, sinopsis, isbn, portada");
 
         if (error) throw error;
-
         setBooks(data);
-        if (!hasShownToast.current) {
-          toast.success("Libros cargados correctamente", toastStyle);
-          hasShownToast.current = true;
-        }
       } catch (error) {
         console.error("Error al cargar los libros", error.message);
         toast.error("Error al cargar los libros", toastStyle);
@@ -49,7 +44,7 @@ const ModalBuscarLibros = ({ open, onClose, hasShownToast }) => {
     };
 
     fetchBooks();
-  }, [open, hasShownToast]);
+  }, [open]);
 
   const filteredBooks = books.filter((book) =>
     book.titulo.toLowerCase().includes(searchTerm.toLowerCase())
@@ -59,8 +54,8 @@ const ModalBuscarLibros = ({ open, onClose, hasShownToast }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <Toaster />
       <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl p-6 relative shadow-lg">
+        {/* Botón cerrar */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-2xl font-bold text-gray-500 hover:text-gray-800"
@@ -68,6 +63,7 @@ const ModalBuscarLibros = ({ open, onClose, hasShownToast }) => {
           ×
         </button>
 
+        {/* Encabezado con logo */}
         <h2 className="text-2xl font-bold text-blue mb-4 text-center">
           ¿Necesitas un título en especial?
         </h2>
@@ -81,6 +77,7 @@ const ModalBuscarLibros = ({ open, onClose, hasShownToast }) => {
             className="mb-4"
           />
 
+          {/* Barra de búsqueda */}
           <div className="flex flex-col items-center mb-4">
             <div className="w-full max-w-md flex items-center">
               <input
@@ -126,6 +123,7 @@ const ModalBuscarLibros = ({ open, onClose, hasShownToast }) => {
             </p>
           )}
 
+          {/* Resultados */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {loading ? (
               <p className="text-center text-gray-500 col-span-2">
