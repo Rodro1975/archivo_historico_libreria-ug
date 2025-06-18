@@ -15,6 +15,8 @@ import {
 import { toast } from "react-hot-toast";
 import FormularioPrestamoLibro from "@/components/FormularioPrestamoLibro";
 import FormularioLibroDigital from "./FormularioLibroDigital";
+import FormularioDonacion from "./FormularioDonacion";
+import FormularioBd from "./FormularioBd";
 
 const toastStyle = {
   style: {
@@ -85,8 +87,11 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                 <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
               </button>
 
-              {/* Resto de botones (mantener igual) */}
-              <button className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full">
+              {/* Botón donacion de libros */}
+              <button
+                onClick={() => setActiveForm("donacion")}
+                className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
+              >
                 <div className="flex flex-col items-center gap-4">
                   <FaBible className="text-gold text-xl" />
                   <span className="text-white font-medium">
@@ -95,7 +100,62 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                 </div>
                 <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
               </button>
-              {/* ... (mantener el resto de botones igual) */}
+
+              {/* Botón donacion de libros */}
+              <button
+                onClick={() => setActiveForm("bd")}
+                className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <FaTasks className="text-gold text-xl" />
+                  <span className="text-white font-medium">
+                    Solicitud de Autores o libros en la base de datos
+                  </span>
+                </div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              </button>
+
+              {/* Botón donacion de libros */}
+              <button
+                onClick={() => setActiveForm("donacion")}
+                className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <FaTripadvisor className="text-gold text-xl" />
+                  <span className="text-white font-medium">
+                    Solicitud para una visita guiada
+                  </span>
+                </div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              </button>
+
+              {/* Botón donacion de libros */}
+              <button
+                onClick={() => setActiveForm("donacion")}
+                className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <FaTable className="text-gold text-xl" />
+                  <span className="text-white font-medium">
+                    Solicitud para un espacio de trabajo
+                  </span>
+                </div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              </button>
+
+              {/* Botón donacion de libros */}
+              <button
+                onClick={() => setActiveForm("donacion")}
+                className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <FaPlaceOfWorship className="text-gold text-xl" />
+                  <span className="text-white font-medium">
+                    Solicitud de inscripción a talleres
+                  </span>
+                </div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              </button>
             </div>
           </>
         ) : activeForm === "prestamo" ? (
@@ -105,6 +165,16 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
           />
         ) : activeForm === "digital" ? (
           <FormularioLibroDigital
+            lectorId={lector?.id}
+            onClose={() => setActiveForm(null)}
+          />
+        ) : activeForm === "donacion" ? (
+          <FormularioDonacion
+            lectorId={lector?.id}
+            onClose={() => setActiveForm(null)}
+          />
+        ) : activeForm === "bd" ? (
+          <FormularioBd
             lectorId={lector?.id}
             onClose={() => setActiveForm(null)}
           />
