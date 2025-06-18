@@ -17,6 +17,9 @@ import FormularioPrestamoLibro from "@/components/FormularioPrestamoLibro";
 import FormularioLibroDigital from "./FormularioLibroDigital";
 import FormularioDonacion from "./FormularioDonacion";
 import FormularioBd from "./FormularioBd";
+import FormularioVisitaGuiada from "./FormularioVisitaGuiada";
+import FormularioEspacioTrabajo from "./FormularioEspacioTrabajo";
+import FormularioTalleres from "./FormularioTalleres";
 
 const toastStyle = {
   style: {
@@ -101,7 +104,7 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                 <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
               </button>
 
-              {/* Botón donacion de libros */}
+              {/* Botón solicitud bd */}
               <button
                 onClick={() => setActiveForm("bd")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
@@ -115,9 +118,9 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                 <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
               </button>
 
-              {/* Botón donacion de libros */}
+              {/* Botón visita guiada */}
               <button
-                onClick={() => setActiveForm("donacion")}
+                onClick={() => setActiveForm("visita")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
               >
                 <div className="flex flex-col items-center gap-4">
@@ -129,9 +132,9 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                 <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
               </button>
 
-              {/* Botón donacion de libros */}
+              {/* Botón Espacio de Trabajo */}
               <button
-                onClick={() => setActiveForm("donacion")}
+                onClick={() => setActiveForm("espacio_trabajo")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
               >
                 <div className="flex flex-col items-center gap-4">
@@ -143,9 +146,9 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                 <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
               </button>
 
-              {/* Botón donacion de libros */}
+              {/* Botón talleres */}
               <button
-                onClick={() => setActiveForm("donacion")}
+                onClick={() => setActiveForm("talleres")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
               >
                 <div className="flex flex-col items-center gap-4">
@@ -175,6 +178,21 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
           />
         ) : activeForm === "bd" ? (
           <FormularioBd
+            lectorId={lector?.id}
+            onClose={() => setActiveForm(null)}
+          />
+        ) : activeForm === "visita" ? (
+          <FormularioVisitaGuiada
+            lectorId={lector?.id}
+            onClose={() => setActiveForm(null)}
+          />
+        ) : activeForm === "espacio_trabajo" ? (
+          <FormularioEspacioTrabajo
+            lectorId={lector?.id}
+            onClose={() => setActiveForm(null)}
+          />
+        ) : activeForm === "talleres" ? (
+          <FormularioTalleres
             lectorId={lector?.id}
             onClose={() => setActiveForm(null)}
           />
