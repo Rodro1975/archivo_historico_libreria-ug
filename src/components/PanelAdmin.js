@@ -182,6 +182,29 @@ const PanelAdmin = () => {
             </p>
           </div>
         </div>
+        {/* Tarjeta para Gestión de Solicitudes */}
+        <div
+          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          onClick={() => console.log("Gestión de Usuarios")}
+        >
+          <Image
+            src="/images/juanperez.png"
+            alt="Gestión de Solicitudes"
+            width={80}
+            height={80}
+            className="mr-4"
+          />
+          <div>
+            <Link href="/mostrarSolicitudes">
+              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+                Solicitudes
+              </h2>
+            </Link>
+            <p className="text-blue text-sm">
+              Administra las solicitudes de los lectores del sistema.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

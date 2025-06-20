@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { toast, Toaster } from "react-hot-toast";
 import supabase from "@/lib/supabase";
@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import ModalInformacion from "@/components/ModalInformacion";
 import ModalBuscarLibros from "@/components/ModalBuscarLibros";
 import ModalSolicitudes from "./ModalSolicitudes";
+import ModalVerSolicitudes from "./ModalVerSolicitudes";
 
 const toastStyle = {
   style: {
@@ -26,7 +27,20 @@ const PanelReader = ({ userData }) => {
   const [modalInfoOpen, setModalInfoOpen] = useState(false);
   const [modalBuscarOpen, setModalBuscarOpen] = useState(false);
   const [ModalSolicitudesOpen, setModalSolicitudesOpen] = useState(false);
+  const [modalVerSolicitudesOpen, setModalVerSolicitudesOpen] = useState(false);
+  const [lectorId, setLectorId] = useState(null);
   const hasShownToast = useRef(false);
+
+  // Obtener el UID del usuario autenticado al montar el componente
+  useEffect(() => {
+    const getUserId = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setLectorId(user?.id || null);
+    };
+    getUserId();
+  }, []);
 
   const handleLogout = async () => {
     toast(
@@ -99,6 +113,11 @@ const PanelReader = ({ userData }) => {
     }
   };
 
+  const handleOpenVerSolicitudes = () => {
+    setModalVerSolicitudesOpen(true);
+    toast.success("Mostrando tus solicitudes", toastStyle);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 relative">
       <Toaster position="top-right" />
@@ -127,7 +146,11 @@ const PanelReader = ({ userData }) => {
             <div className="absolute inset-0 bg-yellow/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
           </button>
 
-          <button className="group relative overflow-hidden rounded-xl bg-yellow p-6 transition-all hover:shadow-lg hover:scale-105">
+          <button
+            onClick={handleOpenVerSolicitudes}
+            className="group relative overflow-hidden rounded-xl bg-yellow p-6 transition-all hover:shadow-lg hover:scale-105"
+            disabled={!lectorId}
+          >
             <div className="flex flex-col items-center gap-4">
               <span className="text-4xl text-blue group-hover:rotate-12 transition-transform">
                 📥
@@ -138,7 +161,7 @@ const PanelReader = ({ userData }) => {
           </button>
 
           <button
-            onClick={() => setModalSolicitudesOpen(true)}
+            onClick={handleOpenSolicitudes}
             className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
@@ -188,25 +211,29 @@ const PanelReader = ({ userData }) => {
       </div>
 
       {/* Modales */}
-      {/* Modal buscar libros */}
       {modalBuscarOpen && (
         <ModalBuscarLibros
           open={modalBuscarOpen}
           onClose={() => setModalBuscarOpen(false)}
         />
       )}
-      {/* Modal crear solicitudes */}
       {ModalSolicitudesOpen && (
         <ModalSolicitudes
           open={ModalSolicitudesOpen}
           onClose={() => setModalSolicitudesOpen(false)}
         />
       )}
-      {/* Modal Informacion */}
       {modalInfoOpen && (
         <ModalInformacion
           open={modalInfoOpen}
           onClose={() => setModalInfoOpen(false)}
+        />
+      )}
+      {modalVerSolicitudesOpen && lectorId && (
+        <ModalVerSolicitudes
+          open={modalVerSolicitudesOpen}
+          onClose={() => setModalVerSolicitudesOpen(false)}
+          lectorId={lectorId}
         />
       )}
     </div>
