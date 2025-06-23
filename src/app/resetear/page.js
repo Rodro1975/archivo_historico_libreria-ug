@@ -11,31 +11,44 @@ export default function ResetearPassword() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // ✅ Recuperar sesión desde el hash de la URL
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "PASSWORD_RECOVERY" && session) {
-        toast.success("Ingresa tu nueva contraseña");
-      }
-    });
+    const hash = window.location.hash;
+    if (hash.includes("access_token")) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!session) {
+          supabase.auth
+            .recoverSessionFromUrl(window.location.href)
+            .then(({ data, error }) => {
+              if (error) {
+                toast.error("Error al recuperar la sesión");
+              } else {
+                toast.success("✅ Puedes cambiar tu contraseña");
+              }
+            });
+        } else {
+          toast.success("✅ Puedes cambiar tu contraseña");
+        }
+      });
+    }
   }, []);
 
   const handleReset = async (e) => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      toast.error("Las contraseñas no coinciden");
+      toast.error("❌ Las contraseñas no coinciden");
       return;
     }
 
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
-
     setLoading(false);
 
     if (error) {
       toast.error(`Error: ${error.message}`);
     } else {
-      toast.success("Contraseña actualizada con éxito");
+      toast.success("✅ Contraseña actualizada con éxito");
       router.push("/login");
     }
   };
@@ -55,6 +68,7 @@ export default function ResetearPassword() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
+            minLength={6}
             className="w-full border border-yellow rounded-lg px-3 py-2 text-blue text-sm focus:ring-2 focus:ring-gold focus:outline-none"
           />
           <input
@@ -63,6 +77,7 @@ export default function ResetearPassword() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
+            minLength={6}
             className="w-full border border-yellow rounded-lg px-3 py-2 text-blue text-sm focus:ring-2 focus:ring-gold focus:outline-none"
           />
           <button
