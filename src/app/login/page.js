@@ -130,7 +130,10 @@ const LoginForm = () => {
             </form>
 
             <div className="text-center mt-4 text-sm">
-              <Link href="#" className="text-sm text-blue hover:text-gold">
+              <Link
+                href="/recuperar"
+                className="text-sm text-blue hover:text-gold"
+              >
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
