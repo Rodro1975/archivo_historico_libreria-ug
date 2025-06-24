@@ -127,7 +127,7 @@ export default function InformesInicio() {
         <h1 className="text-4xl font-black text-white text-center mb-2 tracking-wide">
           Centro de Informes del Archivo Histórico
         </h1>
-        <p className="text-blue text-base text-center max-w-xl mt-1 font-medium">
+        <p className="text-gray-300 text-base text-center max-w-xl mt-1 font-medium">
           Selecciona el tipo de informe que deseas generar.
           <br />
           Algunas opciones están disponibles solo para administradores.
