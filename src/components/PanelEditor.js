@@ -2,11 +2,13 @@
 "use client"; // Asegúrate de que este es un Client Component
 
 import React from "react";
-import { FaUsers, FaBook, FaFileAlt, FaChartBar } from "react-icons/fa"; // Importa los iconos
-import Image from "next/image"; // Asegúrate de importar el componente Image
-import Link from "next/link"; // Importa Link para la navegación
+import { FaUsers, FaBook, FaFileAlt, FaChartBar } from "react-icons/fa";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const PanelEditor = () => {
+  const router = useRouter();
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl text-blue font-bold mb-4">Panel del Editor</h1>
@@ -115,7 +117,7 @@ const PanelEditor = () => {
         {/* Tarjeta para Generación de Informes */}
         <div
           className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
-          onClick={() => console.log("Generación de Informes")}
+          onClick={() => router.push("/informes")} // Ahora router está definido
         >
           <Image
             src="/images/informe.png"

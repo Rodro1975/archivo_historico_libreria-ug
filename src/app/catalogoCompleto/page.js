@@ -6,6 +6,19 @@ import Image from "next/image";
 import WorkBar from "../../components/WorkBar";
 import supabase from "../../lib/supabase";
 import Footer from "../../components/Footer";
+import { Toaster, toast } from "react-hot-toast";
+
+const toastStyle = {
+  style: {
+    background: "#facc15",
+    color: "#1e3a8a",
+    fontWeight: "bold",
+  },
+  iconTheme: {
+    primary: "#1e3a8a",
+    secondary: "#facc15",
+  },
+};
 
 const CatalogoCompleto = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,6 +64,7 @@ const CatalogoCompleto = () => {
 
   return (
     <div className="flex flex-col min-h-screen w-full">
+      <Toaster position="top-right" toastOptions={toastStyle} />
       <div className="sticky top-0 z-50">
         <WorkBar />
       </div>
