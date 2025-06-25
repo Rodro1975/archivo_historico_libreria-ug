@@ -12,6 +12,7 @@ import {
   FaFileAlt,
   FaChartPie,
   FaUserEdit,
+  FaUsersCog,
 } from "react-icons/fa";
 import WorkBar from "@/components/WorkBar";
 
@@ -84,6 +85,14 @@ export default function InformesInicio() {
       descripcion:
         "Analiza libros registrados por dependencias o u. academicas.",
       ruta: "/informes/dependenciaAcademica",
+      grad: "from-gold via-orange to-yellow",
+    },
+    {
+      visible: true,
+      icon: <FaUsersCog size={64} className="text-blue drop-shadow-lg" />,
+      titulo: "Autores mas frecuentes",
+      descripcion: "Analiza libros y su relación con los autores.",
+      ruta: "/informes/autoresFrecuentes",
       grad: "from-gold via-orange to-yellow",
     },
     {
