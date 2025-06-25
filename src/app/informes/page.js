@@ -78,6 +78,15 @@ export default function InformesInicio() {
       grad: "from-gold via-orange to-yellow",
     },
     {
+      visible: true,
+      icon: <FaFileAlt size={64} className="text-blue drop-shadow-lg" />,
+      titulo: "Unidades Academicas y Dependencias",
+      descripcion:
+        "Analiza libros registrados por dependencias o u. academicas.",
+      ruta: "/informes/dependenciaAcademica",
+      grad: "from-gold via-orange to-yellow",
+    },
+    {
       visible: role === "Administrador",
       icon: <FaUsers size={64} className="text-blue drop-shadow-lg" />,
       titulo: "Informe de Lectores",
