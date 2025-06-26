@@ -53,7 +53,11 @@ export default function InformesAutores() {
         .eq("id", user.id)
         .single();
 
-      if (error || !usuario || usuario.role !== "Editor") {
+      if (
+        error ||
+        !usuario ||
+        (usuario.role !== "Editor" && usuario.role !== "Administrador")
+      ) {
         toast.error("Acceso restringido");
         router.push("/dashboard");
         return;

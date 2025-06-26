@@ -10,9 +10,10 @@ import {
   FaBook,
   FaUsers,
   FaFileAlt,
-  FaChartPie,
   FaUserEdit,
   FaUsersCog,
+  FaTools,
+  FaUser,
 } from "react-icons/fa";
 import WorkBar from "@/components/WorkBar";
 
@@ -113,10 +114,18 @@ export default function InformesInicio() {
     },
     {
       visible: role === "Administrador",
-      icon: <FaChartPie size={64} className="text-blue drop-shadow-lg" />,
-      titulo: "Resumen General",
-      descripcion: "Totales y estadísticas visuales del sistema.",
-      ruta: "/informes/resumen",
+      icon: <FaTools size={64} className="text-blue drop-shadow-lg" />,
+      titulo: "Solicitudes de Soporte",
+      descripcion: "Revisión de solicitudes de soporte solicitadas.",
+      ruta: "/informes/soporte",
+      grad: "from-yellow via-orange to-gold",
+    },
+    {
+      visible: role === "Administrador",
+      icon: <FaUser size={64} className="text-blue drop-shadow-lg" />,
+      titulo: "Informe de Usuarios",
+      descripcion: "Revisión de solicitudes de soporte solicitadas.",
+      ruta: "/informes/usuarios",
       grad: "from-yellow via-orange to-gold",
     },
   ];
