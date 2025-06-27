@@ -139,7 +139,7 @@ const PanelEditor = () => {
         {/* Tarjeta para Visualización de Estadísticas */}
         <div
           className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
-          onClick={() => console.log("Visualización de Estadísticas")}
+          onClick={() => router.push("/estadisticas")}
         >
           <Image
             src="/images/analisis.png"

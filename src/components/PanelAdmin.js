@@ -190,7 +190,7 @@ const PanelAdmin = () => {
           onClick={() => console.log("Gestión de Usuarios")}
         >
           <Image
-            src="/images/juanperez.png"
+            src="/images/solicitudes.png"
             alt="Gestión de Solicitudes"
             width={80}
             height={80}
@@ -204,6 +204,27 @@ const PanelAdmin = () => {
             </Link>
             <p className="text-blue text-sm">
               Administra las solicitudes de los lectores del sistema.
+            </p>
+          </div>
+        </div>
+        {/* Tarjeta para Visualización de Estadísticas */}
+        <div
+          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          onClick={() => console.log("Visualización de Estadísticas")}
+        >
+          <Image
+            src="/images/soporte.png"
+            alt="Visualización de Estadísticas"
+            width={80}
+            height={80}
+            className="mr-4"
+          />
+          <div>
+            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
+              Soporte
+            </h2>
+            <p className="text-blue text-sm">
+              Gestiona las solicitudes de soporte.
             </p>
           </div>
         </div>
