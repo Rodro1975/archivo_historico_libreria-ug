@@ -207,11 +207,11 @@ export default function InformesInicio() {
                 </div>
                 <div className="flex justify-center w-full mt-3">
                   <span
-                    className="bg-blue px-4 py-2 rounded-full text-gold text-base font-bold shadow-lg drop-shadow-lg transition-all group-hover:bg-gold group-hover:text-blue group-hover:shadow-yellow/40 group-hover:scale-105"
+                    className="bg-blue px-2 py-1 rounded-full text-gold text-xs font-semibold mt-2 group-hover:bg-gold group-hover:text-blue transition-all"
                     style={{
                       position: "relative",
-                      bottom: "-10px",
-                      boxShadow: "0 4px 18px 0 rgba(30,58,138,0.15)",
+                      bottom: "-4px",
+                      boxShadow: "0 2px 8px 0 rgba(30,58,138,0.10)",
                     }}
                   >
                     Ver informe &rarr;

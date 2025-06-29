@@ -113,13 +113,31 @@ export default function EstadisticasPage() {
           descripcion="Cantidad de libros registrados por cada campus universitario."
           ruta="/estadisticas/libros/campus"
         />
-
         <CardEstadistica
           titulo="✍️ Autores más frecuentes"
           descripcion="Autores con más publicaciones registradas."
-          ruta="/estadisticas/autores"
+          ruta="/estadisticas/autores/frecuencia"
         />
-
+        <CardEstadistica
+          titulo="📋 Vigencia de Autores"
+          descripcion="Cantidad de autores activos e inactivos."
+          ruta="/estadisticas/autores/vigencia"
+        />
+        <CardEstadistica
+          titulo="🏛️ Autores por Estructura"
+          descripcion="Distribución de autores por dependencia y unidad académica."
+          ruta="/estadisticas/autores/estructura"
+        />
+        <CardEstadistica
+          titulo="🏛️ Autores por Estructura"
+          descripcion="Distribución de autores por dependencia y unidad académica."
+          ruta="/estadisticas/autores/estructura"
+        />
+        <CardEstadistica
+          titulo="🧑‍💼 Autores por Cargo"
+          descripcion="Cantidad de autores agrupados por su cargo."
+          ruta="/estadisticas/autores/cargo"
+        />
         {rol === "Administrador" && (
           <>
             <CardEstadistica
