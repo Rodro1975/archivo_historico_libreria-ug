@@ -157,20 +157,35 @@ export default function EstadisticasPage() {
               ruta="/estadisticas/lectores/solicitudes"
             />
             <CardEstadistica
-              titulo="📊 Estado de solicitudes"
-              descripcion="Distribución de solicitudes según su estado actual."
-              ruta="/estadisticas/lectores/estados"
+              titulo="🛡️ Usuarios por Rol"
+              descripcion="Distribución de usuarios según su nivel de acceso al sistema."
+              ruta="/estadisticas/usuarios/rol"
+            />
+            <CardEstadistica
+              titulo="📅 Registro de usuarios por año"
+              descripcion="Cantidad de usuarios registrados en el sistema por año."
+              ruta="/estadisticas/usuarios/registro"
+            />
+            <CardEstadistica
+              titulo="🖊️ Usuarios con rol de autor"
+              descripcion="Comparativa entre usuarios que son autores y los que no."
+              ruta="/estadisticas/usuarios/autores"
+            />
+            <CardEstadistica
+              titulo="🆘 Soporte por Prioridad"
+              descripcion="Cantidad de solicitudes de soporte según su nivel de prioridad."
+              ruta="/estadisticas/soporte/prioridad"
+            />
+            <CardEstadistica
+              titulo="⏱️ Solicitudes atendidas y tiempo de respuesta"
+              descripcion="Cantidad de solicitudes resueltas por cada usuario y el tiempo promedio que tardaron."
+              ruta="/estadisticas/soporte/atencion"
             />
 
             <CardEstadistica
-              titulo="🧑‍💻 Usuarios registrados"
-              descripcion="Total de usuarios del sistema por rol."
-              ruta="/estadisticas/usuarios"
-            />
-            <CardEstadistica
-              titulo="🧾 Libros por Dependencia"
-              descripcion="Cantidad de libros clasificados por área o facultad."
-              ruta="/estadisticas/dependencias"
+              titulo="📊 Estado de solicitudes"
+              descripcion="Distribución de solicitudes según su estado actual."
+              ruta="/estadisticas/lectores/estados"
             />
           </>
         )}
