@@ -142,15 +142,26 @@ export default function EstadisticasPage() {
         {rol === "Administrador" && (
           <>
             <CardEstadistica
-              titulo="👤 Lectores por Unidad Académica"
-              descripcion="Cantidad de lectores registrados por facultad o dependencia."
-              ruta="/estadisticas/lectores"
+              titulo="📅 Lectores por Año"
+              descripcion="Cantidad de lectores registrados en cada año."
+              ruta="/estadisticas/lectores/registro"
             />
             <CardEstadistica
-              titulo="📥 Estado de Solicitudes"
-              descripcion="Resumen de solicitudes: pendientes, aprobadas, rechazadas."
-              ruta="/estadisticas/solicitudes"
+              titulo="📥 Últimos accesos"
+              descripcion="Lectores que accedieron por última vez por año."
+              ruta="/estadisticas/lectores/accesos"
             />
+            <CardEstadistica
+              titulo="📑 Tipos de solicitud"
+              descripcion="Clasificación de solicitudes hechas por los lectores."
+              ruta="/estadisticas/lectores/solicitudes"
+            />
+            <CardEstadistica
+              titulo="📊 Estado de solicitudes"
+              descripcion="Distribución de solicitudes según su estado actual."
+              ruta="/estadisticas/lectores/estados"
+            />
+
             <CardEstadistica
               titulo="🧑‍💻 Usuarios registrados"
               descripcion="Total de usuarios del sistema por rol."
