@@ -119,7 +119,7 @@ export default function AutoresFrecuencia() {
           className="mb-2"
         />
         <h1 className="text-3xl font-bold text-white text-center">
-          ✍️ Autores con más publicaciones
+          Autores con más publicaciones
         </h1>
       </div>
 

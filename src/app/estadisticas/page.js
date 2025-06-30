@@ -129,15 +129,16 @@ export default function EstadisticasPage() {
           ruta="/estadisticas/autores/estructura"
         />
         <CardEstadistica
-          titulo="🏛️ Autores por Estructura"
-          descripcion="Distribución de autores por dependencia y unidad académica."
-          ruta="/estadisticas/autores/estructura"
-        />
-        <CardEstadistica
           titulo="🧑‍💼 Autores por Cargo"
           descripcion="Cantidad de autores agrupados por su cargo."
           ruta="/estadisticas/autores/cargo"
         />
+        <CardEstadistica
+          titulo="📅 Autores por Año y Vigencia"
+          descripcion="Cantidad de autores registrados por año, diferenciando su estado de vigencia."
+          ruta="/estadisticas/autores/creacion"
+        />
+
         {rol === "Administrador" && (
           <>
             <CardEstadistica
