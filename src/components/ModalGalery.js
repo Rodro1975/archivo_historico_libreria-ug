@@ -9,9 +9,10 @@ const ModalGalery = ({ onClose, libro }) => {
 
   return (
     <section className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
-      <div className="bg-gray-100 rounded-lg overflow-hidden shadow-lg w-full max-w-2xl sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto relative 
-                      h-[90vh] max-h-[90vh] flex flex-col">
-        
+      <div
+        className="bg-gray-100 rounded-lg overflow-hidden shadow-lg w-full max-w-2xl sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto relative 
+                      h-[90vh] max-h-[90vh] flex flex-col"
+      >
         {/* Botón de cerrar */}
         <button
           onClick={onClose}
@@ -39,8 +40,8 @@ const ModalGalery = ({ onClose, libro }) => {
           </div>
 
           <p className="text-gray-900 text-sm sm:text-base text-center px-2">
-            ¿Quieres leer un fragmento del libro? Regístrate con tu cuenta de
-            Google o LinkedIn.
+            ¿Quieres tener acceso a más información? Regístrate con tu cuenta de
+            Google.
           </p>
         </div>
 
@@ -59,7 +60,3 @@ const ModalGalery = ({ onClose, libro }) => {
 };
 
 export default ModalGalery;
-
-
-
-

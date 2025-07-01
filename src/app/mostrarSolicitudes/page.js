@@ -88,10 +88,9 @@ export default function MostrarSolicitudes() {
       <WorkBar />
 
       <main className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-3xl font-black text-white mb-6 text-center">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Gestión de Solicitudes de Lectores
         </h1>
-
         {/* Barra de búsqueda */}
         <div className="mb-6 flex items-center justify-center">
           <div className="w-full max-w-md flex items-center">

@@ -74,8 +74,8 @@ const MostrarLibrosPage = () => {
   return (
     <div className="min-h-screen bg-blue">
       <WorkBar />
-      <h1 className="text-4xl text-yellow text-center font-bold mt-8 mb-8">
-        Lista de libros
+      <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
+        Lista de Libros
       </h1>
 
       {/* Barra de búsqueda con botón limpiar */}

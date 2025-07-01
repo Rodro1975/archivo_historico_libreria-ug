@@ -76,11 +76,10 @@ export default function EstadisticasPage() {
           height={160}
           className="mb-2"
         />
-        <h1 className="text-3xl font-bold text-white text-center">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Estadísticas del Archivo Histórico
         </h1>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Editor y Admin pueden ver estadísticas de libros y autores */}
         <CardEstadistica
@@ -157,6 +156,11 @@ export default function EstadisticasPage() {
               ruta="/estadisticas/lectores/solicitudes"
             />
             <CardEstadistica
+              titulo="📊 Estado de solicitudes"
+              descripcion="Distribución de solicitudes según su estado actual."
+              ruta="/estadisticas/lectores/estados"
+            />
+            <CardEstadistica
               titulo="🛡️ Usuarios por Rol"
               descripcion="Distribución de usuarios según su nivel de acceso al sistema."
               ruta="/estadisticas/usuarios/rol"
@@ -180,12 +184,6 @@ export default function EstadisticasPage() {
               titulo="⏱️ Solicitudes atendidas y tiempo de respuesta"
               descripcion="Cantidad de solicitudes resueltas por cada usuario y el tiempo promedio que tardaron."
               ruta="/estadisticas/soporte/atencion"
-            />
-
-            <CardEstadistica
-              titulo="📊 Estado de solicitudes"
-              descripcion="Distribución de solicitudes según su estado actual."
-              ruta="/estadisticas/lectores/estados"
             />
           </>
         )}

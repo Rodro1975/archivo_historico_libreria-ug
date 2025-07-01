@@ -151,7 +151,7 @@ export default function InformesInicio() {
           height={160}
           className="drop-shadow-lg mb-3"
         />
-        <h1 className="text-4xl font-black text-white text-center mb-2 tracking-wide">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Centro de Informes del Archivo Histórico
         </h1>
         <p className="text-gray-300 text-base text-center max-w-xl mt-1 font-medium">
