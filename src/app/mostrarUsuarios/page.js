@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, Suspense } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 import { toast, Toaster } from "react-hot-toast";
 
 const MostrarUsuariosPage = () => {
@@ -98,15 +98,25 @@ const MostrarUsuariosPage = () => {
           Lista de Usuarios
         </h1>
 
-        {/* Búsqueda con botón limpiar */}
-        <div className="flex gap-2 max-w-screen-lg mx-auto px-4 mb-2">
+        {/* Barra de búsqueda amarilla con hexágono y botón limpiar */}
+        <div className="flex items-center gap-2 max-w-screen-lg mx-auto px-4 mb-2">
           <input
             type="text"
             placeholder="Buscar por apellido paterno"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border rounded text-black bg-white placeholder-gray-400"
+            className="w-full p-2 rounded border bg-yellow text-blue placeholder-blue-900 font-bold"
           />
+          <button
+            className="w-12 h-12 bg-orange text-blue flex items-center justify-center transform rotate-30 clip-hexagon"
+            title="Buscar"
+            tabIndex={-1}
+            disabled
+          >
+            <div className="w-full h-full flex items-center justify-center -rotate-30">
+              <FaSearch className="text-blue" />
+            </div>
+          </button>
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
@@ -117,10 +127,23 @@ const MostrarUsuariosPage = () => {
             </button>
           )}
         </div>
-        {/* Mensaje contextual */}
+
+        <style jsx>{`
+          .clip-hexagon {
+            clip-path: polygon(
+              50% 0%,
+              100% 25%,
+              100% 75%,
+              50% 100%,
+              0% 75%,
+              0% 25%
+            );
+          }
+        `}</style>
+
         {searchTerm && (
           <p className="text-sm text-gray-500 text-center mb-2">
-            Haz clic en Limpiar para ver todos los usuarios.
+            Haz clic en Limpiar para ver todos los libros.
           </p>
         )}
 
