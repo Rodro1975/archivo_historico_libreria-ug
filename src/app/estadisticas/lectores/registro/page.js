@@ -116,11 +116,10 @@ export default function RegistroLectores() {
           height={160}
           className="mb-2"
         />
-        <h1 className="text-3xl font-bold text-white text-center">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Lectores registrados por año
         </h1>
       </div>
-
       {data.length > 0 ? (
         <div id="grafica-lectores-registro">
           <ResponsiveContainer width="100%" height={400}>

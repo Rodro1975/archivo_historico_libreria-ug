@@ -124,11 +124,10 @@ export default function EstructuraAutores() {
           height={160}
           className="mb-2"
         />
-        <h1 className="text-3xl font-bold text-white text-center">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Autores por Dependencia y Unidad Académica
         </h1>
       </div>
-
       {data?.datos?.length > 0 ? (
         <div id="grafica-estructura">
           <ResponsiveContainer width="100%" height={400}>

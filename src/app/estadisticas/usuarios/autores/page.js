@@ -115,11 +115,10 @@ export default function UsuariosEsAutorPage() {
           height={160}
           className="mb-2"
         />
-        <h1 className="text-3xl font-bold text-white text-center">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Usuarios con Rol de Autor
         </h1>
       </div>
-
       <div id="grafica-usuarios-esautor" className="w-full h-96">
         <ResponsiveContainer>
           <PieChart>

@@ -118,11 +118,10 @@ export default function AutoresFrecuencia() {
           height={160}
           className="mb-2"
         />
-        <h1 className="text-3xl font-bold text-white text-center">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Autores con más publicaciones
         </h1>
       </div>
-
       {data.length > 0 ? (
         <div id="grafica-autores" className="p-4">
           <BarChart width={800} height={400} data={data} layout="vertical">

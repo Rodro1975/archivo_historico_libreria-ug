@@ -111,7 +111,7 @@ export default function AutoresVigencia() {
           height={160}
           className="mb-2"
         />
-        <h1 className="text-3xl font-bold text-white text-center">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Vigencia de Autores
         </h1>
       </div>
