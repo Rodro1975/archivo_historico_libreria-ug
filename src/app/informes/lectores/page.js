@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import WorkBar from "@/components/WorkBar";
 import jsPDF from "jspdf";
@@ -11,18 +11,6 @@ import autoTable from "jspdf-autotable";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { FaFilePdf, FaFileExcel, FaSearch } from "react-icons/fa";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 function FiltroTexto({ value, placeholder, onChange, onClear }) {
   return (
@@ -94,7 +82,7 @@ export default function InformeLectores() {
         .single();
 
       if (error || !data || data.role !== "Administrador") {
-        toast.error("Acceso restringido");
+        toastError("Acceso restringido");
         router.push("/dashboard");
         return;
       }
@@ -114,7 +102,7 @@ export default function InformeLectores() {
       .order("creado_en", { ascending: false });
 
     if (error) {
-      toast.error("Error al cargar lectores");
+      toastError("Error al cargar lectores");
     } else {
       setLectores(data);
     }
@@ -141,7 +129,7 @@ export default function InformeLectores() {
       headStyles: { fillColor: [30, 58, 138] },
     });
     doc.save("lectores.pdf");
-    toast.success("PDF descargado correctamente");
+    toastSuccess("PDF descargado correctamente");
   };
 
   const exportarExcel = async () => {
@@ -173,7 +161,7 @@ export default function InformeLectores() {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
     saveAs(blob, "lectores.xlsx");
-    toast.success("Excel descargado correctamente");
+    toastSuccess("Excel descargado correctamente");
   };
 
   const lectoresFiltrados = lectores.filter((l) =>
@@ -190,7 +178,6 @@ export default function InformeLectores() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
       <div className="flex flex-col items-center justify-center mb-8">
         <Image

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import supabase from "@/lib/supabase";
 import {
   FaBible,
   FaBook,
@@ -12,7 +11,6 @@ import {
   FaTasks,
   FaTripadvisor,
 } from "react-icons/fa";
-import { toast } from "react-hot-toast";
 import FormularioPrestamoLibro from "@/components/FormularioPrestamoLibro";
 import FormularioLibroDigital from "./FormularioLibroDigital";
 import FormularioDonacion from "./FormularioDonacion";
@@ -20,18 +18,6 @@ import FormularioBd from "./FormularioBd";
 import FormularioVisitaGuiada from "./FormularioVisitaGuiada";
 import FormularioEspacioTrabajo from "./FormularioEspacioTrabajo";
 import FormularioTalleres from "./FormularioTalleres";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 const ModalSolicitudes = ({ open, onClose, lector }) => {
   const [activeForm, setActiveForm] = useState(null); // Estado unificado

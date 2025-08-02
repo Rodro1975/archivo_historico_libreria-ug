@@ -9,7 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import html2canvas from "html2canvas";
 import WorkBar from "@/components/WorkBar";
@@ -36,7 +36,7 @@ export default function AutoresCreacionPage() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -44,7 +44,7 @@ export default function AutoresCreacionPage() {
       if (["Administrador", "Editor"].includes(usuario.role)) {
         fetchData();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -57,7 +57,7 @@ export default function AutoresCreacionPage() {
       .select("id, fecha_creacion, vigencia");
 
     if (error) {
-      toast.error("Error al cargar datos: " + error.message);
+      toastError("Error al cargar datos: " + error.message);
       return;
     }
 
@@ -99,7 +99,6 @@ export default function AutoresCreacionPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

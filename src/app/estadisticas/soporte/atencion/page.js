@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import html2canvas from "html2canvas";
 import WorkBar from "@/components/WorkBar";
@@ -31,7 +31,7 @@ export default function SoporteAtendidasPage() {
       );
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -82,7 +82,6 @@ export default function SoporteAtendidasPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-6">

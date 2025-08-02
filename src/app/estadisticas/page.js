@@ -3,22 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import WorkBar from "@/components/WorkBar";
 import { FaChartBar } from "react-icons/fa";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function EstadisticasPage() {
   const router = useRouter();
@@ -43,7 +31,7 @@ export default function EstadisticasPage() {
         .single();
 
       if (error || !data || !["Administrador", "Editor"].includes(data.role)) {
-        toast.error("Acceso restringido");
+        toastError("Acceso restringido");
         router.push("/dashboard");
         return;
       }
@@ -65,7 +53,6 @@ export default function EstadisticasPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

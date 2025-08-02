@@ -2,25 +2,13 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
-import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import supabase from "@/lib/supabase";
+import { toastSuccess, toastError, toastLoading } from "@/lib/toastUtils";
 import ModalInformacion from "@/components/ModalInformacion";
 import ModalBuscarLibros from "@/components/ModalBuscarLibros";
 import ModalSolicitudes from "./ModalSolicitudes";
 import ModalVerSolicitudes from "./ModalVerSolicitudes";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 const PanelReader = ({ userData }) => {
   const router = useRouter();
@@ -43,7 +31,7 @@ const PanelReader = ({ userData }) => {
   }, []);
 
   const handleLogout = async () => {
-    toast(
+    toastSuccess(
       (t) => (
         <div className="flex flex-col gap-4 p-4">
           <p className="font-bold text-blue-900">
@@ -60,18 +48,15 @@ const PanelReader = ({ userData }) => {
               className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
               onClick={async () => {
                 toast.dismiss(t.id);
-                const toastId = toast.loading("Cerrando sesión...", toastStyle);
+                const toastId = toastLoading("Cerrando sesión...");
                 const { error } = await supabase.auth.signOut();
                 if (error) {
-                  toast.error("Error al cerrar sesión: " + error.message, {
-                    id: toastId,
-                    ...toastStyle,
-                  });
+                  toastError(
+                    "Error al cerrar sesión: " + error.message,
+                    toastId
+                  );
                 } else {
-                  toast.success("Sesión cerrada correctamente", {
-                    id: toastId,
-                    ...toastStyle,
-                  });
+                  toastSuccess("Sesión cerrada correctamente", toastId);
                   router.push("/login");
                 }
               }}
@@ -81,26 +66,14 @@ const PanelReader = ({ userData }) => {
           </div>
         </div>
       ),
-      {
-        duration: Infinity,
-        style: {
-          background: "#facc15",
-          color: "#1e3a8a",
-          fontWeight: "bold",
-          minWidth: "320px",
-        },
-        iconTheme: {
-          primary: "#1e3a8a",
-          secondary: "#facc15",
-        },
-      }
+      { duration: Infinity }
     );
   };
 
   const handleOpenBuscarLibros = () => {
     setModalBuscarOpen(true);
     if (!hasShownToast.current) {
-      toast.success("Libros cargados correctamente", toastStyle);
+      toastSuccess("Libros cargados correctamente");
       hasShownToast.current = true;
     }
   };
@@ -108,19 +81,18 @@ const PanelReader = ({ userData }) => {
   const handleOpenSolicitudes = () => {
     setModalSolicitudesOpen(true);
     if (!hasShownToast.current) {
-      toast.success("Crea tu solicitud", toastStyle);
+      toastSuccess("Crea tu solicitud");
       hasShownToast.current = true;
     }
   };
 
   const handleOpenVerSolicitudes = () => {
     setModalVerSolicitudesOpen(true);
-    toast.success("Mostrando tus solicitudes", toastStyle);
+    toastSuccess("Mostrando tus solicitudes");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 relative">
-      <Toaster position="top-right" />
       <div className="bg-gradient-to-br from-blue to-white rounded-2xl shadow-lg p-8 max-w-5xl mx-auto mt-4 border border-blue">
         <div className="text-center mb-10">
           <Image

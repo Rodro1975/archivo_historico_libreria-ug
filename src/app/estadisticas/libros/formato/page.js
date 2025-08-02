@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import html2canvas from "html2canvas";
 
@@ -25,18 +25,6 @@ const COLORS = [
   "#84cc16", // verde
   "#ef4444", // rojo
 ];
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function FormatoLibros() {
   const [data, setData] = useState([]);
@@ -57,7 +45,7 @@ export default function FormatoLibros() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -65,7 +53,7 @@ export default function FormatoLibros() {
       if (["Administrador", "Editor"].includes(usuario.role)) {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -78,7 +66,7 @@ export default function FormatoLibros() {
       .select("formato");
 
     if (error) {
-      toast.error("Error al cargar libros");
+      toastError("Error al cargar libros");
       return;
     }
 
@@ -123,7 +111,6 @@ export default function FormatoLibros() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
       <div className="flex flex-col items-center justify-center mb-8">
         <Image

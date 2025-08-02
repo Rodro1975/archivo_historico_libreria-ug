@@ -2,21 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Toaster, toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import supabase from "@/lib/supabase";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 export default function FormularioBd({ onClose }) {
   const [loading, setLoading] = useState(false);
@@ -36,12 +24,11 @@ export default function FormularioBd({ onClose }) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error("Debes iniciar sesión para realizar esta acción", toastStyle);
+      toastError("Debes iniciar sesión para realizar esta acción");
       setLoading(false);
       return;
     }
 
-    // Obtener nombre del lector desde la tabla lectores usando el campo id
     const { data: lectorData, error: lectorError } = await supabase
       .from("lectores")
       .select("nombre")
@@ -49,12 +36,11 @@ export default function FormularioBd({ onClose }) {
       .single();
 
     if (lectorError || !lectorData) {
-      toast.error("No se pudo obtener el nombre del lector", toastStyle);
+      toastError("No se pudo obtener el nombre del lector");
       setLoading(false);
       return;
     }
 
-    // Construir detalle con la justificación y tipo de listado solicitado
     const detalle = `Solicitud de listado de: ${data.tipo_listado}.
 Justificación: ${data.justificacion}`;
 
@@ -70,9 +56,9 @@ Justificación: ${data.justificacion}`;
 
     setLoading(false);
     if (error) {
-      toast.error(`Error al enviar la solicitud: ${error.message}`, toastStyle);
+      toastError(`Error al enviar la solicitud: ${error.message}`);
     } else {
-      toast.success("Solicitud enviada correctamente", toastStyle);
+      toastSuccess("Solicitud enviada correctamente");
       reset();
       onClose();
     }
@@ -80,7 +66,6 @@ Justificación: ${data.justificacion}`;
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mx-10">
-      <Toaster position="top-center" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-3xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

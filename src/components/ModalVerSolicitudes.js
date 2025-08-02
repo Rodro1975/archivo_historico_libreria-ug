@@ -3,19 +3,7 @@
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 export default function ModalVerSolicitudes({ open, onClose }) {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -29,7 +17,7 @@ export default function ModalVerSolicitudes({ open, onClose }) {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        toast.error("Inicia sesión para ver tus solicitudes", toastStyle);
+        toastError("Inicia sesión para ver tus solicitudes");
         setLoading(false);
         return;
       }
@@ -43,11 +31,11 @@ export default function ModalVerSolicitudes({ open, onClose }) {
         .order("creado_en", { ascending: false });
 
       if (error) {
-        toast.error("Error al cargar solicitudes", toastStyle);
+        toastError("Error al cargar solicitudes");
         setLoading(false);
       } else {
         setSolicitudes(data);
-        toast.success("Solicitudes cargadas correctamente", toastStyle);
+        toastSuccess("Solicitudes cargadas correctamente");
         setLoading(false);
       }
     };
@@ -61,7 +49,6 @@ export default function ModalVerSolicitudes({ open, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <Toaster position="top-center" />
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden">
         <div className="flex justify-between items-center bg-blue text-yellow px-6 py-4">
           <div className="flex items-center gap-4">

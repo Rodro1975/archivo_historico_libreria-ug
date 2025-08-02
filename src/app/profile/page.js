@@ -10,21 +10,9 @@ import {
 } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import ModalSoporte from "@/components/ModalSoporte";
 import ModalCambioContrasena from "@/components/ModalCambioContrasena"; // ✅ nuevo import
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -37,7 +25,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const mensaje = localStorage.getItem("fotoSubidaExito");
     if (mensaje) {
-      toast.success(mensaje, toastStyle);
+      toastSuccess(mensaje, toastStyle);
       localStorage.removeItem("fotoSubidaExito");
     }
   }, []);
@@ -129,7 +117,6 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 py-12 px-6">
-      <Toaster />
       <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-lg border-l-8 border-yellow p-12 flex flex-col gap-12">
         <header className="flex justify-between items-center">
           <div className="w-44 sm:w-52 relative">

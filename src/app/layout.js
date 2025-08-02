@@ -1,23 +1,21 @@
 // src/app/layout.js
-
 "use client";
 
 import "animate.css";
-import "tailwindcss/tailwind.css"; // Tailwind CSS
-import "./globals.css"; // Asegúrate de que la ruta sea correcta
+import "tailwindcss/tailwind.css";
+import "./globals.css";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({ children }) {
-  const pathname = usePathname(); // Obtener la ruta actual
+  const pathname = usePathname();
 
-  // Usar el hook de efecto para actualizar el título cuando cambie la ruta
   useEffect(() => {
-    // Definir los títulos para cada ruta dentro del efecto
     const getTitle = () => {
       switch (pathname) {
         case "/catalog":
-          return "Galeria - Archivo Histórico de la Editorial UG";
+          return "Galería - Archivo Histórico de la Editorial UG";
         case "/completeCatalog":
           return "Colección Documental - Archivo Histórico de la Editorial UG";
         case "/dashboard":
@@ -27,7 +25,7 @@ export default function RootLayout({ children }) {
         case "/acercaDe":
           return "Acerca de - Archivo Histórico de la Editorial UG";
         default:
-          return "Archivo Histórico de la Editorial UG"; // Título por defecto
+          return "Archivo Histórico de la Editorial UG";
       }
     };
 
@@ -36,7 +34,24 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="es">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {/* Toaster global con estilo institucional */}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: "#facc15", // amarillo
+              color: "#1e3a8a", // azul
+              fontWeight: "bold",
+            },
+            iconTheme: {
+              primary: "#1e3a8a", // azul
+              secondary: "#facc15", // amarillo
+            },
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

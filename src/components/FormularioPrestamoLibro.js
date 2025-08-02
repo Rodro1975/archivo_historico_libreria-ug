@@ -2,21 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Toaster, toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import supabase from "@/lib/supabase";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastError, toastSuccess } from "@/lib/toastUtils";
 
 export default function FormularioPrestamoLibro({ onClose }) {
   const [libros, setLibros] = useState([]);
@@ -39,7 +27,7 @@ export default function FormularioPrestamoLibro({ onClose }) {
         .order("titulo", { ascending: true });
 
       if (error) {
-        toast.error("Error al cargar los libros", toastStyle);
+        toastError("Error al cargar los libros");
         console.error(error);
       } else {
         setLibros(data);
@@ -58,20 +46,19 @@ export default function FormularioPrestamoLibro({ onClose }) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error("Debes iniciar sesión para realizar esta acción", toastStyle);
+      toastError("Debes iniciar sesión para realizar esta acción");
       setLoading(false);
       return;
     }
 
-    // Consultar nombre usando el campo 'id' que es la FK correcta
     const { data: lectorData, error: lectorError } = await supabase
       .from("lectores")
       .select("nombre")
-      .eq("id", user.id) // Cambiado de 'uuid' a 'id'
+      .eq("id", user.id)
       .single();
 
     if (lectorError || !lectorData) {
-      toast.error("No se pudo obtener el nombre del lector", toastStyle);
+      toastError("No se pudo obtener el nombre del lector");
       setLoading(false);
       return;
     }
@@ -90,9 +77,9 @@ export default function FormularioPrestamoLibro({ onClose }) {
 
     setLoading(false);
     if (error) {
-      toast.error(`Error al enviar la solicitud: ${error.message}`, toastStyle);
+      toastError(`Error al enviar la solicitud: ${error.message}`);
     } else {
-      toast.success("Solicitud enviada correctamente", toastStyle);
+      toastSuccess("Solicitud enviada correctamente");
       reset();
       onClose();
     }
@@ -100,7 +87,6 @@ export default function FormularioPrestamoLibro({ onClose }) {
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      <Toaster position="top-center" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

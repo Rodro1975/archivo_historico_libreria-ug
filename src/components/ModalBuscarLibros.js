@@ -4,19 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import supabase from "@/lib/supabase";
 import { FaSearch } from "react-icons/fa";
-import { toast } from "react-hot-toast";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastError } from "@/lib/toastUtils";
 
 const ModalBuscarLibros = ({ open, onClose }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +25,7 @@ const ModalBuscarLibros = ({ open, onClose }) => {
         setBooks(data);
       } catch (error) {
         console.error("Error al cargar los libros", error.message);
-        toast.error("Error al cargar los libros", toastStyle);
+        toastError("Error al cargar los libros");
       } finally {
         setLoading(false);
       }

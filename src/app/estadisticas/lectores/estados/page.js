@@ -11,23 +11,11 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import html2canvas from "html2canvas";
 import Image from "next/image";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function SolicitudesPorEstado() {
   const [data, setData] = useState([]);
@@ -48,7 +36,7 @@ export default function SolicitudesPorEstado() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -56,7 +44,7 @@ export default function SolicitudesPorEstado() {
       if (usuario.role === "Administrador") {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -67,7 +55,7 @@ export default function SolicitudesPorEstado() {
     const { data, error } = await supabase.from("solicitudes").select("estado");
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -105,7 +93,6 @@ export default function SolicitudesPorEstado() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

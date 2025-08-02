@@ -9,25 +9,11 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import html2canvas from "html2canvas";
 import WorkBar from "@/components/WorkBar";
 import Image from "next/image";
-
-const COLORS = ["#22c55e", "#ef4444"];
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function UsuariosEsAutorPage() {
   const [data, setData] = useState([]);
@@ -48,7 +34,7 @@ export default function UsuariosEsAutorPage() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -56,7 +42,7 @@ export default function UsuariosEsAutorPage() {
       if (["Administrador"].includes(usuario.role)) {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -67,7 +53,7 @@ export default function UsuariosEsAutorPage() {
     const { data, error } = await supabase.from("usuarios").select("es_autor");
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -104,7 +90,6 @@ export default function UsuariosEsAutorPage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

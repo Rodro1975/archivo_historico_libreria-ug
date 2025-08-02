@@ -4,7 +4,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import { FaSearch, FaFilePdf, FaFileExcel } from "react-icons/fa";
 import WorkBar from "@/components/WorkBar";
@@ -12,18 +12,6 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function InformesDependenciaAcademica() {
   const router = useRouter();
@@ -56,7 +44,7 @@ export default function InformesDependenciaAcademica() {
         !usuario ||
         (usuario.role !== "Editor" && usuario.role !== "Administrador")
       ) {
-        toast.error("Acceso restringido");
+        toastError("Acceso restringido");
         router.push("/dashboard");
         return;
       }
@@ -80,7 +68,7 @@ export default function InformesDependenciaAcademica() {
     );
 
     if (error) {
-      toast.error("Error al cargar libros");
+      toastError("Error al cargar libros");
     } else {
       setLibros(data);
     }
@@ -116,7 +104,7 @@ export default function InformesDependenciaAcademica() {
       headStyles: { fillColor: [30, 58, 138] },
     });
     doc.save("libros_unidades_dependencias.pdf");
-    toast.success("PDF descargado correctamente");
+    toastSuccess("PDF descargado correctamente");
   };
 
   const exportarExcel = async () => {
@@ -142,7 +130,7 @@ export default function InformesDependenciaAcademica() {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
     saveAs(blob, "libros_ud.xlsx");
-    toast.success("Excel descargado correctamente");
+    toastSuccess("Excel descargado correctamente");
   };
 
   if (!userRole) {
@@ -155,7 +143,6 @@ export default function InformesDependenciaAcademica() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
       <div className="flex flex-col items-center justify-center mb-8">
         <Image

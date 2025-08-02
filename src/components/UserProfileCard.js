@@ -3,19 +3,7 @@
 import React, { useState } from "react";
 import supabase from "@/lib/supabase";
 import { AiFillCamera } from "react-icons/ai";
-import { toast } from "react-hot-toast";
-
-const toastStyle = {
-  style: {
-    background: "#facc15", // amarillo
-    color: "#1e3a8a", // azul oscuro
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const UserProfileCard = ({ userData }) => {
   const [fotoUrl, setFotoUrl] = useState(userData.foto);
@@ -39,7 +27,7 @@ const UserProfileCard = ({ userData }) => {
       });
 
     if (uploadError) {
-      toast.error("Error al subir la foto.", toastStyle);
+      toastError("Error al subir la foto.");
       console.error(uploadError);
       setUploading(false);
       return;
@@ -55,17 +43,16 @@ const UserProfileCard = ({ userData }) => {
       .eq("id", userData.id);
 
     if (updateError) {
-      toast.error("Error al guardar la URL de la imagen.", toastStyle);
+      toastError("Error al guardar la URL de la imagen.");
       console.error(updateError);
       setUploading(false);
       return;
     }
 
     setFotoUrl(publicUrl.publicUrl);
-    toast.success("Foto cambiada correctamente.", toastStyle);
+    toastSuccess("Foto cambiada correctamente.");
     setTimeout(() => {
-      // Recarga para mostrar la nueva foto en todos los componentes
-      window.location.reload();
+      window.location.reload(); // Recarga para actualizar todos los componentes
     }, 1200);
 
     setUploading(false);

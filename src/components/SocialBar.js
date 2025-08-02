@@ -9,7 +9,7 @@ const SocialBar = () => {
   return (
     <div className="fixed top-0 left-0 right-0 bg-gray-800 z-30">
       <div className="max-w-screen-xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2">
-        {/* Logo: sin <a> adicional */}
+        {/* Logo */}
         <Link
           href="https://www.ugto.mx/editorial/"
           target="_blank"

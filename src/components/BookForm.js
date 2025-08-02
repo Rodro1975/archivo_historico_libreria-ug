@@ -6,7 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 // Funciones de validación y cálculo ISBN
 function isValidISBN(isbn) {
@@ -173,7 +173,7 @@ export default function BookForm() {
     if (/^\d{12}$/.test(raw)) suffix = calculateISBN13CheckDigit(raw);
     else if (/^\d{9}$/.test(raw)) suffix = calculateISBN10CheckDigit(raw);
     else {
-      toast.error(
+      toastError(
         "Para calcular, ingresa primero 9 (ISBN-10) o 12 (ISBN-13) dígitos."
       );
       return;
@@ -220,7 +220,7 @@ export default function BookForm() {
   // Validación depósito legal
   const onSubmit = async (data) => {
     if (data.depositoLegal && !selectedDLPDF) {
-      toast.error("Debes subir el archivo de Depósito Legal.");
+      toastError("Debes subir el archivo de Depósito Legal.");
       return;
     }
     // 0) Usuario autenticado
@@ -229,7 +229,7 @@ export default function BookForm() {
       error: userErr,
     } = await supabase.auth.getUser();
     if (userErr || !user) {
-      toast.error("Debes iniciar sesión para registrar un libro.");
+      toastError("Debes iniciar sesión para registrar un libro.");
       return;
     }
     const usuarioId = user.id;
@@ -242,7 +242,7 @@ export default function BookForm() {
       .single();
     if (errUserRow || !usuarioRow) {
       console.error("No se pudo leer el role del usuario:", errUserRow);
-      toast.error("Error interno al verificar permisos.");
+      toastError("Error interno al verificar permisos.");
       return;
     }
     const usuarioRole = usuarioRow.role; // ej. 'Administrador' o 'Editor'
@@ -283,19 +283,19 @@ export default function BookForm() {
       }
     } catch (e) {
       console.error("Error al subir archivos:", e);
-      toast.error("Error al subir archivos.");
+      toastError("Error al subir archivos.");
       return;
     }
 
     // 2) Extraer selectedAutorId y buscar autor
     const { selectedAutorId, ...libroFields } = data;
     if (!selectedAutorId) {
-      toast.error("Debes seleccionar un autor.");
+      toastError("Debes seleccionar un autor.");
       return;
     }
     const autor = autoresOptions.find((a) => a.id === selectedAutorId);
     if (!autor) {
-      toast.error("Autor no válido");
+      toastError("Autor no válido");
       return;
     }
 
@@ -319,7 +319,7 @@ export default function BookForm() {
 
     if (errLibro) {
       console.error("Error al insertar libro:", errLibro);
-      toast.error("No se pudo registrar el libro.");
+      toastError("No se pudo registrar el libro.");
       return;
     }
 
@@ -348,12 +348,12 @@ export default function BookForm() {
       .insert(relaciones);
     if (errLA) {
       console.error("Error al relacionar autor:", errLA);
-      toast.error("Libro registrado, pero no se pudo vincular autor.");
+      toastError("Libro registrado, pero no se pudo vincular autor.");
       return;
     }
 
     // 5) Éxito
-    toast.success("Libro y autor relacionados correctamente");
+    toastSuccess("Libro y autor relacionados correctamente");
     reset();
     setSelectedFile(null);
     setSelectedPDF(null);
@@ -362,7 +362,6 @@ export default function BookForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      <Toaster position="top-right" />
       {/* formulario de registro de libros*/}
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import WorkBar from "@/components/WorkBar";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import html2canvas from "html2canvas";
 import Image from "next/image";
@@ -15,18 +15,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function RegistroLectores() {
   const [data, setData] = useState([]);
@@ -47,7 +35,7 @@ export default function RegistroLectores() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -55,7 +43,7 @@ export default function RegistroLectores() {
       if (usuario.role === "Administrador") {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -66,7 +54,7 @@ export default function RegistroLectores() {
     const { data, error } = await supabase.from("lectores").select("creado_en");
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -105,7 +93,6 @@ export default function RegistroLectores() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

@@ -2,23 +2,12 @@
 
 import { useState, useEffect } from "react";
 import supabase from "@/lib/supabase";
-import { toast } from "react-hot-toast";
 import Image from "next/image";
 import emailjs from "emailjs-com";
-const toastStyle = {
-  style: {
-    background: "#facc15", // amarillo
-    color: "#1e3a8a", // azul oscuro
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils"; // ✅ implementación correcta
 
-// Cambio 2: Simplificar la inicialización igual que en el código funcional
 emailjs.init("1Z9rEYtD53y4HwJCo"); // Tu Public Key
+
 const ASUNTOS = [
   { value: "", label: "Selecciona el asunto" },
   {
@@ -61,6 +50,7 @@ const ASUNTOS = [
   { value: "Sugerencia de mejora", label: "Sugerencia de mejora" },
   { value: "Otro", label: "Otro (especificar en la descripción)" },
 ];
+
 export default function ModalSoporte({ isOpen = true, onClose, userId }) {
   const [asunto, setAsunto] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -68,7 +58,6 @@ export default function ModalSoporte({ isOpen = true, onClose, userId }) {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState("Usuario");
 
-  // 🔍 Cargar nombre del usuario desde la tabla 'usuarios'
   useEffect(() => {
     const fetchUserName = async () => {
       if (!userId) return;
@@ -88,19 +77,22 @@ export default function ModalSoporte({ isOpen = true, onClose, userId }) {
     };
     fetchUserName();
   }, [userId]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!asunto) {
-      toast.error("Por favor selecciona el asunto.", toastStyle);
+      toastError("Por favor selecciona el asunto.");
       return;
     }
     if (!prioridad) {
-      toast.error("Por favor selecciona la prioridad.", toastStyle);
+      toastError("Por favor selecciona la prioridad.");
       return;
     }
+
     setLoading(true);
+
     try {
-      // Primero guardar en Supabase
       const { error } = await supabase.from("soporte").insert({
         usuario_id: userId,
         asunto,
@@ -108,36 +100,36 @@ export default function ModalSoporte({ isOpen = true, onClose, userId }) {
         prioridad,
         estado: "pendiente",
       });
+
       if (error) {
-        toast.error("Error al guardar en la base de datos.", toastStyle);
+        toastError("Error al guardar en la base de datos.");
         setLoading(false);
         return;
       }
-      // Cambio 3: Envío de correo con parámetros correctos (sin to_email)
-      // ✅ CÓDIGO CORREGIDO
+
       await emailjs.send("service_t0p7qz9", "template_r7bizxo", {
         name: userName,
         title: asunto,
         prioridad: prioridad,
         descripcion: descripcion,
-        email: "rodrigoivanordonezchavez@gmail.com", // ← AGREGADO
+        email: "rodrigoivanordonezchavez@gmail.com", // correo destino
       });
-      toast.success("Solicitud enviada y correo notificado.", toastStyle);
+
+      toastSuccess("Solicitud enviada y correo notificado.");
       setAsunto("");
       setDescripcion("");
       setPrioridad("");
       onClose();
     } catch (emailError) {
       console.error("Error al enviar correo:", emailError);
-      toast.error(
-        "Se guardó en soporte, pero falló el envío del correo.",
-        toastStyle
-      );
+      toastError("Se guardó en soporte, pero falló el envío del correo.");
     } finally {
       setLoading(false);
     }
   };
+
   if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="text-blue bg-white p-8 rounded-2xl w-full max-w-md shadow-xl border-4 border-yellow relative">

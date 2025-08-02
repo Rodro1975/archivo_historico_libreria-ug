@@ -1,10 +1,9 @@
 //components/PanelAdmin.js
-"use client"; // Asegúrate de que este es un Client Component
+"use client";
 
 import React from "react";
-import { FaUsers, FaBook, FaFileAlt, FaChartBar } from "react-icons/fa"; // Importa los iconos
-import Image from "next/image"; // Asegúrate de importar el componente Image
-import Link from "next/link"; // Importa Link para la navegación
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const PanelAdmin = () => {
@@ -210,7 +209,7 @@ const PanelAdmin = () => {
         {/* Tarjeta para Visualización de Soporte */}
         <div
           className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
-          onClick={() => console.log("Visualización de Estadísticas")}
+          onClick={() => console.log("Gestión de soporte")}
         >
           <Image
             src="/images/soporte.png"
@@ -220,9 +219,11 @@ const PanelAdmin = () => {
             className="mr-4"
           />
           <div>
-            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
-              Soporte
-            </h2>
+            <Link href="/mostrarSoporte">
+              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+                Soporte
+              </h2>
+            </Link>
             <p className="text-blue text-sm">
               Gestiona las solicitudes de soporte.
             </p>

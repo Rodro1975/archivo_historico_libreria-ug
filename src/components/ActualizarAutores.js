@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
   const {
@@ -79,11 +79,11 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
         .eq("id", autor.id);
 
       if (updateError) {
-        toast.error("Error al actualizar autor.");
+        toastError("Error al actualizar autor.");
         return;
       }
 
-      toast.success("Autor actualizado correctamente.");
+      toastSuccess("Autor actualizado correctamente.");
 
       // Espera 1 segundo para que el toast se muestre antes de cerrar
       setTimeout(() => {
@@ -91,14 +91,13 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
         onClose();
       }, 1000);
     } catch (err) {
-      toast.error("Ocurrió un error inesperado.");
+      toastError("Ocurrió un error inesperado.");
       console.error(err);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <Toaster position="top-right" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

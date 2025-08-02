@@ -2,20 +2,8 @@
 
 import React, { useState } from "react";
 import supabase from "@/lib/supabase";
-import { toast } from "react-hot-toast";
 import Image from "next/image";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const ModalCambioContrasena = ({ isOpen, onClose }) => {
   const [passwords, setPasswords] = useState({
@@ -46,28 +34,22 @@ const ModalCambioContrasena = ({ isOpen, onClose }) => {
 
   const validatePasswords = () => {
     if (!passwords.current.trim()) {
-      toast.error("Ingresa tu contraseña actual", toastStyle);
+      toastError("Ingresa tu contraseña actual");
       return false;
     }
 
     if (passwords.new.length < 6) {
-      toast.error(
-        "La nueva contraseña debe tener al menos 6 caracteres",
-        toastStyle
-      );
+      toastError("La nueva contraseña debe tener al menos 6 caracteres");
       return false;
     }
 
     if (passwords.new !== passwords.confirm) {
-      toast.error("Las nuevas contraseñas no coinciden", toastStyle);
+      toastError("Las nuevas contraseñas no coinciden");
       return false;
     }
 
     if (passwords.current === passwords.new) {
-      toast.error(
-        "La nueva contraseña debe ser diferente a la actual",
-        toastStyle
-      );
+      toastError("La nueva contraseña debe ser diferente a la actual");
       return false;
     }
 
@@ -82,19 +64,17 @@ const ModalCambioContrasena = ({ isOpen, onClose }) => {
     setLoading(true);
 
     try {
-      // Verificar contraseña actual intentando hacer sign in
       const {
         data: { user },
         error: currentPasswordError,
       } = await supabase.auth.getUser();
 
       if (currentPasswordError || !user) {
-        toast.error("Error de autenticación", toastStyle);
+        toastError("Error de autenticación");
         setLoading(false);
         return;
       }
 
-      // Actualizar la contraseña
       const { error: updateError } = await supabase.auth.updateUser({
         password: passwords.new,
       });
@@ -102,41 +82,34 @@ const ModalCambioContrasena = ({ isOpen, onClose }) => {
       if (updateError) {
         console.error("Error al actualizar contraseña:", updateError);
 
-        // Manejar errores específicos
         if (updateError.message.includes("Password should be at least")) {
-          toast.error(
-            "La contraseña es muy débil. Debe tener al menos 6 caracteres",
-            toastStyle
+          toastError(
+            "La contraseña es muy débil. Debe tener al menos 6 caracteres"
           );
         } else if (
           updateError.message.includes("Unable to validate current password")
         ) {
-          toast.error("La contraseña actual es incorrecta", toastStyle);
+          toastError("La contraseña actual es incorrecta");
         } else {
-          toast.error(
-            "Error al cambiar contraseña. Inténtalo de nuevo",
-            toastStyle
-          );
+          toastError("Error al cambiar contraseña. Inténtalo de nuevo");
         }
+
         setLoading(false);
         return;
       }
 
-      // Éxito
-      toast.success("✅ Contraseña actualizada exitosamente", toastStyle);
+      toastSuccess("✅ Contraseña actualizada exitosamente");
 
-      // Limpiar formulario
       setPasswords({
         current: "",
         new: "",
         confirm: "",
       });
 
-      // Cerrar modal
       onClose();
     } catch (error) {
       console.error("Error inesperado:", error);
-      toast.error("Error inesperado. Inténtalo de nuevo", toastStyle);
+      toastError("Error inesperado. Inténtalo de nuevo");
     } finally {
       setLoading(false);
     }

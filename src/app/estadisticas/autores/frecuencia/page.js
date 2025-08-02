@@ -13,21 +13,9 @@ import {
   Cell,
   LabelList,
 } from "recharts";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import html2canvas from "html2canvas";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function AutoresFrecuencia() {
   const [data, setData] = useState([]);
@@ -48,7 +36,7 @@ export default function AutoresFrecuencia() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -56,7 +44,7 @@ export default function AutoresFrecuencia() {
       if (["Administrador", "Editor"].includes(usuario.role)) {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -69,7 +57,7 @@ export default function AutoresFrecuencia() {
       .select("nombre_completo");
 
     if (error) {
-      toast.error("Error al cargar autores");
+      toastError("Error al cargar autores");
       return;
     }
 
@@ -108,7 +96,6 @@ export default function AutoresFrecuencia() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
       <div className="flex flex-col items-center justify-center mb-8">
         <Image

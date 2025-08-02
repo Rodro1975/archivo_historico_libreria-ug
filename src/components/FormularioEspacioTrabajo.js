@@ -2,21 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Toaster, toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import supabase from "@/lib/supabase";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 export default function FormularioEspacioTrabajo({ onClose }) {
   const [loading, setLoading] = useState(false);
@@ -36,7 +24,7 @@ export default function FormularioEspacioTrabajo({ onClose }) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error("Debes iniciar sesión para realizar esta acción", toastStyle);
+      toastError("Debes iniciar sesión para realizar esta acción");
       setLoading(false);
       return;
     }
@@ -48,12 +36,11 @@ export default function FormularioEspacioTrabajo({ onClose }) {
       .single();
 
     if (lectorError || !lectorData) {
-      toast.error("No se pudo obtener el nombre del lector", toastStyle);
+      toastError("No se pudo obtener el nombre del lector");
       setLoading(false);
       return;
     }
 
-    // Construir detalle con la información del formulario
     const detalle = `Solicitud de espacio de trabajo:
 Fecha solicitada: ${data.fecha}
 Duración (horas): ${data.duracion}
@@ -72,9 +59,9 @@ Comentarios adicionales: ${data.comentarios || "Ninguno"}`;
 
     setLoading(false);
     if (error) {
-      toast.error(`Error al enviar la solicitud: ${error.message}`, toastStyle);
+      toastError(`Error al enviar la solicitud: ${error.message}`);
     } else {
-      toast.success("Solicitud enviada correctamente", toastStyle);
+      toastSuccess("Solicitud enviada correctamente");
       reset();
       onClose();
     }
@@ -82,7 +69,6 @@ Comentarios adicionales: ${data.comentarios || "Ninguno"}`;
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mx-10">
-      <Toaster position="top-center" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-3xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

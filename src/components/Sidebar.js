@@ -14,8 +14,9 @@ import {
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import NotificacionesDropdown from "./NotificacionesDropdown";
-import { toast, Toaster } from "react-hot-toast";
 import ModalCorreo from "./ModalCorreo";
+import { toast } from "react-hot-toast"; // Solo para el toast interactivo
+import { toastSuccess, toastError } from "@/lib/toastUtils"; // Estandarizados
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +28,6 @@ const Sidebar = () => {
   const [modalCorreoOpen, setModalCorreoOpen] = useState(false);
   const router = useRouter();
 
-  // Obtener el rol del usuario autenticado y su ID
   useEffect(() => {
     const fetchUserRole = async () => {
       setLoading(true);
@@ -42,8 +42,6 @@ const Sidebar = () => {
           return;
         }
 
-        console.log("Usuario autenticado (UUID):", user.id);
-
         const { data, error } = await supabase
           .from("usuarios")
           .select("role")
@@ -54,7 +52,6 @@ const Sidebar = () => {
           console.error("Error obteniendo rol del usuario:", error);
           setRole(null);
         } else {
-          console.log("Rol obtenido:", data.role);
           setRole(data.role);
         }
       } catch (error) {
@@ -67,7 +64,6 @@ const Sidebar = () => {
     fetchUserRole();
   }, []);
 
-  // Obtener la cantidad inicial de notificaciones no leídas según el rol
   useEffect(() => {
     const fetchNotificationCount = async () => {
       try {
@@ -75,12 +71,7 @@ const Sidebar = () => {
           data: { user },
         } = await supabase.auth.getUser();
 
-        if (!user || !role) {
-          console.error("No se encontró usuario autenticado o rol indefinido");
-          return;
-        }
-
-        console.log("Obteniendo notificaciones para user_id:", user.id);
+        if (!user || !role) return;
 
         let query = supabase
           .from("notificaciones")
@@ -96,9 +87,7 @@ const Sidebar = () => {
 
         const { data, error } = await query;
 
-        if (error) {
-          console.error("Error obteniendo notificaciones:", error);
-        } else {
+        if (!error) {
           setNotificationCount(data.length);
         }
       } catch (error) {
@@ -106,19 +95,13 @@ const Sidebar = () => {
       }
     };
 
-    if (role) {
-      fetchNotificationCount();
-    }
+    if (role) fetchNotificationCount();
   }, [role]);
 
-  // Suscribirse a cambios en la tabla "notificaciones" con filtrado según el rol
   useEffect(() => {
     let unsubscribe = null;
 
-    const handleNewNotification = async (payload) => {
-      console.log("Nueva notificación recibida:", payload);
-
-      // Refrescar el conteo completo para evitar desincronización
+    const handleNewNotification = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -139,9 +122,7 @@ const Sidebar = () => {
 
       const { data, error } = await query;
 
-      if (error) {
-        console.error("Error refrescando notificaciones:", error);
-      } else {
+      if (!error) {
         setNotificationCount(data.length);
       }
     };
@@ -153,13 +134,10 @@ const Sidebar = () => {
 
       if (!user || !role) return;
 
-      let filter = "";
-
-      if (role === "Administrador") {
-        filter = "type.in.(usuarios,libros,autores)";
-      } else if (role === "Editor") {
-        filter = "type.in.(libros,autores)";
-      }
+      const filter =
+        role === "Administrador"
+          ? "type.in.(usuarios,libros,autores)"
+          : "type.in.(libros,autores)";
 
       const channel = supabase
         .channel("notificaciones")
@@ -169,28 +147,22 @@ const Sidebar = () => {
             event: "INSERT",
             schema: "public",
             table: "notificaciones",
-            filter: filter,
+            filter,
           },
           handleNewNotification
         )
         .subscribe();
 
-      unsubscribe = () => {
-        console.log("Desuscribiendo canal...");
-        channel.unsubscribe();
-      };
+      unsubscribe = () => channel.unsubscribe();
     };
 
-    if (role) {
-      subscribeToNotifications();
-    }
+    if (role) subscribeToNotifications();
 
     return () => {
       if (unsubscribe) unsubscribe();
     };
   }, [role]);
 
-  //Obtener el correo del usuario autenticado
   useEffect(() => {
     const fetchUserEmail = async () => {
       const {
@@ -201,22 +173,16 @@ const Sidebar = () => {
     fetchUserEmail();
   }, []);
 
-  // Función para obtener la URL del webmail según el correo
   const getWebmailUrl = (email) => {
     if (!email) return "#";
     const domain = email.split("@")[1]?.toLowerCase() || "";
     if (domain === "ugto.mx") return "https://outlook.office.com/mail/";
     if (domain === "gmail.com") return "https://mail.google.com/";
-    // Puedes agregar más dominios si lo necesitas
     return "https://outlook.office.com/mail/";
   };
 
-  // Botón de hamburguesa para abrir/cerrar el menú lateral
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
-  // Cerrar sesión
   const handleLogout = async () => {
     toast(
       (t) => (
@@ -225,14 +191,14 @@ const Sidebar = () => {
           <div className="flex gap-2">
             <button
               onClick={async () => {
-                toast.dismiss(t.id); // Cierra el toast de confirmación
+                toast.dismiss(t.id);
                 const { error } = await supabase.auth.signOut();
 
                 if (error) {
-                  toast.error("Error al cerrar sesión.");
+                  toastError("Error al cerrar sesión.");
                   console.error("Error al cerrar sesión:", error);
                 } else {
-                  toast.success("Sesión cerrada exitosamente.");
+                  toastSuccess("Sesión cerrada exitosamente.");
                   router.push("/login");
                 }
               }}
@@ -250,12 +216,11 @@ const Sidebar = () => {
         </span>
       ),
       { duration: 10000 }
-    ); // Toast se mantiene 10 segundos si no se responde
+    );
   };
 
   return (
     <div>
-      <Toaster position="top-right" />
       <button
         className="fixed top-4 left-4 z-50 text-3xl text-white bg-[var(--color-blue)] p-2 rounded-md shadow-md"
         onClick={toggleSidebar}

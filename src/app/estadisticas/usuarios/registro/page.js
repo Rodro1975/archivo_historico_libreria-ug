@@ -11,7 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import Image from "next/image";
@@ -28,7 +28,7 @@ export default function RegistroUsuariosPage() {
       .select("fecha_creacion");
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -64,7 +64,7 @@ export default function RegistroUsuariosPage() {
       .single();
 
     if (!usuario) {
-      toast.error("No se pudo verificar el rol");
+      toastError("No se pudo verificar el rol");
       return;
     }
 
@@ -72,7 +72,7 @@ export default function RegistroUsuariosPage() {
     if (usuario.role === "Administrador") {
       cargarDatos();
     } else {
-      toast.error("Acceso denegado");
+      toastError("Acceso denegado");
     }
   }, [cargarDatos]);
 
@@ -101,7 +101,6 @@ export default function RegistroUsuariosPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

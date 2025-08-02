@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const ActualizarUsuarios = ({ usuario, onClose, onUpdate }) => {
   const {
@@ -27,9 +27,9 @@ const ActualizarUsuarios = ({ usuario, onClose, onUpdate }) => {
       .eq("id", usuario.id);
 
     if (error) {
-      toast.error("Error al actualizar el usuario.");
+      toastError("Error al actualizar el usuario.");
     } else {
-      toast.success("Usuario actualizado correctamente.");
+      toastSuccess("Usuario actualizado correctamente.");
       setTimeout(() => {
         onUpdate();
         onClose();
@@ -39,7 +39,6 @@ const ActualizarUsuarios = ({ usuario, onClose, onUpdate }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <Toaster position="top-right" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

@@ -2,21 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Toaster, toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import supabase from "@/lib/supabase";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 export default function FormularioLibroDigital({ onClose }) {
   const [libros, setLibros] = useState([]);
@@ -39,7 +27,7 @@ export default function FormularioLibroDigital({ onClose }) {
         .order("titulo", { ascending: true });
 
       if (error) {
-        toast.error("Error al cargar los libros", toastStyle);
+        toastError("Error al cargar los libros");
         console.error(error);
       } else {
         setLibros(data);
@@ -58,12 +46,11 @@ export default function FormularioLibroDigital({ onClose }) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error("Debes iniciar sesión para realizar esta acción", toastStyle);
+      toastError("Debes iniciar sesión para realizar esta acción");
       setLoading(false);
       return;
     }
 
-    // Obtener nombre del lector desde la tabla lectores usando el campo id
     const { data: lectorData, error: lectorError } = await supabase
       .from("lectores")
       .select("nombre")
@@ -71,12 +58,11 @@ export default function FormularioLibroDigital({ onClose }) {
       .single();
 
     if (lectorError || !lectorData) {
-      toast.error("No se pudo obtener el nombre del lector", toastStyle);
+      toastError("No se pudo obtener el nombre del lector");
       setLoading(false);
       return;
     }
 
-    // Construir detalle con libro y motivo
     const detalle = `Libro digital solicitado: ${data.libro_id}. Motivo: ${data.motivo}`;
 
     const { error } = await supabase.from("solicitudes").insert(
@@ -91,9 +77,9 @@ export default function FormularioLibroDigital({ onClose }) {
 
     setLoading(false);
     if (error) {
-      toast.error(`Error al enviar la solicitud: ${error.message}`, toastStyle);
+      toastError(`Error al enviar la solicitud: ${error.message}`);
     } else {
-      toast.success("Solicitud enviada correctamente", toastStyle);
+      toastSuccess("Solicitud enviada correctamente");
       reset();
       onClose();
     }
@@ -101,7 +87,6 @@ export default function FormularioLibroDigital({ onClose }) {
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mx-10">
-      <Toaster position="top-center" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

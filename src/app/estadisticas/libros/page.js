@@ -13,21 +13,9 @@ import {
 } from "recharts";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import html2canvas from "html2canvas";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function EstadisticasLibros() {
   const [data, setData] = useState([]);
@@ -49,7 +37,7 @@ export default function EstadisticasLibros() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -57,7 +45,7 @@ export default function EstadisticasLibros() {
       if (["Administrador", "Editor"].includes(usuario.role)) {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -70,7 +58,7 @@ export default function EstadisticasLibros() {
       .select("anioPublicacion");
 
     if (error) {
-      toast.error("Error al cargar libros");
+      toastError("Error al cargar libros");
       return;
     }
 
@@ -108,7 +96,6 @@ export default function EstadisticasLibros() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
       <div className="flex flex-col items-center justify-center mb-8">
         <Image

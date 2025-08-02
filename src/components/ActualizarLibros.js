@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
   const {
@@ -103,22 +103,21 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
         .eq("id_libro", libro.id_libro);
 
       if (error) {
-        toast.error("Error al actualizar el libro.");
+        toastError("Error al actualizar el libro.");
         return;
       }
 
-      toast.success("Libro actualizado correctamente.");
+      toastSuccess("Libro actualizado correctamente.");
       onUpdate();
       onClose();
     } catch (err) {
-      toast.error(err.message || "Ocurrió un error inesperado.");
+      toastError(err.message || "Ocurrió un error inesperado.");
       console.error(err);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <Toaster position="top-right" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

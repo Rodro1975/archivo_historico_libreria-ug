@@ -6,19 +6,7 @@ import supabase from "@/lib/supabase";
 import Sidebar from "@/components/Sidebar";
 import PanelAdmin from "@/components/PanelAdmin";
 import PanelEditor from "@/components/PanelEditor";
-import { toast, Toaster } from "react-hot-toast";
-
-const toastStyle = {
-  style: {
-    background: "#facc15", // Naranja
-    color: "#1e3a8a", // Azul
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a", // Azul
-    secondary: "#facc15", // Naranja
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
@@ -34,7 +22,8 @@ const DashboardPage = () => {
       } = await supabase.auth.getSession();
 
       if (sessionError || !session) {
-        toast.error("Debes iniciar sesión para continuar", toastStyle);
+        toastError("Debes iniciar sesión para continuar");
+
         router.push("/login");
         setLoading(false);
         return;
@@ -49,7 +38,8 @@ const DashboardPage = () => {
         .maybeSingle();
 
       if (userError || !userData) {
-        toast.error("Usuario no autorizado o no encontrado", toastStyle);
+        toastError("Usuario no autorizado o no encontrado");
+
         router.push("/login");
         setLoading(false);
         return;
@@ -57,9 +47,12 @@ const DashboardPage = () => {
 
       setUserData(userData);
 
-      if (!toastShown) {
-        toast.success("Inicio de sesión exitoso", toastStyle);
-        setToastShown(true);
+      // ✅ Mostrar el toast solo si vienes del login
+      const cameFromLogin =
+        performance.getEntriesByType("navigation")[0].type === "navigate";
+
+      if (cameFromLogin) {
+        toastSuccess("Inicio de sesión exitoso");
       }
 
       setLoading(false);
@@ -72,7 +65,6 @@ const DashboardPage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <Toaster position="top-right" />
       <Sidebar />
       <header className="bg-blue text-white py-6 text-center">
         {userData?.foto && (

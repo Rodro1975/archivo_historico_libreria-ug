@@ -3,22 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import PanelReader from "@/components/PanelReader";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-    padding: "16px",
-    minWidth: "300px",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 const LectorDashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -33,7 +19,7 @@ const LectorDashboard = () => {
       } = await supabase.auth.getSession();
 
       if (error || !session) {
-        toast.error("Debes iniciar sesión", toastStyle);
+        toastError("Debes iniciar sesión", toastStyle);
         router.push("/login");
         return;
       }
@@ -149,9 +135,6 @@ const LectorDashboard = () => {
           return;
         }
 
-        // El resto del código sigue igual...
-        // [El código para verificar/crear lector y mostrar bienvenida se mantiene igual]
-
         // Revisar si ya es lector
         const { data: lectorExistente } = await supabase
           .from("lectores")
@@ -178,7 +161,7 @@ const LectorDashboard = () => {
 
           if (insertError) {
             console.error("Error al insertar lector:", insertError);
-            toast.error("No se pudo registrar como lector", toastStyle);
+            toastError("No se pudo registrar como lector", toastStyle);
             router.push("/login");
             return;
           }
@@ -194,7 +177,7 @@ const LectorDashboard = () => {
         toast.success("Bienvenido lector", toastStyle);
       } catch (e) {
         console.error("Error general al gestionar sesión:", e);
-        toast.error("Error al cargar el perfil", toastStyle);
+        toastError("Error al cargar el perfil", toastStyle);
         router.push("/login");
       } finally {
         setLoading(false);
@@ -208,7 +191,6 @@ const LectorDashboard = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <Toaster position="top-right" />
       <header className="bg-blue text-white py-6 text-center">
         <h1 className="text-3xl font-bold">
           Bienvenido, {userData?.primer_nombre}

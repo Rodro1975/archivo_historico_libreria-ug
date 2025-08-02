@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import html2canvas from "html2canvas";
 import {
@@ -35,7 +35,7 @@ export default function SolicitudesPorTipo() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -43,7 +43,7 @@ export default function SolicitudesPorTipo() {
       if (usuario.role === "Administrador") {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -54,7 +54,7 @@ export default function SolicitudesPorTipo() {
     const { data, error } = await supabase.from("solicitudes").select("tipo");
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -91,7 +91,6 @@ export default function SolicitudesPorTipo() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -24,9 +24,9 @@ export default function RecuperarPassword() {
     setLoading(false);
 
     if (error) {
-      toast.error(`Error: ${error.message}`);
+      toastError(`Error: ${error.message}`);
     } else {
-      toast.success("Revisa tu correo para restablecer tu contraseña", {
+      toastSuccess("Revisa tu correo para restablecer tu contraseña", {
         duration: 6000,
       });
       setEmail("");
@@ -35,7 +35,6 @@ export default function RecuperarPassword() {
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center bg-gray-50 px-4">
-      <Toaster position="top-center" />
       <div className="bg-white max-w-md w-full rounded-xl shadow-lg p-6">
         <div className="text-center">
           <Image

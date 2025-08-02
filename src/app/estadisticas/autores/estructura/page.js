@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import WorkBar from "@/components/WorkBar";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import html2canvas from "html2canvas";
 import supabase from "@/lib/supabase";
@@ -16,18 +16,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function EstructuraAutores() {
   const [data, setData] = useState([]);
@@ -48,7 +36,7 @@ export default function EstructuraAutores() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -56,7 +44,7 @@ export default function EstructuraAutores() {
       if (["Administrador", "Editor"].includes(usuario.role)) {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -67,7 +55,7 @@ export default function EstructuraAutores() {
     const { data, error } = await supabase.rpc("autores_por_estructura");
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -113,7 +101,6 @@ export default function EstructuraAutores() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

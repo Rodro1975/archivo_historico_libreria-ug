@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 // Esquema de validación
 const AutorSchema = z.object({
@@ -108,7 +108,7 @@ export default function AutorForm() {
           .eq("id", usuarioId);
         if (updateErr) {
           console.error("Error actualizando es_autor en usuarios:", updateErr);
-          toast.error(
+          toastError(
             "Autor registrado, pero no se pudo actualizar el estado en usuarios."
           );
         } else {
@@ -116,19 +116,18 @@ export default function AutorForm() {
         }
       }
 
-      toast.success("Autor registrado exitosamente.");
+      toastSuccess("Autor registrado exitosamente.");
       reset();
       // 4) recarga la lista de usuarios en el padre
       refreshUsuarios();
     } catch (err) {
       console.error("Error registrando autor:", err);
-      toast.error(`Error: ${err.message}`);
+      toastError(`Error: ${err.message}`);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      <Toaster position="top-right" />
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">
           <div className="px-5 py-7 text-center">

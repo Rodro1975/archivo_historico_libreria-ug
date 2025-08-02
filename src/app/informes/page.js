@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import {
   FaBook,
@@ -16,18 +16,6 @@ import {
   FaUser,
 } from "react-icons/fa";
 import WorkBar from "@/components/WorkBar";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function InformesInicio() {
   const router = useRouter();
@@ -51,7 +39,7 @@ export default function InformesInicio() {
         .single();
 
       if (error || !data) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         router.push("/dashboard");
         return;
       }
@@ -140,7 +128,6 @@ export default function InformesInicio() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
       {/* Logo y título centrados */}
       <div className="flex flex-col items-center justify-center mb-10">

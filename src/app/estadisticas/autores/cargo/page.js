@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import WorkBar from "@/components/WorkBar";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import html2canvas from "html2canvas";
 import supabase from "@/lib/supabase";
@@ -17,18 +17,6 @@ import {
   LabelList,
 } from "recharts";
 
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
-
 export default function AutoresPorCargoPage() {
   const [data, setData] = useState(null);
 
@@ -40,7 +28,7 @@ export default function AutoresPorCargoPage() {
         .neq("cargo", null);
 
       if (error) {
-        toast.error("Error al cargar datos de cargos");
+        toastError("Error al cargar datos de cargos");
         return;
       }
 
@@ -73,7 +61,6 @@ export default function AutoresPorCargoPage() {
 
   return (
     <div className="min-h-screen p-6 max-w-6xl mx-auto bg-blue">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
 
       <div className="flex flex-col items-center justify-center mb-8">

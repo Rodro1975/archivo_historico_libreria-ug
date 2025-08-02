@@ -8,7 +8,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const LoginForm = () => {
   const {
@@ -30,10 +30,10 @@ const LoginForm = () => {
     });
 
     if (error) {
-      toast.error(`Error: ${error.message}`);
+      toastError(`Error: ${error.message}`);
       setError(error.message);
     } else {
-      toast.success("Inicio de sesión exitoso");
+      toastSuccess("Inicio de sesión exitoso");
       router.push("/dashboard");
     }
 
@@ -42,7 +42,6 @@ const LoginForm = () => {
 
   return (
     <>
-      <Toaster position="top-right" />
       <NavBar />
       <div className="flex flex-col min-h-screen">
         <div className="flex flex-1 items-center justify-center py-10">

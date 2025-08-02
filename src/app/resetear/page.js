@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
@@ -21,13 +21,13 @@ export default function ResetearPassword() {
             .recoverSessionFromUrl(window.location.href)
             .then(({ data, error }) => {
               if (error) {
-                toast.error("Error al recuperar la sesión");
+                toastError("Error al recuperar la sesión");
               } else {
-                toast.success("✅ Puedes cambiar tu contraseña");
+                toastSuccess("✅ Puedes cambiar tu contraseña");
               }
             });
         } else {
-          toast.success("✅ Puedes cambiar tu contraseña");
+          toastSuccess("✅ Puedes cambiar tu contraseña");
         }
       });
     }
@@ -37,7 +37,7 @@ export default function ResetearPassword() {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      toast.error("❌ Las contraseñas no coinciden");
+      toastError("❌ Las contraseñas no coinciden");
       return;
     }
 
@@ -46,16 +46,15 @@ export default function ResetearPassword() {
     setLoading(false);
 
     if (error) {
-      toast.error(`Error: ${error.message}`);
+      toastError(`Error: ${error.message}`);
     } else {
-      toast.success("✅ Contraseña actualizada con éxito");
+      toastSuccess("✅ Contraseña actualizada con éxito");
       router.push("/login");
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center bg-gray-50 px-4">
-      <Toaster position="top-center" />
       <div className="bg-white max-w-md w-full rounded-xl shadow-lg p-6">
         <h1 className="text-blue text-2xl font-bold mb-4 text-center">
           Restablecer Contraseña

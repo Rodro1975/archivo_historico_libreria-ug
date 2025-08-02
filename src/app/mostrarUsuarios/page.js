@@ -5,7 +5,7 @@ import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const MostrarUsuariosPage = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -78,9 +78,9 @@ const MostrarUsuariosPage = () => {
     });
 
     if (error) {
-      toast.error("Error al eliminar usuario.");
+      toastError("Error al eliminar usuario.");
     } else {
-      toast.success("Usuario eliminado correctamente.");
+      toastSuccess("Usuario eliminado correctamente.");
       fetchUsuarios();
     }
 

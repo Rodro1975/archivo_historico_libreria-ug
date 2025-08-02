@@ -9,25 +9,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import Image from "next/image";
 import html2canvas from "html2canvas";
-
-const COLORS = ["#1e3a8a", "#facc15", "#fb923c", "#22c55e", "#ef4444"];
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function UsuariosPorRolPage() {
   const [data, setData] = useState([]);
@@ -48,7 +34,7 @@ export default function UsuariosPorRolPage() {
         .single();
 
       if (!usuario) {
-        toast.error("No se pudo verificar el rol");
+        toastError("No se pudo verificar el rol");
         return;
       }
 
@@ -56,7 +42,7 @@ export default function UsuariosPorRolPage() {
       if (["Administrador"].includes(usuario.role)) {
         cargarDatos();
       } else {
-        toast.error("Acceso denegado");
+        toastError("Acceso denegado");
       }
     };
 
@@ -67,7 +53,7 @@ export default function UsuariosPorRolPage() {
     const { data, error } = await supabase.from("usuarios").select("role");
 
     if (error) {
-      toast.error("Error al cargar datos");
+      toastError("Error al cargar datos");
       return;
     }
 
@@ -104,9 +90,7 @@ export default function UsuariosPorRolPage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <Toaster position="top-right" toastOptions={toastStyle} />
       <WorkBar />
-
       <div className="flex flex-col items-center justify-center mb-8">
         <Image
           src="/images/editorial-ug.png"
