@@ -35,6 +35,8 @@ export default function Home() {
       <Head>
         <title>Página Principal - Archivo Histórico Editorial UG</title>
       </Head>
+      {/* Barra de navegación */}
+      <NavBar />
 
       {/* Hero*/}
       <section
@@ -88,8 +90,7 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      {/* Barra de navegación */}
-      <NavBar />
+
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
       <section className="collections-highlighted py-8">
