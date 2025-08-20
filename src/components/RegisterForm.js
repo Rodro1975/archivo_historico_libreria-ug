@@ -7,20 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
-import { toast, Toaster } from "react-hot-toast"; // Nuevo import
-
-// Estilos de toast consistentes con el proyecto
-const toastStyle = {
-  style: {
-    background: "#facc15", // yellow
-    color: "#1e3a8a", // blue
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a", // blue
-    secondary: "#facc15", // yellow
-  },
-};
+import { toastSuccess, toastError } from "@/lib/toastUtils";
+import { toast } from "react-hot-toast";
 
 // Esquema de validación con Zod
 const RegisterSchema = z
@@ -94,7 +82,7 @@ export default function RegisterForm() {
     try {
       // Validar que se haya seleccionado una foto antes de proceder
       if (!selectedFile) {
-        toast.error(
+        toastError(
           "Por favor selecciona una foto antes de continuar",
           toastStyle
         );
@@ -116,13 +104,13 @@ export default function RegisterForm() {
 
         // Manejar errores específicos de autenticación
         if (authError.message.includes("already registered")) {
-          toast.error("Este email ya está registrado", toastStyle);
+          toastError("Este email ya está registrado", toastStyle);
         } else if (authError.message.includes("Invalid email")) {
-          toast.error("El formato del email no es válido", toastStyle);
+          toastError("El formato del email no es válido", toastStyle);
         } else if (authError.message.includes("Password")) {
-          toast.error("La contraseña no cumple con los requisitos", toastStyle);
+          toastError("La contraseña no cumple con los requisitos", toastStyle);
         } else {
-          toast.error(
+          toastError(
             "Error al crear la cuenta: " + authError.message,
             toastStyle
           );
@@ -153,14 +141,14 @@ export default function RegisterForm() {
 
         // Manejar errores específicos de storage
         if (storageError.message.includes("size")) {
-          toast.error("La foto es demasiado grande. Máximo 5MB", toastStyle);
+          toastError("La foto es demasiado grande. Máximo 5MB", toastStyle);
         } else if (storageError.message.includes("format")) {
-          toast.error(
+          toastError(
             "Formato de foto no válido. Usa JPG, PNG o JPEG",
             toastStyle
           );
         } else {
-          toast.error(
+          toastError(
             "Error al subir la foto: " + storageError.message,
             toastStyle
           );
@@ -205,11 +193,11 @@ export default function RegisterForm() {
 
         // Manejar errores específicos de base de datos
         if (usuarioError.message.includes("duplicate")) {
-          toast.error("Ya existe un usuario con este email", toastStyle);
+          toastError("Ya existe un usuario con este email", toastStyle);
         } else if (usuarioError.message.includes("permission")) {
-          toast.error("No tienes permisos para crear usuarios", toastStyle);
+          toastError("No tienes permisos para crear usuarios", toastStyle);
         } else {
-          toast.error(
+          toastError(
             "Error al guardar los datos: " + usuarioError.message,
             toastStyle
           );
@@ -224,7 +212,7 @@ export default function RegisterForm() {
       console.log("Usuario creado con éxito:", usuarioData);
 
       toast.dismiss("registro");
-      toast.success(
+      toastSuccess(
         `✅ Usuario ${data.primer_nombre} ${data.apellido_paterno} registrado exitosamente`,
         toastStyle
       );
@@ -235,7 +223,7 @@ export default function RegisterForm() {
 
       // Opcional: mostrar mensaje adicional con instrucciones
       setTimeout(() => {
-        toast.success(
+        toastSuccess(
           "El usuario puede iniciar sesión con su email y contraseña",
           toastStyle
         );
@@ -243,7 +231,7 @@ export default function RegisterForm() {
     } catch (error) {
       console.error("Error inesperado:", error);
       toast.dismiss("registro");
-      toast.error("Error inesperado al registrar usuario", toastStyle);
+      toastError("Error inesperado al registrar usuario", toastStyle);
     } finally {
       setLoading(false);
     }
@@ -251,9 +239,6 @@ export default function RegisterForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      {/* Toaster para mostrar notificaciones */}
-      <Toaster position="top-center" />
-
       {/* formulario de registro */}
       <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
         <div className="p-10 xs:p-0 mx-auto w-full">

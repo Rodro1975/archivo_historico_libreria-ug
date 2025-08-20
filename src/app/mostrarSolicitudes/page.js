@@ -4,21 +4,9 @@ import React, { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import Footer from "@/components/Footer";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import { FaSearch } from "react-icons/fa";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function MostrarSolicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -35,7 +23,7 @@ export default function MostrarSolicitudes() {
       .order("creado_en", { ascending: false });
 
     if (error) {
-      toast.error("Error al cargar solicitudes", toastStyle);
+      toastError("Error al cargar solicitudes", toastStyle);
     } else {
       setSolicitudes(data);
       setFiltered(data);
@@ -73,9 +61,9 @@ export default function MostrarSolicitudes() {
     setLoading(false);
 
     if (error) {
-      toast.error("No se pudo actualizar la solicitud", toastStyle);
+      toastError("No se pudo actualizar la solicitud", toastStyle);
     } else {
-      toast.success("Solicitud actualizada", toastStyle);
+      toastSuccess("Solicitud actualizada", toastStyle);
       setSelected(null);
       setRespuesta("");
       fetchSolicitudes();
@@ -84,7 +72,6 @@ export default function MostrarSolicitudes() {
 
   return (
     <div>
-      <Toaster position="top-center" />
       <WorkBar />
 
       <main className="max-w-6xl mx-auto px-4 py-10">

@@ -70,7 +70,7 @@ export default function AutorForm() {
       .maybeSingle();
     if (userErr) {
       console.error("Error buscando usuario por email:", userErr);
-      toast.error("Error verificando cuenta de usuario.");
+      toastError("Error verificando cuenta de usuario.");
       return;
     }
     if (usersData) {

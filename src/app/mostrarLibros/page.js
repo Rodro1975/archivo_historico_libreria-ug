@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 
 const MostrarLibrosPage = () => {
@@ -189,7 +189,6 @@ const MostrarLibrosPage = () => {
           }}
         />
       )}
-      <Toaster position="top-right" />
 
       {/* Modal de confirmación */}
       {showConfirm && (
@@ -208,7 +207,7 @@ const MostrarLibrosPage = () => {
                 onClick={async () => {
                   setShowConfirm(false);
                   await handleDelete(libroAEliminar);
-                  toast.success("Libro eliminado correctamente");
+                  toastSuccess("Libro eliminado correctamente");
                 }}
                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               >

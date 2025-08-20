@@ -153,9 +153,7 @@ const LoginForm = () => {
                   });
 
                   if (error) {
-                    toast.error(
-                      "Error al iniciar con Google: " + error.message
-                    );
+                    toastError("Error al iniciar con Google: " + error.message);
                   }
                 }}
                 className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg"

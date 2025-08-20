@@ -3,20 +3,8 @@
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
-import { Toaster, toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { FaSearch } from "react-icons/fa";
-
-const toastStyle = {
-  style: {
-    background: "#facc15",
-    color: "#1e3a8a",
-    fontWeight: "bold",
-  },
-  iconTheme: {
-    primary: "#1e3a8a",
-    secondary: "#facc15",
-  },
-};
 
 export default function MostrarSoportePage() {
   const [soportes, setSoportes] = useState([]);
@@ -38,7 +26,7 @@ export default function MostrarSoportePage() {
       );
 
     if (error) {
-      toast.error("Error al cargar soporte: " + error.message, toastStyle);
+      toastError("Error al cargar soporte: " + error.message, toastStyle);
       return;
     }
     setSoportes(data);
@@ -50,7 +38,7 @@ export default function MostrarSoportePage() {
       .from("usuarios")
       .select("id, primer_nombre, apellido_paterno");
     if (error) {
-      toast.error("Error al cargar usuarios: " + error.message, toastStyle);
+      toastError("Error al cargar usuarios: " + error.message, toastStyle);
       return;
     }
     setUsuarios(data);
@@ -75,9 +63,9 @@ export default function MostrarSoportePage() {
       .eq("id", id);
 
     if (error) {
-      toast.error("Error al actualizar: " + error.message, toastStyle);
+      toastError("Error al actualizar: " + error.message, toastStyle);
     } else {
-      toast.success("Solicitud actualizada", toastStyle);
+      toastSuccess("Solicitud actualizada", toastStyle);
       fetchSoportes();
     }
   }
@@ -93,7 +81,6 @@ export default function MostrarSoportePage() {
   return (
     <div className="min-h-screen bg-blue text-white">
       <WorkBar />
-      <Toaster position="top-right" />
 
       <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
         Gestión de Soporte Técnico

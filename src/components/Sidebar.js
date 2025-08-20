@@ -15,8 +15,8 @@ import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import NotificacionesDropdown from "./NotificacionesDropdown";
 import ModalCorreo from "./ModalCorreo";
-import { toast } from "react-hot-toast"; // Solo para el toast interactivo
-import { toastSuccess, toastError } from "@/lib/toastUtils"; // Estandarizados
+import { toastSuccess, toastError } from "@/lib/toastUtils";
+import { toast } from "react-hot-toast";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);

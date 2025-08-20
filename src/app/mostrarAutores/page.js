@@ -5,7 +5,7 @@ import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarAutores from "@/components/ActualizarAutores";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const MostrarAutoresPage = () => {
   const [autores, setAutores] = useState([]);
@@ -63,10 +63,10 @@ const MostrarAutoresPage = () => {
         .delete()
         .eq("id", autorAEliminar.id);
       if (error) throw error;
-      toast.success("Autor eliminado correctamente");
+      toastSuccess("Autor eliminado correctamente");
       fetchAutores();
     } catch (err) {
-      toast.error("Error al eliminar autor: " + err.message);
+      toastError("Error al eliminar autor: " + err.message);
     } finally {
       setAutorAEliminar(null);
       setShowConfirm(false);

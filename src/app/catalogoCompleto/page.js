@@ -5,7 +5,6 @@ import { FaSearch, FaPlus } from "react-icons/fa";
 import Image from "next/image";
 import WorkBar from "../../components/WorkBar";
 import supabase from "../../lib/supabase";
-import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const CatalogoCompleto = () => {
   const [searchTerm, setSearchTerm] = useState("");

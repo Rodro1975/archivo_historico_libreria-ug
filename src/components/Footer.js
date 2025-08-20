@@ -1,84 +1,33 @@
 // Footer.js
-"use client"; // Indica que este es un Client Component
+"use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
 
 const Footer = () => {
-  const [email, setEmail] = useState("");
-
-  const handleSubscribe = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }), // Mandamos el correo ingresado
-      });
-
-      if (response.ok) {
-        console.log("Correo electrónico suscrito:", email);
-        setEmail(""); // Limpiar el campo después de la suscripción
-        alert("¡Gracias por suscribirte!");
-      } else {
-        alert("Error al suscribirte. Inténtalo de nuevo.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error al suscribirte. Inténtalo de nuevo.");
-    }
-  };
-
   return (
     <footer
       className="mt-auto relative h-auto bg-fixed bg-cover bg-center"
       style={{ backgroundImage: "url('/images/footer.jpg')" }}
     >
-      {/* Cubierta con degradado de gris oscuro a gris medio */}
+      {/* Cubierta con degradado */}
       <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-gray-200 opacity-90"></div>
 
-      <div className="relative z-5 px-4 py-12 mx-auto max-w-7xl">
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+      <div className="relative z-5 px-4 py-16 mx-auto max-w-7xl">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0">
           {/* Enlaces a la izquierda */}
           <div className="text-center md:text-left md:order-1 flex-grow md:flex-none">
-            <ul className="space-y-2 text-blue">
+            <ul className="space-y-2 text-blue text-lg">
               <li>
                 <Link
-                  href="/avisoPrivacidad"
-                  className="hover:text-white transition duration-300"
-                >
-                  Aviso de privacidad
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/terminosCondiciones"
-                  className="hover:text-white transition duration-300"
-                >
-                  Términos y condiciones
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faqs"
-                  className="hover:text-white transition duration-300"
-                >
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://www.ugto.mx/directorio-universidad-guanajuato/secretaria-academica-ug/programa-editorial-universitario"
+                  href="https://www.ugto.mx/editorial/images/aviso-privacidad-programa-editorial.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition duration-300"
                 >
-                  Programa Editorial Universitario
+                  Aviso de privacidad
                 </Link>
               </li>
               <li>
@@ -93,7 +42,7 @@ const Footer = () => {
           </div>
 
           {/* Logo al centro */}
-          <div className="flex-shrink-0 mb-6 md:mb-0 md:order-2 md:w-auto w-full flex justify-center">
+          <div className="flex-shrink-0 mb-6 md:mb-0 md:order-2 flex justify-center">
             <Link
               href="https://www.ugto.mx/editorial/"
               target="_blank"
@@ -102,46 +51,40 @@ const Footer = () => {
             >
               <Image
                 src="/images/editorial-ug.png"
-                alt="Librería Logo"
-                width={150}
-                height={50}
-                className="h-12 w-auto rounded-full"
+                alt="Editorial UG Logo"
+                width={220}
+                height={70}
+                className="h-16 w-auto" // 👈 más grande, sin redondeo, sin fondo
               />
             </Link>
           </div>
 
-          {/* Sección de Suscripción a la derecha */}
-          <div className="flex flex-col items-center md:items-end w-full md:w-1/3 space-y-4 md:order-3">
-            <h2 className="text-blue text-xl font-bold mb-2 text-center md:text-right">
-              Suscripción a boletín de noticias
-            </h2>
-            <p className="text-gray-200 text-center md:text-right">
-              Tu dirección de correo electrónico es 100% segura para nosotros.
-            </p>
-            <form
-              onSubmit={handleSubscribe}
-              className="flex flex-col items-center md:items-start w-full max-w-xs space-y-2"
+          {/* Redes sociales */}
+          <div className="flex space-x-6 md:order-3">
+            {/* Facebook */}
+            <Link
+              href="https://www.facebook.com/EditorialUGTO"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#0A263D] hover:text-[#1877F2] transition-transform transform hover:scale-125 duration-300"
             >
-              <input
-                type="email"
-                placeholder="Escribe tu correo electrónico..."
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="p-2 rounded-full border-gray-300 mb-2 w-full text-gray-500"
-              />
-              <button
-                type="submit"
-                className="bg-blue text-white py-2 px-4 rounded-full font-bold hover:bg-white hover:text-blue transition duration-300 w-full"
-              >
-                Suscribirse
-              </button>
-            </form>
+              <FaFacebookF size={30} />
+            </Link>
+
+            {/* Instagram */}
+            <Link
+              href="https://www.instagram.com/editorial_ug?igsh=MTFkZm9xdTVqeGppMw=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#0A263D] hover:text-[#E4405F] transition-transform transform hover:scale-125 duration-300"
+            >
+              <FaInstagram size={30} />
+            </Link>
           </div>
         </div>
 
         {/* Información adicional centrada al final */}
-        <div className="mt-6 border-t border-gray-200 pt-4 text-center text-gray-400">
+        <div className="mt-8 border-t border-gray-200 pt-4 text-center text-gray-400 text-sm md:text-base">
           <p>
             &copy; 2024 Archivo Histórico Editorial UG | Todos los derechos
             reservados. || Diseño de Rodrigo Iván Ordoñez Chávez

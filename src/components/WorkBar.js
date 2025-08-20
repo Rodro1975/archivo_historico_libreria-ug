@@ -22,7 +22,8 @@ import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 import NotificacionesDropdown from "./NotificacionesDropdown"; // ajuste la ruta si es necesario
 import ActualizarAutores from "./ActualizarAutores";
 import AutorForm from "./AutorForm";
-import { toast, Toaster } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
+import { toast } from "react-hot-toast";
 
 const WorkBar = () => {
   const [userData, setUserData] = useState(null);
@@ -150,11 +151,11 @@ const WorkBar = () => {
                 const { error } = await supabase.auth.signOut();
 
                 if (error) {
-                  toast.error("Error al cerrar sesión.");
+                  toastError("Error al cerrar sesión.");
                   console.error("Error al cerrar sesión:", error);
                 } else {
                   localStorage.removeItem("token");
-                  toast.success("Sesión cerrada exitosamente.");
+                  toastSuccess("Sesión cerrada exitosamente.");
 
                   // Redirigir después de mostrar el mensaje
                   setTimeout(() => {
@@ -190,7 +191,6 @@ const WorkBar = () => {
 
   return (
     <div className="relative">
-      <Toaster position="top-right" />
       {/* Botón hamburguesa */}
       <button
         className="fixed top-4 left-4 z-50 text-3xl text-white bg-[var(--color-blue)] p-2 rounded-md shadow-md"

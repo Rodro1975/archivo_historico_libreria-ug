@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
@@ -9,6 +9,7 @@ export default function ModalVerSolicitudes({ open, onClose }) {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lectorId, setLectorId] = useState(null);
+  const hasShownToast = useRef(false); // ✅ Evita toast duplicado
 
   useEffect(() => {
     const obtenerSolicitudes = async () => {
@@ -35,13 +36,17 @@ export default function ModalVerSolicitudes({ open, onClose }) {
         setLoading(false);
       } else {
         setSolicitudes(data);
-        toastSuccess("Solicitudes cargadas correctamente");
+        if (!hasShownToast.current) {
+          toastSuccess("Solicitudes cargadas correctamente");
+          hasShownToast.current = true;
+        }
         setLoading(false);
       }
     };
 
     if (open) {
       obtenerSolicitudes();
+      hasShownToast.current = false; // ✅ Reinicia el control al reabrir modal
     }
   }, [open]);
 

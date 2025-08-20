@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import { toastSuccess, toastError, toastLoading } from "@/lib/toastUtils";
+import { toast } from "react-hot-toast";
 import ModalInformacion from "@/components/ModalInformacion";
 import ModalBuscarLibros from "@/components/ModalBuscarLibros";
 import ModalSolicitudes from "./ModalSolicitudes";
@@ -31,7 +32,7 @@ const PanelReader = ({ userData }) => {
   }, []);
 
   const handleLogout = async () => {
-    toastSuccess(
+    toast(
       (t) => (
         <div className="flex flex-col gap-4 p-4">
           <p className="font-bold text-blue-900">
@@ -48,7 +49,9 @@ const PanelReader = ({ userData }) => {
               className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
               onClick={async () => {
                 toast.dismiss(t.id);
-                const toastId = toastLoading("Cerrando sesión...");
+                const toastId = toastLoading("Cerrando sesión...", {
+                  duration: Infinity,
+                });
                 const { error } = await supabase.auth.signOut();
                 if (error) {
                   toastError(
@@ -56,7 +59,7 @@ const PanelReader = ({ userData }) => {
                     toastId
                   );
                 } else {
-                  toastSuccess("Sesión cerrada correctamente", toastId);
+                  toastSuccess("Sesión cerrada correctamente", { id: toastId });
                   router.push("/login");
                 }
               }}

@@ -1,13 +1,13 @@
 import React from "react";
 import Image from "next/image";
-import { toast } from "react-hot-toast";
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 const ModalCorreo = ({ email, webmailUrl, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const copiarCorreo = () => {
     navigator.clipboard.writeText(email);
-    toast.success("Correo copiado al portapapeles", {
+    toastSuccess("Correo copiado al portapapeles", {
       style: {
         background: "#facc15", // amarillo
         color: "#1e3a8a", // azul oscuro

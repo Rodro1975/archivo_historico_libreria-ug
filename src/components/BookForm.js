@@ -8,6 +8,11 @@ import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
+// Permite letras (incluye acentos), números, espacios y puntuación común.
+// NO permite que empiece vacío/espacios, ni que sea solo símbolos.
+const tituloRegex =
+  /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,:;()'"\-–—!?/&]+$/;
+
 // Funciones de validación y cálculo ISBN
 function isValidISBN(isbn) {
   const digits = isbn.replace(/[-\s]/g, "");
@@ -71,11 +76,35 @@ const RegisterBookSchema = z.object({
       message:
         "El ISBN debe ser válido (ISBN-10 o ISBN-13, con o sin guiones, y con dígito de control correcto). Ejemplo: 978-607-441-616-9 o 84-376-0494-1",
     }),
-  doi: z
-    .string()
-    .min(2, { message: "El DOI debe tener al menos 2 caracteres." }),
-  titulo: z.string().min(1, { message: "El título es requerido" }),
-  subtitulo: z.string().optional(),
+  doi: z.string().regex(/^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i, {
+    message: "El DOI debe tener el formato correcto (ej. 10.1000/xyz123).",
+  }),
+  titulo: z.preprocess(
+    (v) => (typeof v === "string" ? v.trim() : v),
+    z
+      .string()
+      .min(3, { message: "El título debe tener al menos 3 caracteres." })
+      .max(200, { message: "El título no debe exceder los 200 caracteres." })
+      .regex(tituloRegex, {
+        message:
+          "El título solo puede contener letras, números, espacios y puntuación común, y no puede iniciar con símbolos.",
+      })
+  ),
+  subtitulo: z
+    .preprocess(
+      (v) => (typeof v === "string" ? v.trim() : v),
+      z
+        .string()
+        .max(200, {
+          message: "El subtítulo no debe exceder los 200 caracteres.",
+        })
+        .regex(tituloRegex, {
+          message:
+            "El subtítulo solo puede contener letras, números, espacios y puntuación común, y no puede iniciar con símbolos.",
+        })
+    )
+    .optional()
+    .or(z.literal("")),
   materia: z.string().optional(),
   tematica: z.string().optional(),
   coleccion: z.string().min(1, { message: "La colección es requerida" }),
@@ -135,6 +164,8 @@ export default function BookForm() {
   const [autoresOptions, setAutoresOptions] = useState([]);
   const [isbnInput, setIsbnInput] = useState("");
   const [isbnTouched, setIsbnTouched] = useState(false);
+  const [isbnExists, setIsbnExists] = useState(false);
+  const [checkingISBN, setCheckingISBN] = useState(false);
 
   const {
     register,
@@ -164,21 +195,68 @@ export default function BookForm() {
   const handleIsbnChange = (e) => {
     let value = e.target.value.replace(/[^0-9Xx\-]/g, "").slice(0, 17);
     setIsbnInput(value);
+    setIsbnExists(false); // reset indicador si el usuario edita
   };
 
-  // Botón que añade el dígito de control
-  const handleCalculateCheckDigit = () => {
-    const raw = isbnInput.replace(/-/g, "");
-    let suffix = "";
-    if (/^\d{12}$/.test(raw)) suffix = calculateISBN13CheckDigit(raw);
-    else if (/^\d{9}$/.test(raw)) suffix = calculateISBN10CheckDigit(raw);
-    else {
+  // Botón que añade el dígito de control y verifica duplicados
+  const handleCalculateCheckDigit = async () => {
+    const raw = isbnInput.replace(/-/g, "").toUpperCase();
+
+    let fullISBN = "";
+
+    if (/^\d{9}$/.test(raw)) {
+      // ISBN-10 sin dígito de control
+      const checkDigit = calculateISBN10CheckDigit(raw);
+      fullISBN = raw + checkDigit;
+    } else if (/^\d{12}$/.test(raw)) {
+      // ISBN-13 sin dígito de control
+      const checkDigit = calculateISBN13CheckDigit(raw);
+      fullISBN = raw + checkDigit;
+    } else if (
+      /^\d{10}$/.test(raw) ||
+      /^\d{9}X$/.test(raw) ||
+      /^\d{13}$/.test(raw)
+    ) {
+      // Ya es un ISBN completo
+      fullISBN = raw;
+    } else {
       toastError(
-        "Para calcular, ingresa primero 9 (ISBN-10) o 12 (ISBN-13) dígitos."
+        "Ingresa 9 (ISBN-10) o 12 (ISBN-13) dígitos sin dígito de control para calcular."
       );
       return;
     }
-    setIsbnInput(isbnInput + suffix);
+
+    if (!isValidISBN(fullISBN)) {
+      toastError("El ISBN calculado no es válido.");
+      return;
+    }
+
+    setCheckingISBN(true);
+    setIsbnExists(false);
+
+    const { data, error } = await supabase
+      .from("libros")
+      .select("isbn")
+      .eq("isbn", fullISBN)
+      .limit(1);
+
+    setCheckingISBN(false);
+
+    if (error) {
+      console.error("Error verificando ISBN:", error);
+      toastError("Error al verificar el ISBN. Intenta nuevamente.");
+      return;
+    }
+
+    if (data && data.length > 0) {
+      setIsbnExists(true);
+      toastError("El ISBN ya existe en la base de datos.");
+      return;
+    }
+
+    setIsbnExists(false);
+    setIsbnInput(fullISBN);
+    toastSuccess("ISBN válido y no duplicado. Dígito de control añadido.");
   };
 
   const tipoAutoria = watch("tipoAutoria");
@@ -523,16 +601,21 @@ export default function BookForm() {
                   maxLength={17}
                   autoComplete="off"
                   required
-                  className="flex-grow border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                  className={`flex-grow rounded-lg px-3 py-2 text-sm text-blue focus:outline-none focus:ring-2 w-full ${
+                    isbnExists
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-400"
+                      : "border-yellow focus:border-blue focus:ring-gold border"
+                  }`}
                 />
 
                 <button
                   type="button"
                   onClick={handleCalculateCheckDigit}
+                  disabled={checkingISBN}
                   className="inline-flex items-center bg-blue text-white font-medium px-3 py-2 rounded-md hover:bg-blue-600 transition"
                   title="Autocompletar dígito de control"
                 >
-                  Calcular
+                  {checkingISBN ? "Verificando..." : "Calcular"}
                 </button>
               </div>
 
@@ -544,6 +627,7 @@ export default function BookForm() {
               )}
             </div>
 
+            {/* DOI formato oficial */}
             <div className="mb-4">
               <label
                 htmlFor="doi"
@@ -554,18 +638,19 @@ export default function BookForm() {
               <input
                 type="text"
                 id="doi"
-                {...register("doi")} // Registra el campo con react-hook-form
+                {...register("doi")}
                 required
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa tu DOI"
+                placeholder="Ej. 10.1000/xyz123"
               />
-              {errors.doi && ( // Muestra el mensaje de error si existe
+              {errors.doi && (
                 <p className="text-red-500 text-xs italic">
                   {errors.doi.message}
                 </p>
               )}
             </div>
 
+            {/* Título (obligatorio) */}
             <div className="mb-4">
               <label
                 htmlFor="titulo"
@@ -576,18 +661,19 @@ export default function BookForm() {
               <input
                 type="text"
                 id="titulo"
-                {...register("titulo")} // Registra el campo con react-hook-form
+                {...register("titulo")}
                 required
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa tu Titulo"
               />
-              {errors.titulo && ( // Muestra el mensaje de error si existe
+              {errors.titulo && (
                 <p className="text-red-500 text-xs italic">
                   {errors.titulo.message}
                 </p>
               )}
             </div>
 
+            {/* Subtitulo (opcional) */}
             <div className="mb-4">
               <label
                 htmlFor="subtitulo"
@@ -598,12 +684,12 @@ export default function BookForm() {
               <input
                 type="text"
                 id="subtitulo"
-                {...register("subtitulo")} // Registra el campo con react-hook-form
-                required
+                {...register("subtitulo")}
+                // IMPORTANTE: quitar required para que sea opcional
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa tu Subtitulo"
+                placeholder="Ingresa tu Subtitulo (opcional)"
               />
-              {errors.subtitulo && ( // Muestra el mensaje de error si existe
+              {errors.subtitulo && (
                 <p className="text-red-500 text-xs italic">
                   {errors.subtitulo.message}
                 </p>
@@ -1082,18 +1168,20 @@ export default function BookForm() {
                 onChange={handleFileChange} // Se cambia a manejar el archivo directamente
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 accept=".jpg, .jpeg, .png"
+                required
               />
             </div>
 
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Archivo PDF
+                Archivo Libro PDF
               </label>
               <input
                 type="file"
                 onChange={handlePDFChange}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 accept=".pdf"
+                required
               />
             </div>
 

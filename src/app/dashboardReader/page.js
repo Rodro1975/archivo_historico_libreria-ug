@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
+import { toast } from "react-hot-toast";
 import PanelReader from "@/components/PanelReader";
 
 const LectorDashboard = () => {
@@ -19,7 +20,7 @@ const LectorDashboard = () => {
       } = await supabase.auth.getSession();
 
       if (error || !session) {
-        toastError("Debes iniciar sesión", toastStyle);
+        toastError("Debes iniciar sesión");
         router.push("/login");
         return;
       }
@@ -161,7 +162,7 @@ const LectorDashboard = () => {
 
           if (insertError) {
             console.error("Error al insertar lector:", insertError);
-            toastError("No se pudo registrar como lector", toastStyle);
+            toastError("No se pudo registrar como lector");
             router.push("/login");
             return;
           }
@@ -174,10 +175,10 @@ const LectorDashboard = () => {
           role: lector.rol || "Lector",
         });
 
-        toast.success("Bienvenido lector", toastStyle);
+        toastSuccess("Bienvenido lector");
       } catch (e) {
         console.error("Error general al gestionar sesión:", e);
-        toastError("Error al cargar el perfil", toastStyle);
+        toastError("Error al cargar el perfil");
         router.push("/login");
       } finally {
         setLoading(false);

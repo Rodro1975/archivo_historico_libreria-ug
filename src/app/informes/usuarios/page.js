@@ -86,7 +86,7 @@ export default function InformeUsuarios() {
         .single();
 
       if (error || !data || data.role !== "Administrador") {
-        toast.error("Acceso restringido");
+        toastError("Acceso restringido");
         router.push("/dashboard");
         return;
       }
