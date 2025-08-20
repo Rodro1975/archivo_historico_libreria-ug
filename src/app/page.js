@@ -4,6 +4,7 @@
 import Head from "next/head";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import ModalVentas from "@/components/ModalVentas";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -159,7 +160,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      {/* Modal de Ventas (nuevo) */}
+      <ModalVentas />
       {/* Catálogo destacado (glassy card) */}
       <section className="relative py-12">
         <div className="mx-4 md:mx-20 lg:mx-40">

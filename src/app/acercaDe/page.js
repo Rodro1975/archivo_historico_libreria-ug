@@ -2,101 +2,104 @@
 "use client";
 
 import Head from "next/head";
-
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { FaEnvelope as Email } from "react-icons/fa";
+import ModalVentas from "@/components/ModalVentas";
 
 export default function AcercaPage() {
   return (
-    <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
+    <>
       <Head>
         <title>Acerca del Archivo Histórico - Editorial UG</title>
       </Head>
 
-      {/* NavBar */}
-
+      {/* NavBar sticky (fuera de wrappers con overflow) */}
       <NavBar />
 
-      {/* Hero */}
-      <section
-        className="relative flex items-center justify-center min-h-[50vh] bg-blue text-center px-4"
-        style={{
-          backgroundImage: "url('/images/libreriaUg.jpg')",
-          backgroundSize: "cover",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/60"></div>
-        <h1 className="relative text-white font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-          Acerca del Archivo Histórico
-        </h1>
-      </section>
-
-      {/* Misión y Visión */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-screen-xl mx-auto grid gap-8 lg:grid-cols-2">
-          <div className="bg-white p-8 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold text-blue mb-4">
-              Nuestra Misión
-            </h2>
-            <p className="text-gray-700">
-              El Archivo Histórico de la Editorial de la Universidad de
-              Guanajuato es una institución dedicada a la conservación y
-              difusión del patrimonio documental universitario, preservando la
-              memoria institucional y facilitando el acceso a la historia de
-              nuestra casa de estudios.
-            </p>
-          </div>
-          <div className="bg-white p-8 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold text-blue mb-4">
-              Nuestros Fondos
-            </h2>
-            <p className="text-gray-700">
-              A través de sus fondos documentales, el archivo ofrece una visión
-              integral del desarrollo académico, cultural y social de la
-              universidad, promoviendo investigación y actividades de difusión
-              para toda la comunidad.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Coordinación */}
-      <section className="py-16 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-semibold text-yellow mb-4">
-            Coordinación
-          </h2>
-          <p className="text-gray-300 mb-6">
-            La coordinación del Archivo Histórico está a cargo de la Doctora
-            Elba Rolón, quien lidera un equipo comprometido con la preservación
-            del patrimonio documental.
-          </p>
-          <Link
-            href="mailto:elba.rolon@ugto.mx"
-            target="_blank"
-            className="inline-flex items-center bg-yellow text-blue font-medium py-2 px-6 rounded-full shadow hover:bg-orange transition"
-          >
-            <Email className="w-5 h-5 mr-2" />
-            elba.rolon@ugto.mx
-          </Link>
-        </div>
-      </section>
-
-      {/* CTA a Sitio Web */}
-      <section className="py-16 px-4 bg-gray-50 text-center">
-        <Link
-          href="https://www.ugto.mx/editorial/"
-          target="_blank"
-          className="inline-block bg-orange text-blue font-semibold py-3 px-8 sm:py-4 sm:px-10 md:py-5 md:px-12 rounded-full shadow hover:bg-yellow transition"
+      {/* Contenido */}
+      <div className="flex flex-col min-h-screen w-full">
+        {/* Hero */}
+        <section
+          className="relative flex items-center justify-center min-h-[50vh] bg-blue text-center px-4"
+          style={{
+            backgroundImage: "url('/images/libreriaUg.jpg')",
+            backgroundSize: "cover",
+          }}
         >
-          Visita Editorial UG
-        </Link>
-      </section>
+          <div className="absolute inset-0 bg-black/60"></div>
+          <h1 className="relative text-white font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
+            Acerca del Archivo Histórico
+          </h1>
+        </section>
 
-      <Footer />
-    </div>
+        {/* Misión y Visión */}
+        <section className="py-16 px-4 bg-gray-50">
+          <div className="max-w-screen-xl mx-auto grid gap-8 lg:grid-cols-2">
+            <div className="bg-white p-8 rounded-lg shadow">
+              <h2 className="text-2xl font-semibold text-blue mb-4">
+                Nuestra Misión
+              </h2>
+              <p className="text-gray-700">
+                El Catálogo Histórico de Publicaciones de Editorial UG de la
+                Universidad de Guanajuato o Archivo Institucional de
+                Publicaciones tiene como objetivo clasificar, preservar y
+                difundir todas las publicaciones universitarias, es decir, los
+                libros y revistas con sello editorial UG, realizados a lo largo
+                de su amplia tradición editorial.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-lg shadow">
+              <h2 className="text-2xl font-semibold text-blue mb-4">
+                Nuestros Fondos
+              </h2>
+              <p className="text-gray-700">
+                Está conformado por un archivo electrónico de las publicaciones
+                universitarias y sus metadatos, y un archivo físico de las
+                publicaciones en soporte impreso. El Programa Editorial
+                Universitario (Editorial UG) es el responsable de administrar y
+                promover la integración de títulos, como parte de su compromiso
+                con la historia editorial de la institución. El espacio físico
+                que alberga el acervo impreso de publicaciones de este Catálogo
+                se nombró en 2017: Claustro Académico “Fondo Editorial Eugenio
+                Trueba Olivares”, en honor a uno de los principales promotores
+                de la tradición editorial universitaria. Se encuentra ubicado en
+                la ciudad de Guanajuato, dentro del Mesón de San Antonio, en las
+                oficinas de la Editorial UG. En esta página encontrarás un
+                listado en permanente crecimiento de los títulos que conforman
+                la historia editorial de la Universidad de Guanajuato.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* contacto */}
+        <section className="py-16 px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl font-semibold text-yellow mb-4">
+              Contacto
+            </h2>
+            <p className="text-gray-300 mb-6">
+              Mtro. Edgar Magaña Guzmán Responsable del Catálogo Editorial
+            </p>
+            <Link
+              href="mailto:libreriaug@ugto.mx"
+              target="_blank"
+              className="inline-flex items-center bg-yellow text-blue font-medium py-2 px-6 rounded-full shadow hover:bg-orange transition"
+            >
+              <Email className="w-5 h-5 mr-2" />
+              libreriaug@ugto.mx
+            </Link>
+          </div>
+        </section>
+
+        {/* Modal de Ventas (nuevo) */}
+        <ModalVentas />
+
+        <Footer />
+      </div>
+    </>
   );
 }

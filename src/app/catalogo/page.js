@@ -10,6 +10,7 @@ import Link from "next/link";
 import ModalGalery from "@/components/ModalGalery";
 import "animate.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import ModalVentas from "@/components/ModalVentas";
 
 const CatalogoPage = () => {
   const [userData, setUserData] = useState(null);
@@ -128,68 +129,8 @@ const CatalogoPage = () => {
         </div>
       </section>
 
-      {/* Barra de información */}
-      {isInfoBarVisible && (
-        <div className="relative isolate flex items-center gap-x-6 overflow-hidden bg-gradient-to-r from-blue to-gray-800 px-6 py-4 sm:px-3.5">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <div className="text-sm leading-6 text-white flex items-center">
-              <span
-                className={`font-bold text-yellow ${
-                  isAnimatingText ? "animate__animated animate__heartBeat" : ""
-                }`}
-                onMouseEnter={() => {
-                  setIsAnimatingText(true);
-                }}
-                onMouseLeave={() => {
-                  setIsAnimatingText(false);
-                }}
-              >
-                PONTE ABEJA
-              </span>
-              <svg
-                viewBox="0 0 2 2"
-                className="mx-2 inline h-0.5 w-0.5 fill-current"
-                aria-hidden="true"
-              >
-                <circle cx="1" cy="1" r="1" />
-              </svg>
-              Visita la Librería UG y encuentra tu próxima lectura favorita.
-            </div>
-
-            <Link
-              href="https://libreriaug.ugto.mx/"
-              target="_blank"
-              rel="noreferrer"
-              className="flex-none rounded-full inline-block bg-gray-900 px-3.5 py-1 text-sm font-medium text-gold shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-            >
-              ¡Comprar Ahora! <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </div>
-          <div className="flex flex-1 justify-end">
-            <button
-              type="button"
-              className={`-m-3 p-3 focus-visible:outline-offset-[-4px] transition-transform duration-500 ease-in-out ${
-                isAnimatingX ? "animate__animated animate__rotateOut" : ""
-              } hover:scale-110 hover:text-gray-700`}
-              onClick={manejarCerrarBarra}
-            >
-              <span className="sr-only">Dismiss</span>
-              <svg
-                className="h-5 w-5 text-gray-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 8.586L15.293 3.293a1 1 0 1 1 1.414 1.414L11.414 10l5.293 5.293a1 1 0 0 1-1.414 1.414L10 11.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L8.586 10 3.293 4.707A1 1 0 1 1 4.707 3.293L10 8.586z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Modal Ventas */}
+      <ModalVentas />
 
       {/* Catálogo */}
       <div className="catalogo-container">
