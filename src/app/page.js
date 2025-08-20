@@ -4,7 +4,7 @@
 import Head from "next/head";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import Carrusel from "@/components/Carrusel";
+
 import Image from "next/image";
 import Link from "next/link";
 import Modal from "../components/Modal";
@@ -29,12 +29,6 @@ export default function Home() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  const slides = [
-    { image: "/images/libroUg.jpg", alt: "Descripción de la imagen 1" },
-    { image: "/images/libroUg.jpg", alt: "Descripción de la imagen 2" },
-    { image: "/images/libroUg.jpg", alt: "Descripción de la imagen 3" },
-  ];
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -97,16 +91,7 @@ export default function Home() {
       {/* Barra de navegación */}
       <NavBar />
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <section className="news-events relative py-48 text-center bg-fixed bg-cover bg-center">
-        <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
-          Noticias y Eventos
-        </h2>
-        <div className="mx-4 md:mx-20 lg:mx-40">
-          {" "}
-          {/* Aquí controlas el margen */}
-          <Carrusel slides={slides} />
-        </div>
-      </section>
+
       <section className="collections-highlighted py-8">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
           Colecciones Destacadas
@@ -115,24 +100,6 @@ export default function Home() {
           {" "}
           {/* Aquí agregamos los márgenes responsivos */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="collection-card bg-white shadow-lg rounded-lg p-4">
-              <Image
-                src="/images/libroUg.jpg"
-                alt="Título de la Colección"
-                width={500}
-                height={300}
-                className="w-full h-40 object-cover rounded-t-lg"
-              />
-              <h3 className="text-xl text-gray-300 font-semibold mt-2">
-                Colección: Historia Local
-              </h3>
-              <p className="text-gray-600">
-                Breve descripción sobre la colección destacada.
-              </p>
-              <button className="mt-4 bg-blue text-white py-2 px-4 rounded-full">
-                Explorar
-              </button>
-            </div>
             <div className="collection-card bg-white shadow-lg rounded-lg p-4">
               <Image
                 src="/images/libroUg.jpg"
@@ -191,93 +158,80 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* Coleccion destacada del mes */}
-      <section className="featured-month py-8">
-        <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
-          Colección Destacada del Mes
-        </h2>
+
+      {/* Catálogo destacado (glassy card) */}
+      <section className="relative py-12">
         <div className="mx-4 md:mx-20 lg:mx-40">
-          <div className="p-6 bg-gray-100 rounded-lg shadow-md mx-auto max-w-3xl">
+          <Link
+            href="/catalogo"
+            aria-label="Ir al Catálogo Histórico"
+            className="group block relative overflow-hidden rounded-2xl"
+          >
+            {/* Fondo con la misma imagen */}
             <Image
               src="/images/libroUg.jpg"
-              alt="Colección Destacada"
-              width={600}
-              height={400}
-              className="w-full h-auto object-cover rounded-lg mb-4"
+              alt="Catálogo Histórico Editorial UG"
+              width={1600}
+              height={900}
+              priority
+              className="w-full h-[360px] md:h-[420px] lg:h-[460px] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
-            <p className="text-gray-700 mb-2">
-              Este mes, exploramos la colección sobre [Tema de la Colección].
-              Esta colección incluye documentos, fotografías y testimonios que
-              destacan su importancia histórica.
-            </p>
-            <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600">
-              Una cita inspiradora o un testimonio relevante sobre la colección.
-            </blockquote>
-          </div>
+
+            {/* Overlay degradado sutil para contraste */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-black/50 via-black/30 to-black/10" />
+
+            {/* Panel glassy */}
+            <div
+              className="
+          absolute inset-x-4 md:inset-x-10 bottom-6 md:bottom-8
+          backdrop-blur-md bg-white/10 border border-white/20
+          rounded-2xl shadow-xl
+          px-5 py-5 md:px-8 md:py-6
+          ring-1 ring-white/10
+        "
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-white drop-shadow-sm">
+                    Explora el{" "}
+                    <span className="text-gold">Catálogo Histórico</span>
+                  </h2>
+                  <p className="mt-1 text-gray-100/90 md:max-w-2xl">
+                    Consulta títulos, autores, años y más. Acceso para lectores
+                    autenticados y búsqueda pública de metadatos.
+                  </p>
+                </div>
+
+                {/* Botón tipo tarjeta (CTA) */}
+                <div
+                  className="
+              w-full md:w-auto
+              rounded-xl bg-white/15 border border-white/25
+              px-5 py-3 text-center
+              transition-all duration-300
+              hover:bg-white/25 hover:shadow-2xl
+              group-hover:translate-y-[-1px]
+              ring-1 ring-white/10
+            "
+                >
+                  <span className="block font-semibold text-white">
+                    Ir al Catálogo
+                  </span>
+                  <span
+                    className="
+                block text-xs mt-0.5
+                bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent
+              "
+                  >
+                    /catalogo
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Link>
         </div>
       </section>
-      {/* Coleccion historias personales */}
-      <section className="personal-stories py-8">
-        <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
-          Historias Detrás de las Colecciones
-        </h2>
-        <div className="mx-4 md:mx-20 lg:mx-40">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="story-card bg-white shadow-lg rounded-lg p-4">
-              <Image
-                src="/images/juanperez.png"
-                alt="Historia Personal"
-                width={500}
-                height={300}
-                className="w-full h-40 object-cover rounded-t-lg"
-              />
-              <h3 className="text-xl font-semibold mt-2">
-                El Legado de Juan Pérez
-              </h3>
-              <p className="text-gray-600">
-                Juan Pérez donó su colección de cartas y manuscritos,
-                permitiendo a futuras generaciones conocer la historia local
-                desde una perspectiva única y personal.
-              </p>
-            </div>
-            <div className="story-card bg-white shadow-lg rounded-lg p-4">
-              <Image
-                src="/images/juanperez.png"
-                alt="Historia Personal"
-                width={500}
-                height={300}
-                className="w-full h-40 object-cover rounded-t-lg"
-              />
-              <h3 className="text-xl font-semibold mt-2">
-                Voces de la Comunidad
-              </h3>
-              <p className="text-gray-600">
-                Esta colección reúne testimonios de habitantes que compartieron
-                sus vivencias durante eventos históricos, enriqueciendo el
-                acervo cultural de la región.
-              </p>
-            </div>
-            <div className="story-card bg-white shadow-lg rounded-lg p-4">
-              <Image
-                src="/images/juanperez.png"
-                alt="Historia Personal"
-                width={500}
-                height={300}
-                className="w-full h-40 object-cover rounded-t-lg"
-              />
-              <h3 className="text-xl font-semibold mt-2">
-                Mujeres en la Historia
-              </h3>
-              <p className="text-gray-600">
-                Documentos y fotografías que visibilizan el papel fundamental de
-                las mujeres en la construcción de la identidad y memoria
-                colectiva.
-              </p>
-            </div>
-          </div>
-          {/* Repetir otras historias */}
-        </div>
-      </section>
+
       {/* Footer */}
       <Footer />
     </div>
