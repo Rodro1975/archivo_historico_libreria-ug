@@ -2,7 +2,7 @@
 "use client";
 
 import Head from "next/head";
-import SocialBar from "@/components/SocialBar";
+
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
@@ -16,8 +16,8 @@ export default function AcercaPage() {
         <title>Acerca del Archivo Histórico - Editorial UG</title>
       </Head>
 
-      {/* Social + Nav */}
-      <SocialBar />
+      {/* NavBar */}
+
       <NavBar />
 
       {/* Hero */}

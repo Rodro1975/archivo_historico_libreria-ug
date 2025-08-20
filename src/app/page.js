@@ -2,7 +2,6 @@
 "use client";
 
 import Head from "next/head";
-import SocialBar from "@/components/SocialBar";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Carrusel from "@/components/Carrusel";
@@ -42,9 +41,6 @@ export default function Home() {
       <Head>
         <title>Página Principal - Archivo Histórico Editorial UG</title>
       </Head>
-
-      {/* Barra Social */}
-      <SocialBar />
 
       {/* Hero*/}
       <section
@@ -98,12 +94,9 @@ export default function Home() {
           </Link>
         </div>
       </section>
-
       {/* Barra de navegación */}
       <NavBar />
-
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
       <section className="news-events relative py-48 text-center bg-fixed bg-cover bg-center">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
           Noticias y Eventos
@@ -114,7 +107,6 @@ export default function Home() {
           <Carrusel slides={slides} />
         </div>
       </section>
-
       <section className="collections-highlighted py-8">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
           Colecciones Destacadas
@@ -199,7 +191,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Coleccion destacada del mes */}
       <section className="featured-month py-8">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
@@ -225,7 +216,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Coleccion historias personales */}
       <section className="personal-stories py-8">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
@@ -288,7 +278,6 @@ export default function Home() {
           {/* Repetir otras historias */}
         </div>
       </section>
-
       {/* Footer */}
       <Footer />
     </div>
