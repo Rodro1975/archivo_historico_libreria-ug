@@ -19,7 +19,7 @@ import {
 } from "react-icons/ai";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
-import NotificacionesDropdown from "./NotificacionesDropdown"; // ajuste la ruta si es necesario
+import NotificacionesPanel from "./NotificacionesPanel";
 import ActualizarAutores from "./ActualizarAutores";
 import AutorForm from "./AutorForm";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
@@ -250,9 +250,10 @@ const WorkBar = () => {
               )}
             </li>
             {/* Dropdown de Notificaciones (fuera del botón, como en Sidebar) */}
-            <NotificacionesDropdown
-              show={showDropdown}
+            <NotificacionesPanel
+              open={showDropdown}
               onClose={() => setShowDropdown(false)}
+              role={userData?.role}
             />
 
             {/* Galería del Editor */}

@@ -13,10 +13,11 @@ import {
 } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
-import NotificacionesDropdown from "./NotificacionesDropdown";
+
 import ModalCorreo from "./ModalCorreo";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { toast } from "react-hot-toast";
+import NotificacionesPanel from "./NotificacionesPanel";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -262,9 +263,10 @@ const Sidebar = () => {
             </li>
 
             {/* Dropdown de Notificaciones */}
-            <NotificacionesDropdown
-              show={showDropdown}
+            <NotificacionesPanel
+              open={showDropdown}
               onClose={() => setShowDropdown(false)}
+              role={role}
             />
 
             <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">

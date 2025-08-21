@@ -146,6 +146,13 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                 <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
               </button>
             </div>
+            {/* Botón de cerrar alternativo */}
+            <button
+              onClick={onClose}
+              className="mt-6 px-4 py-2 bg-yellow hover:bg-orange text-blue font-semibold rounded-lg"
+            >
+              Cerrar
+            </button>
           </>
         ) : activeForm === "prestamo" ? (
           <FormularioPrestamoLibro
@@ -184,13 +191,6 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
           />
         ) : null}
       </div>
-      {/* Botón de cerrar alternativo */}
-      <button
-        onClick={onClose}
-        className="mt-6 px-4 py-2 bg-yellow hover:bg-orange text-blue font-semibold rounded-lg"
-      >
-        Cerrar
-      </button>
     </div>
   );
 };
