@@ -1,3 +1,4 @@
+// src/components/PanelReader.js
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -20,7 +21,6 @@ const PanelReader = ({ userData }) => {
   const [lectorId, setLectorId] = useState(null);
   const hasShownToast = useRef(false);
 
-  // Obtener el UID del usuario autenticado al montar el componente
   useEffect(() => {
     const getUserId = async () => {
       const {
@@ -35,7 +35,7 @@ const PanelReader = ({ userData }) => {
     toast(
       (t) => (
         <div className="flex flex-col gap-4 p-4">
-          <p className="font-bold text-blue-900">
+          <p className="font-bold" style={{ color: "var(--color-blue)" }}>
             ¿Estás seguro que quieres cerrar sesión?
           </p>
           <div className="flex justify-end gap-2">
@@ -95,95 +95,253 @@ const PanelReader = ({ userData }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 relative">
-      <div className="bg-gradient-to-br from-blue to-white rounded-2xl shadow-lg p-8 max-w-5xl mx-auto mt-4 border border-blue">
-        <div className="text-center mb-10">
-          <Image
-            src="/images/editorial-ug.png"
-            alt="Editorial UG Logo"
-            width={200}
-            height={200}
-            className="mx-auto mb-6 rounded-xl"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <button
-            onClick={handleOpenBuscarLibros}
-            className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <span className="text-4xl text-yellow group-hover:rotate-12 transition-transform">
-                🔍
-              </span>
-              <span className="text-yellow font-medium">Buscar Libros</span>
-            </div>
-            <div className="absolute inset-0 bg-yellow/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
-          </button>
-
-          <button
-            onClick={handleOpenVerSolicitudes}
-            className="group relative overflow-hidden rounded-xl bg-yellow p-6 transition-all hover:shadow-lg hover:scale-105"
-            disabled={!lectorId}
-          >
-            <div className="flex flex-col items-center gap-4">
-              <span className="text-4xl text-blue group-hover:rotate-12 transition-transform">
-                📥
-              </span>
-              <span className="text-blue font-medium">Ver solicitudes</span>
-            </div>
-            <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
-          </button>
-
-          <button
-            onClick={handleOpenSolicitudes}
-            className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <span className="text-4xl text-yellow group-hover:rotate-12 transition-transform">
-                📝
-              </span>
-              <span className="text-yellow font-medium">Crear Solicitudes</span>
-            </div>
-            <div className="absolute inset-0 bg-yellow/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
-          </button>
-
-          <button
-            onClick={() => setModalInfoOpen(true)}
-            className="group relative overflow-hidden rounded-xl bg-yellow p-6 transition-all hover:shadow-lg hover:scale-105"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <span className="text-4xl text-blue group-hover:rotate-12 transition-transform">
-                ❓
-              </span>
-              <span className="text-blue font-medium">Información</span>
-            </div>
-            <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
-          </button>
-
-          <button
-            onClick={handleLogout}
-            className="group relative overflow-hidden rounded-xl bg-red-600 p-6 col-span-full transition-all hover:shadow-lg hover:scale-105"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <span className="text-4xl text-white group-hover:rotate-12 transition-transform">
-                🚪
-              </span>
-              <span className="text-white font-medium">Cerrar sesión</span>
-            </div>
-            <div className="absolute inset-0 bg-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
-          </button>
-        </div>
-
-        <div className="absolute bottom-0 right-0 opacity-5 pointer-events-none">
-          <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
-            <path
-              d="M0 100C0 44.7715 44.7715 0 100 0C155.228 0 200 44.7715 200 100C200 155.228 155.228 200 100 200C44.7715 200 0 155.228 0 100Z"
-              fill="gold"
-            />
-          </svg>
-        </div>
+    <main className="relative min-h-screen w-full isolate">
+      {/* Fondo a pantalla completa */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/interiorLib.JPG"
+          alt="Interior Librería UG"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        {/* Overlay con leve tinte para contraste */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "rgba(0,0,0,0.25)" }}
+        />
       </div>
+
+      {/* Contenedor glassy principal (estilo Wattly) */}
+      <section className="relative z-10 px-4 py-10 md:py-14">
+        <div className="max-w-6xl mx-auto">
+          <div
+            className="
+              relative rounded-3xl overflow-hidden
+              shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+              ring-1 ring-white/20 border border-white/20
+              bg-white/10 backdrop-blur-2xl
+              px-6 py-8 md:px-12 md:py-12
+            "
+          >
+            {/* Borde superior de acento (gradiente de marca) */}
+            <div
+              className="absolute left-0 right-0 top-0 h-1"
+              style={{
+                background:
+                  "linear-gradient(90deg, var(--color-yellow) 0%, var(--color-orange) 50%, var(--color-gold) 100%)",
+              }}
+            />
+
+            {/* Glow decorativo */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-20 opacity-30 blur-3xl"
+              style={{
+                background:
+                  "radial-gradient(60% 60% at 20% 20%, rgba(255,255,255,0.15), rgba(255,255,255,0) 70%), radial-gradient(40% 40% at 80% 10%, rgba(255,255,255,0.08), rgba(255,255,255,0) 70%)",
+              }}
+            />
+
+            {/* Encabezado con logo y saludo */}
+            <div className="relative text-center mb-8">
+              <Image
+                src="/images/editorial-ug.png"
+                alt="Editorial UG Logo"
+                width={180}
+                height={180}
+                className="mx-auto mb-6"
+                priority
+              />
+
+              {userData?.primer_nombre && (
+                <div className="space-y-1">
+                  <h1 className="text-3xl md:text-4xl font-extrabold text-white drop-shadow">
+                    Bienvenido, {userData.primer_nombre}
+                  </h1>
+                  <p
+                    className="font-semibold"
+                    style={{ color: "var(--color-yellow)" }}
+                  >
+                    Rol: {userData?.role || "Lector"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Grid impactante: una tarjeta "destacada" + 3 regulares + logout */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Buscar Libros (destacada, ocupa 2 columnas en md+) */}
+              <button
+                onClick={handleOpenBuscarLibros}
+                className="
+                  group relative overflow-hidden rounded-2xl p-6 md:col-span-2
+                  transition-all hover:scale-[1.01] hover:shadow-2xl
+                  border border-white/15 bg-white/10 backdrop-blur-xl
+                "
+              >
+                {/* Decor brand diagonal */}
+                <div
+                  className="absolute inset-y-0 left-0 w-1/2 -skew-x-6 opacity-70"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, var(--color-blue) 0%, rgba(255,255,255,0) 70%)",
+                  }}
+                />
+                <div className="relative z-10 flex flex-col md:flex-row items-center gap-5">
+                  <div
+                    className="h-16 w-16 rounded-2xl flex items-center justify-center ring-1 ring-white/20"
+                    style={{ backgroundColor: "var(--color-blue)" }}
+                  >
+                    <span
+                      className="text-3xl"
+                      style={{ color: "var(--color-yellow)" }}
+                    >
+                      🔍
+                    </span>
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h3 className="text-white text-2xl font-bold tracking-tight">
+                      Buscar libros
+                    </h3>
+                    <p className="text-white/80 text-sm mt-1">
+                      Catálogo institucional • título, autor, ISBN, año…
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{
+                    background:
+                      "linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0))",
+                  }}
+                />
+              </button>
+
+              {/* Ver solicitudes */}
+              <button
+                onClick={handleOpenVerSolicitudes}
+                disabled={!lectorId}
+                className="
+                  group relative overflow-hidden rounded-2xl p-6
+                  transition-all hover:scale-[1.01] hover:shadow-2xl
+                  border border-white/15 bg-white/10 backdrop-blur-xl
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                "
+              >
+                <div className="relative z-10 flex items-center gap-4">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center ring-1 ring-white/20"
+                    style={{ backgroundColor: "var(--color-yellow)" }}
+                  >
+                    <span
+                      className="text-2xl"
+                      style={{ color: "var(--color-blue)" }}
+                    >
+                      📥
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">
+                      Ver solicitudes
+                    </h4>
+                    <p className="text-white/75 text-xs">
+                      Revisa el estado y el historial
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Crear solicitudes */}
+              <button
+                onClick={handleOpenSolicitudes}
+                className="
+                  group relative overflow-hidden rounded-2xl p-6
+                  transition-all hover:scale-[1.01] hover:shadow-2xl
+                  border border-white/15 bg-white/10 backdrop-blur-xl
+                "
+              >
+                <div className="relative z-10 flex items-center gap-4">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center ring-1 ring-white/20"
+                    style={{ backgroundColor: "var(--color-blue)" }}
+                  >
+                    <span
+                      className="text-2xl"
+                      style={{ color: "var(--color-yellow)" }}
+                    >
+                      📝
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">
+                      Crear solicitud
+                    </h4>
+                    <p className="text-white/75 text-xs">
+                      Pide material o asistencia
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Información */}
+              <button
+                onClick={() => setModalInfoOpen(true)}
+                className="
+                  group relative overflow-hidden rounded-2xl p-6
+                  transition-all hover:scale-[1.01] hover:shadow-2xl
+                  border border-white/15 bg-white/10 backdrop-blur-xl
+                "
+              >
+                <div className="relative z-10 flex items-center gap-4">
+                  <div
+                    className="h-12 w-12 rounded-xl flex items-center justify-center ring-1 ring-white/20"
+                    style={{ backgroundColor: "var(--color-yellow)" }}
+                  >
+                    <span
+                      className="text-2xl"
+                      style={{ color: "var(--color-blue)" }}
+                    >
+                      ❓
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">Información</h4>
+                    <p className="text-white/75 text-xs">
+                      Ayuda y guía del panel
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Cerrar sesión (full width) */}
+              <button
+                onClick={handleLogout}
+                className="
+                  group relative overflow-hidden rounded-2xl p-5 md:col-span-3
+                  transition-all hover:scale-[1.005] hover:shadow-2xl
+                  border border-white/15 bg-white/5 backdrop-blur-xl
+                "
+              >
+                <div className="relative z-10 flex items-center justify-center gap-3">
+                  <span className="text-xl text-white">🚪</span>
+                  <span className="text-white font-semibold">
+                    Cerrar sesión
+                  </span>
+                </div>
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{
+                    background:
+                      "linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0))",
+                  }}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Modales */}
       {modalBuscarOpen && (
@@ -211,7 +369,7 @@ const PanelReader = ({ userData }) => {
           lectorId={lectorId}
         />
       )}
-    </div>
+    </main>
   );
 };
 

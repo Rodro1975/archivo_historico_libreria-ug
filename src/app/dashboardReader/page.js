@@ -1,9 +1,10 @@
+// app/dashboardReader/page.js
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
-import { toastSuccess, toastError } from "@/lib/toastUtils";
+import { toastSuccess, toastError, toastStyle } from "@/lib/toastUtils"; // ← añade toastStyle
 import { toast } from "react-hot-toast";
 import PanelReader from "@/components/PanelReader";
 
@@ -39,15 +40,13 @@ const LectorDashboard = () => {
           .eq("email", email)
           .maybeSingle();
 
-        // Crear toasts interactivos para roles superiores
+        // Toats interactivos para roles superiores
         if (usuario?.role === "Administrador") {
-          const adminToast = toast(
+          toast(
             (t) => (
-              <div style={toastStyle.style}>
+              <div style={toastStyle?.style}>
                 <p>¿Deseas ir al panel de Administrador?</p>
-                <div
-                  style={{ marginTop: "10px", display: "flex", gap: "10px" }}
-                >
+                <div style={{ marginTop: 10, display: "flex", gap: 10 }}>
                   <button
                     onClick={() => {
                       toast.dismiss(t.id);
@@ -58,7 +57,7 @@ const LectorDashboard = () => {
                       color: "white",
                       padding: "8px 16px",
                       border: "none",
-                      borderRadius: "4px",
+                      borderRadius: 4,
                       cursor: "pointer",
                     }}
                   >
@@ -71,7 +70,7 @@ const LectorDashboard = () => {
                       color: "#1e3a8a",
                       padding: "8px 16px",
                       border: "none",
-                      borderRadius: "4px",
+                      borderRadius: 4,
                       cursor: "pointer",
                     }}
                   >
@@ -80,21 +79,15 @@ const LectorDashboard = () => {
                 </div>
               </div>
             ),
-            {
-              duration: Infinity,
-              icon: "🔑",
-              ...toastStyle,
-            }
+            { duration: Infinity, icon: "🔑", ...(toastStyle || {}) }
           );
           return;
         } else if (usuario?.role === "Editor") {
-          const editorToast = toast(
+          toast(
             (t) => (
-              <div style={toastStyle.style}>
+              <div style={toastStyle?.style}>
                 <p>¿Deseas ir al panel de Editor?</p>
-                <div
-                  style={{ marginTop: "10px", display: "flex", gap: "10px" }}
-                >
+                <div style={{ marginTop: 10, display: "flex", gap: 10 }}>
                   <button
                     onClick={() => {
                       toast.dismiss(t.id);
@@ -105,7 +98,7 @@ const LectorDashboard = () => {
                       color: "white",
                       padding: "8px 16px",
                       border: "none",
-                      borderRadius: "4px",
+                      borderRadius: 4,
                       cursor: "pointer",
                     }}
                   >
@@ -118,7 +111,7 @@ const LectorDashboard = () => {
                       color: "#1e3a8a",
                       padding: "8px 16px",
                       border: "none",
-                      borderRadius: "4px",
+                      borderRadius: 4,
                       cursor: "pointer",
                     }}
                   >
@@ -127,11 +120,7 @@ const LectorDashboard = () => {
                 </div>
               </div>
             ),
-            {
-              duration: Infinity,
-              icon: "✏️",
-              ...toastStyle,
-            }
+            { duration: Infinity, icon: "✏️", ...(toastStyle || {}) }
           );
           return;
         }
@@ -191,16 +180,9 @@ const LectorDashboard = () => {
   if (loading) return <h1 className="text-center mt-10">Cargando...</h1>;
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <header className="bg-blue text-white py-6 text-center">
-        <h1 className="text-3xl font-bold">
-          Bienvenido, {userData?.primer_nombre}
-        </h1>
-        <p className="text-xl text-yellow-300">Rol: {userData?.role}</p>
-      </header>
-      <main className="p-6 text-center">
-        <PanelReader userData={userData} />
-      </main>
+    // 👇 Sin fondo gris ni header: dejamos que el PanelReader controle el diseño
+    <div className="min-h-screen">
+      <PanelReader userData={userData} />
     </div>
   );
 };
