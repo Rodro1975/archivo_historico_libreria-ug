@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
+import FormReader from "@/components/FormReader";
 
 const LoginForm = () => {
   const {
@@ -19,6 +20,7 @@ const LoginForm = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [registroOpen, setRegistroOpen] = useState(false);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -162,10 +164,22 @@ const LoginForm = () => {
                 <span>Google</span>
               </button>
             </div>
+            <div className="text-center text-blue mt-4 text-sm">
+              <button
+                type="button"
+                onClick={() => setRegistroOpen(true)}
+                className="underline decoration-yellow hover:opacity-80"
+              >
+                Regístrate con otro correo
+              </button>
+            </div>
           </div>
         </div>
+        {/* Modal Footer */}
         <Footer />
       </div>
+      {/* Modal registro lector */}
+      <FormReader open={registroOpen} onClose={() => setRegistroOpen(false)} />
     </>
   );
 };

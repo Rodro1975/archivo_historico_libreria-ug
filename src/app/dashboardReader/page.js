@@ -7,7 +7,6 @@ import supabase from "@/lib/supabase";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { toast } from "react-hot-toast";
 import PanelReader from "@/components/PanelReader";
-import Footer from "@/components/Footer";
 
 const LectorDashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -184,8 +183,6 @@ const LectorDashboard = () => {
     // 👇 Sin fondo gris ni header: dejamos que el PanelReader controle el diseño
     <div className="min-h-screen">
       <PanelReader userData={userData} />
-
-      <Footer />
     </div>
   );
 };
