@@ -143,6 +143,13 @@ const ModalBuscarLibros = ({ open, onClose }) => {
               ))
             )}
           </div>
+          {/* Botón de cerrar alternativo */}
+          <button
+            onClick={onClose}
+            className="mt-6 px-4 py-2 bg-yellow hover:bg-orange text-blue font-semibold rounded-lg"
+          >
+            Cerrar
+          </button>
         </div>
       </div>
     </div>
