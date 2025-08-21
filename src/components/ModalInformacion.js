@@ -81,12 +81,12 @@ const ModalInformacion = ({ open, onClose }) => {
                 preservación del patrimonio documental.
               </p>
               <Link
-                href="mailto:elba.rolon@ugto.mx"
+                href="mailto:libreriaug@ugto.mx"
                 target="_blank"
                 className="inline-flex items-center bg-yellow text-blue font-medium py-2 px-6 rounded-full shadow hover:bg-orange transition"
               >
                 <Email className="w-5 h-5 mr-2" />
-                elba.rolon@ugto.mx
+                libreriaug@ugto.mx
               </Link>
             </div>
           </section>

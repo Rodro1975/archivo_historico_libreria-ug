@@ -172,7 +172,7 @@ export default function Home() {
           >
             {/* Fondo con la misma imagen */}
             <Image
-              src="/images/libroUg.jpg"
+              src="/images/ugtoUG.jpeg"
               alt="Catálogo Histórico Editorial UG"
               width={1600}
               height={900}

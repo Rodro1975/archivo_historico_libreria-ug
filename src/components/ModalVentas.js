@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function ModalVentas() {
   return (
-    <section className="bg-yellow py-16 px-4">
+    <section className="bg-gold py-16 px-4">
       <div className="max-w-3xl mx-auto">
         {/* Card glassy con efecto gold */}
         <div
