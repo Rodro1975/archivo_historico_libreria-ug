@@ -18,12 +18,14 @@ const AutorSchema = z.object({
     .refine((email) => email.endsWith("@ugto.mx"), {
       message: "Debe ser un correo institucional @ugto.mx",
     }),
-  dependencia_id: z.number().int("Debe seleccionar una dependencia"),
-  unidad_academica_id: z.number().int().optional(),
+  dependencia_id: z
+    .number({ invalid_type_error: "Debe seleccionar una dependencia" })
+    .int("Debe seleccionar una dependencia"),
+  unidad_academica_id: z.number().int().optional(), // ← aceptará undefined
   vigencia: z.boolean().default(true),
 });
 
-export default function AutorForm() {
+export default function AutorForm({ onRefreshUsuarios }) {
   const {
     register,
     handleSubmit,
@@ -43,7 +45,8 @@ export default function AutorForm() {
     supabase
       .from("dependencias")
       .select("id,nombre")
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error(error);
         if (data) setDependencias(data);
       });
   }, []);
@@ -54,20 +57,22 @@ export default function AutorForm() {
     supabase
       .from("unidades_academicas")
       .select("id,nombre")
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error(error);
         if (data) setUnidades(data);
         setLoadingUnidades(false);
       });
   }, []);
 
   const onSubmit = async (formData) => {
-    // 1) Intentar buscar un usuario con ese email:
+    // 1) Buscar usuario por email
     let usuarioId = null;
     const { data: usersData, error: userErr } = await supabase
       .from("usuarios")
       .select("id")
       .eq("email", formData.correo_institucional)
       .maybeSingle();
+
     if (userErr) {
       console.error("Error buscando usuario por email:", userErr);
       toastError("Error verificando cuenta de usuario.");
@@ -75,14 +80,9 @@ export default function AutorForm() {
     }
     if (usersData) {
       usuarioId = usersData.id;
-      console.log("Autor coincide con usuario UUID:", usuarioId);
-    } else {
-      console.log(
-        "No existe usuario con ese email, se dejará usuario_id en NULL"
-      );
     }
 
-    // 2) Insertar el autor, usando usuarioId o null
+    // 2) Insertar autor
     try {
       const { error: insertErr } = await supabase.from("autores").insert([
         {
@@ -91,16 +91,15 @@ export default function AutorForm() {
           cargo: formData.cargo,
           correo_institucional: formData.correo_institucional,
           dependencia_id: formData.dependencia_id,
-          unidad_academica_id: formData.unidad_academica_id,
+          unidad_academica_id: formData.unidad_academica_id, // undefined si no eligió
           vigencia: formData.vigencia,
           fecha_creacion: new Date(),
           fecha_modificacion: new Date(),
         },
       ]);
       if (insertErr) throw insertErr;
-      console.log("Autor insertado con éxito.");
 
-      // 3) Si existe usuarioId, actualizar es_autor = true
+      // 3) Si existe usuario, marcar es_autor
       if (usuarioId) {
         const { error: updateErr } = await supabase
           .from("usuarios")
@@ -111,15 +110,16 @@ export default function AutorForm() {
           toastError(
             "Autor registrado, pero no se pudo actualizar el estado en usuarios."
           );
-        } else {
-          console.log("Campo es_autor actualizado en usuarios:", usuarioId);
         }
       }
 
       toastSuccess("Autor registrado exitosamente.");
       reset();
-      // 4) recarga la lista de usuarios en el padre
-      refreshUsuarios();
+
+      // 4) Notificar al padre (opcional)
+      if (typeof onRefreshUsuarios === "function") {
+        onRefreshUsuarios();
+      }
     } catch (err) {
       console.error("Error registrando autor:", err);
       toastError(`Error: ${err.message}`);
@@ -217,7 +217,7 @@ export default function AutorForm() {
               </label>
               <select
                 {...register("dependencia_id", {
-                  setValueAs: (v) => Number(v),
+                  setValueAs: (v) => (v === "" ? NaN : Number(v)),
                 })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               >
@@ -235,14 +235,14 @@ export default function AutorForm() {
               )}
             </div>
 
-            {/* Unidad Académica */}
+            {/* Unidad Académica (opcional) */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Unidad Académica
               </label>
               <select
                 {...register("unidad_academica_id", {
-                  setValueAs: (v) => (v ? Number(v) : null),
+                  setValueAs: (v) => (v ? Number(v) : undefined), // ← undefined si vacío
                 })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               >
