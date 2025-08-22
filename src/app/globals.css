@@ -7,12 +7,12 @@
 @tailwind utilities;
 
 :root {
-  --color-blue: #003c71; /* Pantone 540c */
-  --color-yellow: #f6e70f; /* Pantone 121c */
-  --color-gold: #e3d8b0; /* Pantone 451c */
-  --color-gray: #e5e7eb; /* gray-200 */
-  --color-orange: #ffa500; /* orange */
-  --color-navy: #1f2937; /* gray-900 */
+  --color-blue: #0a263d; /* ≈ Pantone 540 */
+  --color-yellow: #ffd300; /* ≈ Pantone 109 */
+  --color-gold: #8c6e39; /* ≈ Pantone 872 (simulación en pantalla) */
+  --color-gray: #e5e7eb; /* igual */
+  --color-orange: #ffa500; /* si lo usas como acento, mantenlo */
+  --color-navy: #0a263d; /* opcional: unifica navy con el azul institucional */
 }
 
 @media (prefers-color-scheme: dark) {
