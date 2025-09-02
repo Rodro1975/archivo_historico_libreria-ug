@@ -105,3 +105,19 @@ h3 {
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* Colores de texto para estados de solicitudes */
+.text-pendiente {
+  color: var(--color-yellow); /* amarillo institucional */
+  font-weight: bold;
+}
+
+.text-aprobado {
+  color: #28a745; /* verde accesible, similar a Bootstrap success */
+  font-weight: bold;
+}
+
+.text-rechazado {
+  color: #dc3545; /* rojo accesible, similar a Bootstrap danger */
+  font-weight: bold;
+}

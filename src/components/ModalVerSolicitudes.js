@@ -110,7 +110,15 @@ export default function ModalVerSolicitudes({ open, onClose }) {
                       <td className="p-2 text-sm text-blue whitespace-pre-wrap">
                         {solicitud.detalle}
                       </td>
-                      <td className="p-2 text-sm font-bold text-orange-700">
+                      <td
+                        className={`p-2 text-sm font-bold ${
+                          solicitud.estado === "aprobado"
+                            ? "text-aprobado"
+                            : solicitud.estado === "rechazado"
+                            ? "text-rechazado"
+                            : "text-pendiente"
+                        }`}
+                      >
                         {solicitud.estado || "Pendiente"}
                       </td>
                       <td className="p-2 text-sm text-blue whitespace-pre-wrap">
