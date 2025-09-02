@@ -70,6 +70,19 @@ export default function MostrarSolicitudes() {
     }
   };
 
+  //helper local para manejar colores de estado
+  const claseEstado = (estadoRaw) => {
+    const e = (estadoRaw || "pendiente").toLowerCase();
+    if (e === "aprobado") return "text-aprobado";
+    if (e === "rechazado") return "text-rechazado";
+    return "text-pendiente";
+  };
+
+  const labelEstado = (estadoRaw) => {
+    const e = (estadoRaw || "pendiente").toLowerCase();
+    return e.charAt(0).toUpperCase() + e.slice(1);
+  };
+
   return (
     <div>
       <WorkBar />
@@ -147,8 +160,12 @@ export default function MostrarSolicitudes() {
                     <td className="px-4 py-3">{s.nombre}</td>
                     <td className="px-4 py-3">{s.tipo}</td>
                     <td className="px-4 py-3">{s.detalle}</td>
-                    <td className="px-4 py-3 font-semibold">
-                      {s.estado || "Pendiente"}
+                    <td
+                      className={`px-4 py-3 font-semibold ${claseEstado(
+                        s.estado
+                      )}`}
+                    >
+                      {labelEstado(s.estado)}
                     </td>
                     <td className="px-4 py-3">
                       {new Date(s.creado_en).toLocaleString()}
