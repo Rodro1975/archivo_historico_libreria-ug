@@ -31,7 +31,7 @@ export default function AcercaPage() {
         >
           <div className="absolute inset-0 bg-black/60"></div>
           <h1 className="relative text-white font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-            Acerca del Archivo Histórico
+            Acerca del Catálogo Histórico de Publicaciones{" "}
           </h1>
         </section>
 
@@ -55,21 +55,32 @@ export default function AcercaPage() {
               <h2 className="text-2xl font-semibold text-blue mb-4">
                 Nuestros Fondos
               </h2>
-              <p className="text-gray-700">
+              <p className="text-gray-700 leading-relaxed">
                 Está conformado por un archivo electrónico de las publicaciones
                 universitarias y sus metadatos, y un archivo físico de las
                 publicaciones en soporte impreso. El Programa Editorial
                 Universitario (Editorial UG) es el responsable de administrar y
                 promover la integración de títulos, como parte de su compromiso
-                con la historia editorial de la institución. El espacio físico
-                que alberga el acervo impreso de publicaciones de este Catálogo
-                se nombró en 2017: Claustro Académico “Fondo Editorial Eugenio
-                Trueba Olivares”, en honor a uno de los principales promotores
-                de la tradición editorial universitaria. Se encuentra ubicado en
-                la ciudad de Guanajuato, dentro del Mesón de San Antonio, en las
-                oficinas de la Editorial UG. En esta página encontrarás un
-                listado en permanente crecimiento de los títulos que conforman
-                la historia editorial de la Universidad de Guanajuato.
+                con la historia editorial de la institución.
+              </p>
+
+              <p className="text-gray-700 leading-relaxed mt-4 sm:mt-5">
+                El espacio físico que alberga el acervo impreso de publicaciones
+                de este Catálogo se nombró en 2017:
+                <strong>
+                  {" "}
+                  Claustro Académico “Fondo Editorial Eugenio Trueba Olivares”
+                </strong>
+                , en honor a uno de los principales promotores de la tradición
+                editorial universitaria. Se encuentra ubicado en la ciudad de
+                Guanajuato, dentro del Mesón de San Antonio, en las oficinas de
+                la Editorial UG.
+              </p>
+
+              <p className="text-gray-700 leading-relaxed mt-4 sm:mt-5">
+                En esta página encontrarás un listado en permanente crecimiento
+                de los títulos que conforman la historia editorial de la
+                Universidad de Guanajuato.
               </p>
             </div>
           </div>

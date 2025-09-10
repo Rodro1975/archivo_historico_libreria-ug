@@ -138,10 +138,10 @@ export default function FormReader({ open, onClose }) {
                 />
               </div>
               <h1 className="font-black text-3xl mb-2 text-blue">
-                Crear cuenta de Lector
+                Crear cuenta
               </h1>
               <p className="text-sm text-gray-500">
-                Regístrate con tu correo y contraseña para acceder como lector.
+                Regístrate y conoce el catálogo histórico de publicaciones.{" "}
               </p>
             </div>
 

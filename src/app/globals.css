@@ -121,3 +121,9 @@ h3 {
   color: #dc3545; /* rojo accesible, similar a Bootstrap danger */
   font-weight: bold;
 }
+
+/* Pill blanca para logos editorial */
+.logo-pill {
+  @apply inline-flex items-center justify-center rounded-2xl
+         bg-white px-3 py-2 shadow-md ring-1 ring-[#F2C12E]/30;
+}

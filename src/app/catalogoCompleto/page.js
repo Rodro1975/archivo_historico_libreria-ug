@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import Image from "next/image";
 import WorkBar from "../../components/WorkBar";
@@ -10,10 +10,18 @@ const CatalogoCompleto = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
+  const closeBtnRef = useRef(null);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
+  //Estado para autores
+  const [authorData, setAuthorData] = useState({
+    principal: null,
+    otros: [],
+    coeditores: [],
+  });
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -21,7 +29,7 @@ const CatalogoCompleto = () => {
         const { data, error } = await supabase
           .from("libros")
           .select(
-            "id_libro, titulo, sinopsis, isbn, portada, codigoRegistro, coleccion, numeroEdicion, anioPublicacion, formato, tipoAutoria, numeroPaginas"
+            "id_libro, titulo, subtitulo, sinopsis, isbn, portada, codigoRegistro, coleccion, numeroEdicion, anioPublicacion, formato, tipoAutoria, numeroPaginas"
           );
         if (error) throw error;
         setBooks(data);
@@ -32,6 +40,38 @@ const CatalogoCompleto = () => {
 
     fetchBooks();
   }, []);
+
+  // Bloqueo de scroll, foco y cierre con ESC cuando el modal está abierto
+  useEffect(() => {
+    if (!selectedBook) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setSelectedBook(null);
+    };
+    document.addEventListener("keydown", onKeyDown);
+
+    // foco al botón cerrar
+    setTimeout(() => {
+      closeBtnRef.current?.focus();
+    }, 0);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [selectedBook]);
+
+  //***Dispara el cargador de libros cuando se abre el modal */
+  useEffect(() => {
+    if (!selectedBook?.id_libro) {
+      setAuthorData({ principal: null, otros: [], coeditores: [] });
+      return;
+    }
+    loadAuthors(selectedBook.id_libro);
+  }, [selectedBook]);
 
   // Función para validar si la URL es correcta
   const isValidUrl = (url) => {
@@ -45,8 +85,66 @@ const CatalogoCompleto = () => {
 
   // Filtrar los libros con el término de búsqueda
   const filteredBooks = books.filter((book) =>
-    book.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+    (book?.titulo || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Muestra "—" si viene null/undefined o string vacío
+  const show = (v) =>
+    v === null || v === undefined || (typeof v === "string" && v.trim() === "")
+      ? "—"
+      : v;
+
+  // Mapea formato a la etiqueta pedida
+  const showFormatos = (f) => {
+    if (!f) return "—";
+    const v = String(f).toLowerCase();
+    if (v === "impreso") return "Impreso";
+    if (v === "electronico" || v === "electrónico") return "Electrónico";
+    if (v === "ambos") return "Impreso y Electrónico";
+    return f; // fallback por si aparece otro valor
+  };
+
+  //***Cargador de autores del libro seleccionado***
+  const loadAuthors = async (libroId) => {
+    try {
+      // Opción A — JOIN directo (requiere FK libro_autor.autor_id -> autores.id)
+      const { data, error } = await supabase
+        .from("libro_autor")
+        .select(`tipo_autor, autor:autores ( id, nombre_completo )`)
+        .eq("libro_id", libroId);
+
+      if (error) throw error;
+
+      const rows = (data || []).filter((r) => r.autor?.nombre_completo);
+      const isRole = (row, re) =>
+        (row?.tipo_autor || "").toString().toLowerCase().match(re);
+
+      const coeditores = rows
+        .filter((r) => isRole(r, /coeditor/))
+        .map((r) => r.autor.nombre_completo);
+
+      // principal explícito; fallback: 'autor' puro; fallback 2: primero de la lista
+      const principalRow =
+        rows.find((r) => isRole(r, /principal/)) ||
+        rows.find((r) => isRole(r, /^autor$/)) ||
+        rows[0];
+
+      const principal = principalRow?.autor?.nombre_completo || null;
+
+      const otros = rows
+        .filter(
+          (r) =>
+            r !== principalRow && // excluye principal
+            !isRole(r, /coeditor/) // excluye coeditores
+        )
+        .map((r) => r.autor.nombre_completo);
+
+      setAuthorData({ principal, otros, coeditores });
+    } catch (err) {
+      console.error("Error al cargar autores:", err.message);
+      setAuthorData({ principal: null, otros: [], coeditores: [] });
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -72,11 +170,10 @@ const CatalogoCompleto = () => {
 
         <div className="relative z-10 text-center px-6 md:px-12 lg:w-3/4">
           <h1 className="text-6xl md:text-6xl lg:text-8xl font-extrabold leading-tight text-white drop-shadow-xl">
-            Archivo Histórico Editorial UG
+            Galería del editor{" "}
           </h1>
           <p className="mt-4 text-lg md:text-xl text-white drop-shadow-lg">
-            Accede a una vasta colección de libros históricos. Colabora, edita y
-            enriquece el legado editorial que define nuestra historia.
+            Acceso rápido a publicaciones
           </p>
         </div>
       </div>
@@ -193,7 +290,16 @@ const CatalogoCompleto = () => {
 
       {/* Modal WOW optimizado para todos los dispositivos */}
       {selectedBook && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 animate-fadeIn p-4">
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 animate-fadeIn p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="book-modal-title"
+          aria-describedby="book-modal-desc"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedBook(null);
+          }}
+        >
           <div
             className="relative bg-gradient-to-br from-yellow via-gold to-orange rounded-3xl shadow-2xl border-4 border-gold w-full p-6 md:p-8 animate-slideUp overflow-y-auto"
             style={{
@@ -201,69 +307,122 @@ const CatalogoCompleto = () => {
               maxHeight: "90vh",
               width: "36rem",
             }}
+            onClick={(e) => e.stopPropagation()}
           >
             <button
+              ref={closeBtnRef}
               onClick={() => setSelectedBook(null)}
-              className="absolute top-4 right-4 hover:bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-4xl transition-all duration-300"
+              className="absolute top-4 right-4 hover:bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-4xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/80"
               title="Cerrar"
+              aria-label="Cerrar"
             >
               ×
             </button>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-blue mb-4 text-center drop-shadow pr-8">
+            <h2
+              id="book-modal-title"
+              className="text-2xl md:text-3xl font-extrabold text-blue text-center drop-shadow pr-8"
+            >
               {selectedBook.titulo}
             </h2>
+
+            {Boolean(selectedBook?.subtitulo?.trim()) && (
+              <p
+                id="book-modal-subtitle"
+                className="mt-1 mb-4 text-base md:text-lg text-blue/90 font-semibold text-center"
+              >
+                {selectedBook.subtitulo}
+              </p>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-white">
+              {/* Columna 1 */}
               <div>
                 <p className="mb-1">
                   <span className="font-bold text-gray-700">
                     Código de registro:
                   </span>{" "}
-                  {selectedBook.codigoRegistro}
+                  {show(selectedBook.codigoRegistro)}
                 </p>
+
+                <p className="mb-1">
+                  <span className="font-bold text-gray-700">
+                    Autor principal:
+                  </span>{" "}
+                  {authorData.principal ?? "—"}
+                </p>
+
+                {authorData.otros.length > 0 && (
+                  <p className="mb-1">
+                    <span className="font-bold text-gray-700">
+                      Otros autores:
+                    </span>{" "}
+                    {authorData.otros.join(", ")}
+                  </p>
+                )}
+
                 <p className="mb-1">
                   <span className="font-bold text-gray-700">Colección:</span>{" "}
-                  {selectedBook.coleccion}
+                  {show(selectedBook.coleccion)}
                 </p>
+
                 <p className="mb-1">
                   <span className="font-bold text-gray-700">Edición:</span>{" "}
-                  {selectedBook.numeroEdicion}
+                  {show(selectedBook.numeroEdicion)}
                 </p>
+
                 <p className="mb-1">
                   <span className="font-bold text-gray-700">
                     Año de publicación:
                   </span>{" "}
-                  {selectedBook.anioPublicacion}
-                </p>
-                <p className="mb-1">
-                  <span className="font-bold text-gray-700">Formato:</span>{" "}
-                  {selectedBook.formato}
-                </p>
-                <p className="mb-1">
-                  <span className="font-bold text-gray-700">
-                    N° de páginas:
-                  </span>{" "}
-                  {selectedBook.numeroPaginas}
+                  {show(selectedBook.anioPublicacion)}
                 </p>
               </div>
+
+              {/* Columna 2 */}
               <div>
                 <p className="mb-1">
-                  <span className="font-bold text-gray-700">ISBN:</span>{" "}
-                  {selectedBook.isbn}
+                  <span className="font-bold text-gray-700">Formatos:</span>{" "}
+                  {showFormatos(selectedBook.formato)}
                 </p>
+
+                <p className="mb-1">
+                  <span className="font-bold text-gray-700">
+                    Núm. de páginas:
+                  </span>{" "}
+                  {show(selectedBook.numeroPaginas)}
+                </p>
+
+                <p className="mb-1">
+                  <span className="font-bold text-gray-700">ISBN UG:</span>{" "}
+                  {show(selectedBook.isbn)}
+                </p>
+
                 <p className="mb-1">
                   <span className="font-bold text-gray-700">
                     Tipo de autoría:
                   </span>{" "}
-                  {selectedBook.tipoAutoria}
+                  {show(selectedBook.tipoAutoria)}
                 </p>
+
+                {authorData.coeditores.length > 0 && (
+                  <p className="mb-1">
+                    <span className="font-bold text-gray-700">Coeditores:</span>{" "}
+                    {authorData.coeditores.join(", ")}
+                  </p>
+                )}
+
                 <p className="mb-1">
-                  <span className="font-bold text-gray-700">Descripción:</span>
-                  <span className="block text-gray-400 text-sm mt-1">
-                    {selectedBook.sinopsis}
+                  <span className="font-bold text-gray-700">Sinopsis:</span>
+                  <span
+                    id="book-modal-desc"
+                    className="block text-gray-100/90 text-sm mt-1"
+                  >
+                    {show(selectedBook.sinopsis)}
                   </span>
                 </p>
               </div>
             </div>
+
             <div className="flex justify-center mt-6">
               <Image
                 src={

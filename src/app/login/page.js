@@ -138,19 +138,18 @@ const LoginForm = () => {
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
-            {/* Botones sociales en una sola fila */}
-            <div className="mt-4 flex gap-2">
+            {/* Botones de inicio de sesión y creación de cuenta */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {/* Google */}
               <button
                 onClick={async () => {
-                  const redirectUrl = `${window.location.origin}/dashboardReader`; // se adapta a local y producción
+                  const redirectUrl = `${window.location.origin}/dashboardReader`;
 
                   const { error } = await supabase.auth.signInWithOAuth({
                     provider: "google",
                     options: {
                       redirectTo: redirectUrl,
-                      queryParams: {
-                        prompt: "select_account", // Forzar selector de cuenta Google
-                      },
+                      queryParams: { prompt: "select_account" },
                     },
                   });
 
@@ -158,19 +157,23 @@ const LoginForm = () => {
                     toastError("Error al iniciar con Google: " + error.message);
                   }
                 }}
-                className="flex-1 flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg"
+                className="flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg"
+                type="button"
+                aria-label="Iniciar sesión con Google"
               >
-                <i className="fab fa-google mr-2 text-red-600"></i>
+                <i className="fab fa-google mr-2 text-red-600" />
                 <span>Google</span>
               </button>
-            </div>
-            <div className="text-center text-blue mt-4 text-sm">
+
+              {/* Crear cuenta (antes: Regístrate con otro correo) */}
               <button
                 type="button"
                 onClick={() => setRegistroOpen(true)}
-                className="underline decoration-yellow hover:opacity-80"
+                className="flex items-center justify-center border border-gray-200 text-gray-900 w-full py-2.5 rounded-lg text-sm hover:bg-gray-100 hover:shadow-lg"
+                aria-label="Crear cuenta con correo"
               >
-                Regístrate con otro correo
+                <i className="fas fa-user-plus mr-2 text-blue" />
+                <span>Crear cuenta</span>
               </button>
             </div>
           </div>

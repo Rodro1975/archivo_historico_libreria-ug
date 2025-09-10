@@ -65,20 +65,55 @@ export default function Home() {
         {/* Contenedor de texto y botón */}
         <div className="relative z-10 max-w-2xl">
           <h1
-            className="text-gold font-extrabold drop-shadow-lg
-      text-3xl sm:text-4xl md:text-6xl
-      leading-tight mb-2 sm:mb-4"
+            className="text-gold font-extrabold tracking-tight
+             [text-wrap:balance] break-words
+             text-2xl sm:text-3xl md:text-5xl lg:text-6xl
+             leading-snug sm:leading-tight md:leading-[1.15]
+             mb-2 sm:mb-4"
+            style={{
+              textShadow: [
+                // contorno fino (8 direcciones)
+                "1px 0 0 #0C1B2A",
+                "-1px 0 0 #0C1B2A",
+                "0 1px 0 #0C1B2A",
+                "0 -1px 0 #0C1B2A",
+                "1px 1px 0 #0C1B2A",
+                "-1px -1px 0 #0C1B2A",
+                "1px -1px 0 #0C1B2A",
+                "-1px 1px 0 #0C1B2A",
+                // glow suave para separar del fondo
+                "0 2px 8px rgba(0,0,0,0.45)",
+              ].join(", "),
+            }}
           >
-            Archivo Histórico de la Editorial UG
+            CATÁLOGO HISTÓRICO DE PUBLICACIONES Editorial UG
           </h1>
+
           <p
             className="text-gold
-      text-sm sm:text-base md:text-lg
-      mb-4 sm:mb-6"
+             text-sm sm:text-base md:text-lg
+             leading-relaxed
+             mb-4 sm:mb-6"
+            style={{
+              textShadow: [
+                // contorno fino (8 direcciones), más sutil que en el h1
+                "0.6px 0 0 #0C1B2A",
+                "-0.6px 0 0 #0C1B2A",
+                "0 0.6px 0 #0C1B2A",
+                "0 -0.6px 0 #0C1B2A",
+                "0.6px 0.6px 0 #0C1B2A",
+                "-0.6px -0.6px 0 #0C1B2A",
+                "0.6px -0.6px 0 #0C1B2A",
+                "-0.6px 0.6px 0 #0C1B2A",
+                // glow muy leve para separar del fondo
+                "0 1px 4px rgba(0,0,0,0.35)",
+              ].join(", "),
+            }}
           >
             Explora nuestra colección y aprende más sobre la historia de la
             Editorial de la UG.
           </p>
+
           <Link
             href="/login"
             className="inline-block bg-yellow text-blue font-semibold
@@ -87,7 +122,7 @@ export default function Home() {
         hover:bg-blue hover:text-yellow
       "
           >
-            Inicia Sesión
+            Inicia Sesión y consulta
           </Link>
         </div>
       </section>
@@ -96,7 +131,7 @@ export default function Home() {
 
       <section className="collections-highlighted py-8">
         <h2 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-yellow to-orange bg-clip-text text-transparent">
-          Colecciones Destacadas
+          Conoce nuestras publicaciones y su historia
         </h2>
         <div className="mx-4 md:mx-20 lg:mx-40">
           {" "}

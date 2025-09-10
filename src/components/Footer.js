@@ -41,22 +41,52 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Logo al centro */}
-          <div className="flex-shrink-0 mb-6 md:mb-0 md:order-2 flex justify-center">
-            <Link
+          <div className="flex-shrink-0 mb-6 md:mb-0 md:order-2 flex flex-col items-center gap-3 md:flex-row md:gap-6 justify-center">
+            <a
+              href="https://www.ugto.mx/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Universidad de Guanajuato"
+              className="group inline-flex items-center"
+            >
+              <span className="sr-only">Universidad de Guanajuato</span>
+              <div
+                className="inline-flex items-center justify-center rounded-2xl
+                    bg-white px-3 py-2 shadow-md ring-1 ring-black/10"
+              >
+                <Image
+                  src="/images/escudo-png.png"
+                  alt="Escudo de la Universidad de Guanajuato"
+                  width={180}
+                  height={180}
+                  className="h-14 sm:h-16 md:h-20 w-auto"
+                />
+              </div>
+            </a>
+
+            <a
               href="https://www.ugto.mx/editorial/"
               target="_blank"
-              rel="noreferrer"
-              className="flex items-center space-x-3 rtl:space-x-reverse"
+              rel="noopener noreferrer"
+              title="Editorial UG"
+              className="inline-flex items-center"
             >
-              <Image
-                src="/images/editorial-ug.png"
-                alt="Editorial UG Logo"
-                width={220}
-                height={70}
-                className="h-16 w-auto" // 👈 más grande, sin redondeo, sin fondo
-              />
-            </Link>
+              <span className="sr-only">
+                Editorial de la Universidad de Guanajuato
+              </span>
+              <div
+                className="inline-flex items-center justify-center rounded-2xl
+                    bg-white px-3 py-2 shadow-md ring-1 ring-black/10"
+              >
+                <Image
+                  src="/images/editorial-ug.png"
+                  alt="Logo Editorial de la Universidad de Guanajuato"
+                  width={220}
+                  height={70}
+                  className="h-12 sm:h-14 md:h-16 w-auto"
+                />
+              </div>
+            </a>
           </div>
 
           {/* Redes sociales */}
@@ -82,6 +112,9 @@ const Footer = () => {
             </Link>
           </div>
         </div>
+        <p className="pt-6 text-center text-gray-400 font-bold text-base md:text-lg">
+          Tu dirección de correo electrónico es 100% segura para nosotros.
+        </p>
 
         {/* Información adicional centrada al final */}
         <div className="mt-8 border-t border-gray-200 pt-4 text-center text-gray-400 text-sm md:text-base">
