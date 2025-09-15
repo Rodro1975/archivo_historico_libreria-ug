@@ -22,10 +22,10 @@ const FAQsPage = () => {
           Información General
         </h2>
         <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
-          ¿Qué es el Archivo Histórico de la Universidad de Guanajuato?
+          ¿Qué es el Catálogo Histórico de la Universidad de Guanajuato?
         </h2>
         <p className="text-gray-700 mb-4">
-          El Archivo Histórico de la Universidad de Guanajuato es una colección
+          El Catálogo Histórico de la Universidad de Guanajuato es una colección
           de documentos y registros importantes que preservan la historia
           académica y administrativa de la institución.
         </p>
@@ -41,7 +41,7 @@ const FAQsPage = () => {
           Acceso y Uso del Archivo
         </h2>
         <h2 className="text-2xl font-bold text-center text-[#003c71] mb-6">
-          ¿Cómo puedo acceder al archivo histórico?
+          ¿Cómo puedo acceder al Catálogo histórico?
         </h2>
         <p className="text-gray-700 mb-4">
           El archivo es accesible tanto en línea como en forma física. Para

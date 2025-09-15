@@ -98,7 +98,7 @@ const MostrarAutoresPage = () => {
         <div className="flex items-center gap-2 max-w-screen-lg mx-auto px-4 mb-2">
           <input
             type="text"
-            placeholder="Buscar por nombre de autor"
+            placeholder="Buscar por apellido de autor"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-2 rounded border bg-yellow text-blue placeholder-blue-900 font-bold"

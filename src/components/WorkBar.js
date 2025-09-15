@@ -212,6 +212,25 @@ const WorkBar = () => {
           width={200}
           height={200}
         />
+
+        {/* Botón a la derecha (mismo estilo azul del sidebar) */}
+        <Link
+          href="/dashboard"
+          aria-label="Volver al Dashboard"
+          className="group inline-flex items-center gap-2 px-3 py-1.5
+               rounded-lg font-semibold text-sm
+               bg-[var(--color-blue)] text-white
+               shadow-md hover:brightness-110 hover:shadow-lg
+               transition duration-200
+               focus:outline-none focus:ring-2 focus:ring-[var(--color-blue)]/60
+               absolute right-4 top-1/2 -translate-y-1/2"
+        >
+          <AiOutlineDashboard
+            size={18}
+            className="opacity-95 group-hover:opacity-100"
+          />
+          <span className="hidden sm:inline">Volver al Dashboard</span>
+        </Link>
       </div>
 
       {/* Sidebar */}
@@ -234,6 +253,26 @@ const WorkBar = () => {
         {/* Menú con scroll */}
         <div className="flex-1 overflow-y-auto">
           <ul className="flex flex-col gap-6 p-6 text-[var(--color-blue)]">
+            {/* Dashboard */}
+            <li>
+              <Link
+                href="/dashboard"
+                className="group w-full inline-flex items-center gap-3 px-3 py-2
+               rounded-lg font-light
+               bg-[var(--color-blue)] text-white
+               shadow-md hover:brightness-110 hover:shadow-lg hover:-translate-y-px
+               transition duration-200
+               focus:outline-none focus:ring-2 focus:ring-[var(--color-blue)]/60"
+                aria-label="Volver al Dashboard"
+              >
+                <AiOutlineDashboard
+                  size={22}
+                  className="opacity-95 group-hover:opacity-100"
+                />
+                <span>Volver al Dashboard</span>
+              </Link>
+            </li>
+
             {/* Notificaciones */}
             <li className="relative flex items-center gap-4 hover:text-[var(--color-orange)]">
               <button
@@ -334,14 +373,6 @@ const WorkBar = () => {
                 </li>
               </>
             )}
-
-            {/* Dashboard */}
-            <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
-              <AiOutlineDashboard size={24} />
-              <Link href="/dashboard" className="block text-lg">
-                Volver al Dashboard
-              </Link>
-            </li>
           </ul>
         </div>
 

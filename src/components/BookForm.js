@@ -12,7 +12,7 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 // NO permite que empiece vacío/espacios, ni que sea solo símbolos.
 const tituloRegex =
   /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,:;()'"\-–—!?/&]+$/;
-
+const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
 // Funciones de validación y cálculo ISBN
 function isValidISBN(isbn) {
   const digits = isbn.replace(/[-\s]/g, "");
@@ -76,9 +76,15 @@ const RegisterBookSchema = z.object({
       message:
         "El ISBN debe ser válido (ISBN-10 o ISBN-13, con o sin guiones, y con dígito de control correcto). Ejemplo: 978-607-441-616-9 o 84-376-0494-1",
     }),
-  doi: z.string().regex(/^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i, {
-    message: "El DOI debe tener el formato correcto (ej. 10.1000/xyz123).",
-  }),
+  doi: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z
+      .string()
+      .regex(doiRegex, {
+        message: "El DOI debe tener el formato correcto (ej. 10.1000/xyz123).",
+      })
+      .optional()
+  ),
   titulo: z.preprocess(
     (v) => (typeof v === "string" ? v.trim() : v),
     z
@@ -639,9 +645,8 @@ export default function BookForm() {
                 type="text"
                 id="doi"
                 {...register("doi")}
-                required
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ej. 10.1000/xyz123"
+                placeholder="Ej. 10.1000/xyz123 (opcional)"
               />
               {errors.doi && (
                 <p className="text-red-500 text-xs italic">

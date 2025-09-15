@@ -64,7 +64,7 @@ export default function EstadisticasPage() {
           className="mb-2"
         />
         <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
-          Estadísticas del Archivo Histórico
+          Estadísticas del Catálogo Histórico
         </h1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

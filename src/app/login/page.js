@@ -21,6 +21,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [registroOpen, setRegistroOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -175,6 +176,57 @@ const LoginForm = () => {
                 <i className="fas fa-user-plus mr-2 text-blue" />
                 <span>Crear cuenta</span>
               </button>
+            </div>
+            {/* Ayuda sobre opciones de registro (popover independiente) */}
+            <div className="mt-2 relative flex justify-center">
+              <button
+                type="button"
+                onClick={() => setHelpOpen((v) => !v)}
+                aria-expanded={helpOpen}
+                aria-controls="help-popover"
+                className="inline-flex items-center gap-2 text-xs text-blue underline hover:opacity-80"
+                title="¿Por qué registrarse con correo?"
+              >
+                <i className="fas fa-info-circle" />
+                <span>¿Primera vez aquí?</span>
+              </button>
+
+              {helpOpen && (
+                <div
+                  id="help-popover"
+                  role="dialog"
+                  aria-labelledby="help-title"
+                  className="absolute top-full mt-2 w-[min(22rem,90vw)] bg-white border border-gray-200 rounded-lg shadow-xl p-3 z-50
+                 right-0 sm:left-1/2 sm:-translate-x-1/2"
+                >
+                  <p
+                    id="help-title"
+                    className="text-sm font-semibold text-blue"
+                  >
+                    Elige cómo crear tu cuenta
+                  </p>
+                  <ul className="mt-2 text-xs text-gray-700 space-y-1 list-disc pl-5">
+                    <li>
+                      <strong>Google (Gmail):</strong> si es tu primera vez,
+                      creamos tu cuenta automáticamente con tu Gmail.
+                    </li>
+                    <li>
+                      <strong>Otro correo o institucional (@ugto.mx):</strong>{" "}
+                      usa <em>Crear cuenta</em> para registrarte con email y
+                      contraseña.
+                    </li>
+                  </ul>
+                  <div className="mt-2 text-right">
+                    <button
+                      type="button"
+                      onClick={() => setHelpOpen(false)}
+                      className="text-blue text-xs underline hover:opacity-80"
+                    >
+                      Entendido
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

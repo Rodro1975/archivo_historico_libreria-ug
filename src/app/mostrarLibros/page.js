@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
@@ -17,29 +17,65 @@ const MostrarLibrosPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [libroAEliminar, setLibroAEliminar] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [principalMap, setPrincipalMap] = useState({}); // { [id_libro]: "Nombre Autor 1" }
 
-  const fetchLibros = async () => {
+  //Helper para elegir autor principal
+  const pickPrincipal = (rows = []) => {
+    if (!rows.length) return null;
+    const norm = (x) => (x || "").toString().toLowerCase();
+    const by = (pred) => rows.find((r) => pred(norm(r?.tipo_autor)));
+    const row =
+      by((t) => t.includes("principal")) || by((t) => t === "autor") || rows[0];
+    return row?.autor?.nombre_completo || null;
+  };
+
+  const fetchLibros = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase.from("libros").select("*");
-
       if (error) throw new Error(error.message);
-      if (!data)
-        throw new Error("No se encontraron datos en la tabla 'libros'.");
+      setLibros(data || []);
+      setFilteredLibros(data || []);
 
-      setLibros(data);
-      setFilteredLibros(data);
+      // Cargar autores principales en un solo fetch (no N+1)
+      if (data?.length) {
+        const ids = data.map((l) => l.id_libro).filter(Boolean);
+
+        const { data: la, error: e2 } = await supabase
+          .from("libro_autor")
+          .select("libro_id, tipo_autor, autor:autores ( nombre_completo )")
+          .in("libro_id", ids);
+
+        if (!e2 && la) {
+          // Agrupar por libro_id
+          const byLibro = la.reduce((acc, row) => {
+            (acc[row.libro_id] ||= []).push(row);
+            return acc;
+          }, {});
+
+          // Construir mapa id_libro -> Autor 1
+          const map = {};
+          ids.forEach((id) => {
+            map[id] = pickPrincipal(byLibro[id] || []) || null;
+          });
+          setPrincipalMap(map);
+        } else {
+          setPrincipalMap({});
+        }
+      } else {
+        setPrincipalMap({});
+      }
     } catch (err) {
       console.error("Error al obtener libros:", err.message);
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchLibros();
-  }, []);
+  }, [fetchLibros]);
 
   // Filtrar los libros al cambiar el término de búsqueda
   useEffect(() => {
@@ -136,6 +172,8 @@ const MostrarLibrosPage = () => {
               <th className="border px-4 py-2">ISBN</th>
               <th className="border px-4 py-2">DOI</th>
               <th className="border px-4 py-2">Titulo</th>
+              <th className="border px-4 py-2">Autor Principal</th>
+
               <th className="border px-4 py-2">Acciones</th>
             </tr>
           </thead>
@@ -147,6 +185,9 @@ const MostrarLibrosPage = () => {
                 <td className="border px-4 py-2">{libro.isbn}</td>
                 <td className="border px-4 py-2">{libro.doi}</td>
                 <td className="border px-4 py-2">{libro.titulo}</td>
+                <td className="border px-4 py-2">
+                  {principalMap[libro.id_libro] ?? "—"}
+                </td>
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => {

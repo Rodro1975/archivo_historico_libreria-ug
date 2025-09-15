@@ -19,7 +19,7 @@ const AvisoPrivacidadPage = () => {
           Aviso Legal
         </h1>
         <h2 className="text-3xl font-bold text-center text-[#003c71] mb-6">
-          Términos y Condiciones Generales de Uso del Archivo Histórico de la
+          Términos y Condiciones Generales de Uso del Catálogo Histórico de la
           Editorial de la Universidad de Guanajuato
         </h2>
         <p className="text-gray-700 mb-4">

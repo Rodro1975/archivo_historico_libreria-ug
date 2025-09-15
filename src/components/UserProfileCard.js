@@ -72,7 +72,6 @@ const UserProfileCard = ({ userData }) => {
     apellido_paterno,
     apellido_materno,
     email,
-    telefono,
     role,
     justificacion,
     fecha_creacion,
@@ -118,50 +117,45 @@ const UserProfileCard = ({ userData }) => {
           {nombreCompleto}
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-blue text-sm">
-          <div>
-            <strong>Correo electrónico:</strong>
-            <p className="text-black">{email}</p>
-          </div>
-          <div>
-            <strong>Teléfono:</strong>
-            <p className="text-black">{telefono || "N/A"}</p>
-          </div>
-          <div>
-            <strong>Rol:</strong>
-            <p className="text-blue">{role}</p>
-          </div>
-          <div>
-            <strong>¿Es autor?:</strong>
-            <p>{autor ? "Sí" : "No"}</p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-3 md:auto-rows-fr items-stretch gap-3 md:gap-4 text-blue text-sm">
+          {/* Fila 1 */}
+          <dl className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5 leading-tight">
+            <dt className="font-semibold">Correo electrónico:</dt>
+            <dd className="text-black break-words">{email}</dd>
+          </dl>
 
-          {autor && (
-            <>
-              <div>
-                <strong>Dependencia:</strong>
-                <p>{autor.dependencias?.nombre || "No asignada"}</p>
-              </div>
-              <div>
-                <strong>Unidad académica:</strong>
-                <p>{autor.unidades_academicas?.nombre || "No asignada"}</p>
-              </div>
-            </>
-          )}
+          <dl className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5 leading-tight">
+            <dt className="font-semibold">Rol:</dt>
+            <dd className="text-blue">{role}</dd>
+          </dl>
 
-          <div className="md:col-span-2">
-            <strong>Justificación:</strong>
-            <p className="text-black">{justificacion || "Ninguna"}</p>
-          </div>
+          {/* Fila 2 */}
+          <dl className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5 leading-tight">
+            <dt className="font-semibold">¿Es autor?:</dt>
+            <dd>{autor ? "Sí" : "No"}</dd>
+          </dl>
 
-          <div>
-            <strong>Fecha de creación:</strong>
-            <p>{new Date(fecha_creacion).toLocaleDateString()}</p>
-          </div>
-          <div>
-            <strong>Última modificación:</strong>
-            <p>{new Date(fecha_modificacion).toLocaleDateString()}</p>
-          </div>
+          <dl className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5 leading-tight">
+            <dt className="font-semibold">Dependencia:</dt>
+            <dd>{autor?.dependencias?.nombre || "No asignada"}</dd>
+            <dt className="font-semibold">Unidad académica:</dt>
+            <dd>{autor?.unidades_academicas?.nombre || "No asignada"}</dd>
+          </dl>
+
+          {/* Fila 3 */}
+          <dl className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5 leading-tight">
+            <dt className="font-semibold">Justificación:</dt>
+            <dd className="text-black break-words">
+              {justificacion || "Ninguna"}
+            </dd>
+          </dl>
+
+          <dl className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5 leading-tight">
+            <dt className="font-semibold">Fecha de creación:</dt>
+            <dd>{new Date(fecha_creacion).toLocaleDateString()}</dd>
+            <dt className="font-semibold">Última modificación:</dt>
+            <dd>{new Date(fecha_modificacion).toLocaleDateString()}</dd>
+          </dl>
         </div>
       </div>
     </>

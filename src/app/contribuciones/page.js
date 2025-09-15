@@ -76,7 +76,7 @@ export default function ContribucionesPage() {
                 Contribuciones y Agradecimientos
               </h1>
               <p className="mt-3 text-white/80 max-w-2xl mx-auto">
-                Este proyecto del <strong>Archivo Histórico (UG)</strong> fue
+                Este proyecto del <strong>Catálogo Histórico (UG)</strong> fue
                 posible gracias a la colaboración de múltiples personas, equipos
                 y comunidades.
               </p>

@@ -76,8 +76,8 @@ const ModalInformacion = ({ open, onClose }) => {
                 Contacto Directo
               </h2>
               <p className="text-gray-300 mb-6">
-                La coordinación del Archivo Histórico está a cargo de la Doctora
-                Elba Rolón, quien lidera un equipo comprometido con la
+                La coordinación del Catálogo Histórico está a cargo de la
+                Doctora Elba Rolón, quien lidera un equipo comprometido con la
                 preservación del patrimonio documental.
               </p>
               <Link
