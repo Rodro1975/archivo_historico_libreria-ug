@@ -21,18 +21,21 @@ const MostrarAutoresPage = () => {
   const fetchAutores = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error: supabaseError } = await supabase.from("autores")
-        .select(`
+      const { data, error: supabaseError } = await supabase
+        .from("autores")
+        .select(
+          `
           id,
           nombre_completo,
-          cargo,
+          institucion_tipo,
+          institucion_nombre,
           correo_institucional,
-          vigencia,
           dependencia_id,
           unidad_academica_id,
-          dependencias (nombre),
-          unidades_academicas (nombre)
-        `);
+          dependencias ( nombre ),
+          unidades_academicas ( nombre )
+        `
+        ); // 👈 se quitó 'vigencia' y 'cargo' del select, se agrego 'institucion_tipo' e 'institucion_nombre'
 
       if (supabaseError) throw supabaseError;
       setAutores(data || []);
@@ -49,7 +52,9 @@ const MostrarAutoresPage = () => {
     (term) => {
       const lower = term.toLowerCase();
       setFilteredAutores(
-        autores.filter((a) => a.nombre_completo.toLowerCase().includes(lower))
+        autores.filter((a) =>
+          (a?.nombre_completo || "").toLowerCase().includes(lower)
+        )
       );
     },
     [autores]
@@ -94,7 +99,7 @@ const MostrarAutoresPage = () => {
           Lista de Autores
         </h1>
 
-        {/* Barra de búsqueda amarilla con hexágono y botón limpiar */}
+        {/* Barra de búsqueda */}
         <div className="flex items-center gap-2 max-w-screen-lg mx-auto px-4 mb-2">
           <input
             type="text"
@@ -148,11 +153,13 @@ const MostrarAutoresPage = () => {
             <thead>
               <tr>
                 <th className="border px-4 py-2">Nombre Completo</th>
-                <th className="border px-4 py-2">Cargo</th>
-                <th className="border px-4 py-2">Dependencia ID</th>
-                <th className="border px-4 py-2">Unidad Académica ID</th>
+                <th className="border px-4 py-2">Institución</th>
+                <th className="border px-4 py-2">
+                  Rectoría/Campus/CNMS/Secretaría
+                </th>
+                <th className="border px-4 py-2">División/Escuela</th>
                 <th className="border px-4 py-2">Correo Institucional</th>
-                <th className="border px-4 py-2">Vigencia</th>
+                {/* 👇 Se elimina columna Vigencia */}
                 <th className="border px-4 py-2">Acciones</th>
               </tr>
             </thead>
@@ -163,19 +170,32 @@ const MostrarAutoresPage = () => {
                     <td className="border px-4 py-2">
                       {autor.nombre_completo}
                     </td>
-                    <td className="border px-4 py-2">{autor.cargo}</td>
                     <td className="border px-4 py-2">
-                      {autor.dependencia_id ?? "—"}
+                      {autor.institucion_tipo === "UG"
+                        ? "UG"
+                        : autor.institucion_tipo === "Externa"
+                        ? `Externa${
+                            autor.institucion_nombre
+                              ? " – " + autor.institucion_nombre
+                              : ""
+                          }`
+                        : "—"}
                     </td>
                     <td className="border px-4 py-2">
-                      {autor.unidad_academica_id ?? "—"}
+                      {/* Muestra nombre de la FK si existe; si no, el id como fallback */}
+                      {autor?.dependencias?.nombre ??
+                        autor?.dependencia_id ??
+                        "—"}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {autor?.unidades_academicas?.nombre ??
+                        autor?.unidad_academica_id ??
+                        "—"}
                     </td>
                     <td className="border px-4 py-2">
                       {autor.correo_institucional}
                     </td>
-                    <td className="border px-4 py-2 text-center">
-                      {autor.vigencia ? "✅" : "❌"}
-                    </td>
+                    {/* 👇 Sin columna vigencia */}
                     <td className="border px-4 py-2">
                       <button
                         onClick={() => {
@@ -203,7 +223,8 @@ const MostrarAutoresPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  {/* colSpan de 6 porque ya no está la columna “Vigencia” */}
+                  <td colSpan="6" className="text-center py-4">
                     No se encontraron autores
                   </td>
                 </tr>
@@ -220,9 +241,9 @@ const MostrarAutoresPage = () => {
                 ¿Eliminar autor?
               </h2>
               <p className="mb-6 text-gray-700">
-                ¿Estás seguro de que deseas eliminar al autor? Esta acción no se
-                puede deshacer.{" "}
-                <strong>{autorAEliminar.nombre_completo}</strong>?
+                ¿Estás seguro de que deseas eliminar al autor{" "}
+                <strong>{autorAEliminar.nombre_completo}</strong>? Esta acción
+                no se puede deshacer.
               </p>
               <div className="flex justify-center gap-4">
                 <button

@@ -36,7 +36,7 @@ function isValidISBN(isbn) {
   }
   return false;
 }
-
+//Calculadora ISBN 13 digitos
 function calculateISBN13CheckDigit(isbn12) {
   if (!/^\d{12}$/.test(isbn12)) return "";
   let sum = 0;
@@ -45,7 +45,7 @@ function calculateISBN13CheckDigit(isbn12) {
   }
   return String((10 - (sum % 10)) % 10);
 }
-
+//Calculadora ISBN 10 digitos
 function calculateISBN10CheckDigit(isbn9) {
   if (!/^\d{9}$/.test(isbn9)) return "";
   let sum = 0;
@@ -55,6 +55,8 @@ function calculateISBN10CheckDigit(isbn9) {
   const remainder = sum % 11;
   return remainder === 10 ? "X" : String(remainder);
 }
+
+const CURRENT_YEAR = new Date().getFullYear();
 
 // Esquema de validación con Zod
 const RegisterBookSchema = z.object({
@@ -111,49 +113,52 @@ const RegisterBookSchema = z.object({
     )
     .optional()
     .or(z.literal("")),
-  materia: z.string().optional(),
-  tematica: z.string().optional(),
-  coleccion: z.string().min(1, { message: "La colección es requerida" }),
+  materia: z.string().min(1, { message: "La materia es requerida" }),
+  tematica: z.string().min(1, { message: "La temática es requerida" }),
+  coleccion: z
+    .preprocess(
+      (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+      z.string()
+    )
+    .optional(),
   numeroEdicion: z.preprocess(
     (val) => parseInt(val, 10),
     z.number().int({ message: "El número de edición debe ser un entero." })
   ),
-  anioPublicacion: z
-    .string()
-    .regex(/^\d{4}$/, {
-      message: "El año debe tener exactamente 4 dígitos (ejemplo: 1980)",
-    })
-    .refine(
-      (val) => {
-        const num = Number(val);
-        return num >= 1000 && num <= new Date().getFullYear();
-      },
-      {
-        message: "El año debe ser válido y de 4 dígitos (ejemplo: 1980)",
-      }
-    ),
+  anioPublicacion: z.preprocess(
+    (v) => {
+      // Acepta string o número; convierte a número o NaN si viene vacío
+      const s = typeof v === "string" ? v.trim() : v;
+      const n = typeof s === "string" && s !== "" ? Number(s) : Number(s);
+      return n;
+    },
+    z
+      .number({
+        required_error: "El año es requerido",
+        invalid_type_error: "El año debe ser numérico",
+      })
+      .int("El año debe ser un entero")
+      .min(1000, "El año debe tener 4 dígitos (>=1000)")
+      .max(CURRENT_YEAR, `El año no puede ser mayor a ${CURRENT_YEAR}`)
+  ),
   formato: z.string().min(1, { message: "El formato es requerido" }),
-  responsablePublicacion: z.string().optional(),
-  correoResponsable: z.string().optional(),
-  telefonoResponsable: z.string().optional(),
   campus: z.string().min(1, { message: "El campus es requerido" }),
-  division: z.string().optional(),
-  departamento: z.string().optional(),
-  dimensiones: z
-    .string()
-    .min(2, { message: "Las dimensiones deben tener al menos 2 caracteres." }),
   numeroPaginas: z.preprocess(
     (val) => parseInt(val, 10),
     z.number().int({ message: "El número de páginas debe ser un entero." })
   ),
-  pesoGramos: z.preprocess(
-    (val) => parseInt(val, 10),
-    z.number().int({ message: "El peso en gramos debe ser un entero." })
+  tiraje_o_ibd: z
+    .preprocess(
+      (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+      z.string()
+    )
+    .optional(),
+  idioma: z.enum(
+    ["español", "ingles", "frances", "aleman", "portugues", "otro"],
+    {
+      errorMap: () => ({ message: "Selecciona un idioma válido" }),
+    }
   ),
-  tiraje_o_ibd: z.string().min(1, { message: "El tiraje es requerido" }),
-  idioma: z.enum(["español", "ingles", "frances", "aleman", "portugues"], {
-    errorMap: () => ({ message: "Selecciona un idioma válido" }),
-  }),
   esTraduccion: z.boolean(),
   sinopsis: z
     .string()
@@ -331,44 +336,57 @@ export default function BookForm() {
     }
     const usuarioRole = usuarioRow.role; // ej. 'Administrador' o 'Editor'
 
-    // 1) Subir archivos
-    let imageUrl = "",
-      pdfUrl = "",
-      dlpdfUrl = "";
-    try {
-      if (selectedFile) {
-        const name = `portadas/${Date.now()}-${selectedFile.name}`;
-        await supabase.storage.from("portadas").upload(name, selectedFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-        imageUrl = supabase.storage.from("portadas").getPublicUrl(name)
-          .data.publicUrl;
+    // 1) Subir archivos (control de error explícito; upload no lanza throw)
+    let imageUrl = "";
+    let pdfUrl = "";
+    let dlpdfUrl = "";
+
+    // Portada (opcional)
+    if (selectedFile) {
+      const name = `portadas/${Date.now()}-${selectedFile.name}`;
+      const { data: up1, error: upErr1 } = await supabase.storage
+        .from("portadas")
+        .upload(name, selectedFile, { cacheControl: "3600", upsert: false });
+
+      if (upErr1) {
+        console.error("Error subiendo portada:", upErr1);
+        toastError("Error al subir la portada.");
+        return;
       }
-      if (selectedPDF) {
-        const name = `libros/${Date.now()}-${selectedPDF.name}`;
-        await supabase.storage.from("libros").upload(name, selectedPDF, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-        pdfUrl = supabase.storage.from("libros").getPublicUrl(name)
-          .data.publicUrl;
+      imageUrl = supabase.storage.from("portadas").getPublicUrl(name)
+        .data.publicUrl;
+    }
+
+    // PDF del libro (opcional)
+    if (selectedPDF) {
+      const name = `libros/${Date.now()}-${selectedPDF.name}`;
+      const { data: up2, error: upErr2 } = await supabase.storage
+        .from("libros")
+        .upload(name, selectedPDF, { cacheControl: "3600", upsert: false });
+
+      if (upErr2) {
+        console.error("Error subiendo PDF del libro:", upErr2);
+        toastError("Error al subir el PDF del libro.");
+        return;
       }
-      if (selectedDLPDF) {
-        const name = `depositolegal/${Date.now()}-${selectedDLPDF.name}`;
-        await supabase.storage
-          .from("depositolegal")
-          .upload(name, selectedDLPDF, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-        dlpdfUrl = supabase.storage.from("depositolegal").getPublicUrl(name)
-          .data.publicUrl;
+      pdfUrl = supabase.storage.from("libros").getPublicUrl(name)
+        .data.publicUrl;
+    }
+
+    // Depósito Legal (opcional; lo mantienes por ahora)
+    if (selectedDLPDF) {
+      const name = `depositolegal/${Date.now()}-${selectedDLPDF.name}`;
+      const { data: up3, error: upErr3 } = await supabase.storage
+        .from("depositolegal")
+        .upload(name, selectedDLPDF, { cacheControl: "3600", upsert: false });
+
+      if (upErr3) {
+        console.error("Error subiendo Depósito Legal PDF:", upErr3);
+        toastError("Error al subir el Depósito Legal PDF.");
+        return;
       }
-    } catch (e) {
-      console.error("Error al subir archivos:", e);
-      toastError("Error al subir archivos.");
-      return;
+      dlpdfUrl = supabase.storage.from("depositolegal").getPublicUrl(name)
+        .data.publicUrl;
     }
 
     // 2) Extraer selectedAutorId y buscar autor
@@ -473,7 +491,7 @@ export default function BookForm() {
             {/* SELECT autor principal */}
             <div className="mb-4 col-span-full">
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Selecciona Autor Principal
+                Selecciona Autor Principal*
               </label>
               <select
                 {...register("selectedAutorId")}
@@ -498,7 +516,7 @@ export default function BookForm() {
                 htmlFor="tipoAutoria"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Tipo Autoría
+                Tipo Autoría*
               </label>
               <select
                 id="tipoAutoria"
@@ -570,7 +588,7 @@ export default function BookForm() {
                 htmlFor="codigoRegistro"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Código Registro
+                Código Registro*
               </label>
               <input
                 type="text"
@@ -593,7 +611,7 @@ export default function BookForm() {
                 htmlFor="isbn"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                ISBN
+                ISBN*
               </label>
 
               <div className="flex items-center gap-2 w-full">
@@ -603,7 +621,7 @@ export default function BookForm() {
                   {...register("isbn")}
                   value={isbnInput}
                   onChange={handleIsbnChange}
-                  placeholder="Escribe hasta 9 o 12 dígitos"
+                  placeholder="Escribe 9 o 12 dígitos y presiona calcular"
                   maxLength={17}
                   autoComplete="off"
                   required
@@ -661,7 +679,7 @@ export default function BookForm() {
                 htmlFor="titulo"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Titulo
+                Titulo*
               </label>
               <input
                 type="text"
@@ -706,7 +724,7 @@ export default function BookForm() {
                 htmlFor="materia"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Materia
+                Materia*
               </label>
               <input
                 type="text"
@@ -728,7 +746,7 @@ export default function BookForm() {
                 htmlFor="tematica"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Tematica
+                Temática*
               </label>
               <input
                 type="text"
@@ -736,7 +754,7 @@ export default function BookForm() {
                 {...register("tematica")} // Registra el campo con react-hook-form
                 required
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa tu Tematica"
+                placeholder="Ingresa tu Temática"
               />
               {errors.tematica && ( // Muestra el mensaje de error si existe
                 <p className="text-red-500 text-xs italic">
@@ -755,12 +773,14 @@ export default function BookForm() {
               <input
                 type="text"
                 id="coleccion"
-                {...register("coleccion")} // Registra el campo con react-hook-form
-                required
+                {...register("coleccion", {
+                  setValueAs: (v) =>
+                    typeof v === "string" && v.trim() === "" ? undefined : v,
+                })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa tu Colección"
               />
-              {errors.coleccion && ( // Muestra el mensaje de error si existe
+              {errors.coleccion && (
                 <p className="text-red-500 text-xs italic">
                   {errors.coleccion.message}
                 </p>
@@ -772,7 +792,7 @@ export default function BookForm() {
                 htmlFor="numeroEdicion"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Número de Edicion
+                Número de Edicion*
               </label>
               <input
                 type="number"
@@ -794,7 +814,7 @@ export default function BookForm() {
                 htmlFor="anioPublicacion"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Año de Publicación
+                Año de Publicación*
               </label>
               <input
                 type="text"
@@ -820,7 +840,7 @@ export default function BookForm() {
                 htmlFor="formato"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Formato
+                Formato*
               </label>
               <select
                 id="formato"
@@ -832,78 +852,14 @@ export default function BookForm() {
                   Selecciona un formato de impresión
                 </option>
                 <option value="impreso">Impreso</option>
-                <option value="electronico">Electrónico</option>
-                <option value="ambos">Ambos</option>
+                <option value="Impresión bajo demanda">IBD</option>
+                <option value="Electrónico de acceso abierto">EA</option>
+                <option value="Electrónico comercial">EC</option>
+                <option value="Otro">Otro</option>
               </select>
               {errors.formato && (
                 <p className="text-red-500 text-xs italic">
                   {errors.formato.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="responsablePublicacion"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Responsable de Publicación
-              </label>
-              <input
-                type="text"
-                id="responsablePublicacion"
-                {...register("responsablePublicacion")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa al responsable de la publicación"
-              />
-              {errors.responsablePublicacion && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.responsablePublicacion.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="correoResponsable"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Correo del Responsable de Publicación
-              </label>
-              <input
-                type="email"
-                id="correoResponsable"
-                {...register("correoResponsable")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el correo del responsable de la publicación"
-              />
-              {errors.correoResponsable && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.correoResponsable.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="telefonoResponsable"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Teléfono del Responsable de Publicación
-              </label>
-              <input
-                type="text"
-                id="telefonoResponsable"
-                {...register("telefonoResponsable")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el teléfono del responsable de la publicación"
-              />
-              {errors.telefonoResponsable && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.telefonoResponsable.message}
                 </p>
               )}
             </div>
@@ -932,76 +888,10 @@ export default function BookForm() {
 
             <div className="mb-4">
               <label
-                htmlFor="division"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                División
-              </label>
-              <input
-                type="text"
-                id="division"
-                {...register("division")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa la División"
-              />
-              {errors.division && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.division.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="departamento"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Departamento
-              </label>
-              <input
-                type="text"
-                id="departamento"
-                {...register("departamento")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Departamento"
-              />
-              {errors.departamento && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.departamento.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="dimensiones"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Dimensiones
-              </label>
-              <input
-                type="text"
-                id="dimensiones"
-                {...register("dimensiones")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa las Dimensiones"
-              />
-              {errors.dimensiones && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.dimensiones.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
                 htmlFor="numeroPaginas"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Número de Páginas
+                Número de Páginas*
               </label>
               <input
                 type="number"
@@ -1020,28 +910,6 @@ export default function BookForm() {
 
             <div className="mb-4">
               <label
-                htmlFor="pesoGramos"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Peso en Gramos
-              </label>
-              <input
-                type="number"
-                id="pesoGramos"
-                {...register("pesoGramos")} // Registra el campo con react-hook-form
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Peso en Gramos"
-              />
-              {errors.pesoGramos && ( // Muestra el mensaje de error si existe
-                <p className="text-red-500 text-xs italic">
-                  {errors.pesoGramos.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
                 htmlFor="tiraje_o_ibd"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
@@ -1050,12 +918,14 @@ export default function BookForm() {
               <input
                 type="text"
                 id="tiraje_o_ibd"
-                {...register("tiraje_o_ibd")} // Registra el campo con react-hook-form
-                required
+                {...register("tiraje_o_ibd", {
+                  setValueAs: (v) =>
+                    typeof v === "string" && v.trim() === "" ? undefined : v,
+                })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el Tiraje o IBD"
               />
-              {errors.tiraje_o_ibd && ( // Muestra el mensaje de error si existe
+              {errors.tiraje_o_ibd && (
                 <p className="text-red-500 text-xs italic">
                   {errors.tiraje_o_ibd.message}
                 </p>
@@ -1067,7 +937,7 @@ export default function BookForm() {
                 htmlFor="idioma"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Idioma
+                Idioma*
               </label>
               <select
                 id="idioma"
@@ -1081,6 +951,7 @@ export default function BookForm() {
                 <option value="frances">Francés</option>
                 <option value="aleman">Alemán</option>
                 <option value="portugues">Portugués</option>
+                <option value="otro">Otro</option>
               </select>
               {errors.idioma && (
                 <p className="text-red-500 text-xs italic">
@@ -1109,7 +980,7 @@ export default function BookForm() {
                 htmlFor="sinopsis"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Sinopsis
+                Sinopsis*
               </label>
               <textarea
                 id="sinopsis"
