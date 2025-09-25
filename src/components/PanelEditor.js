@@ -114,6 +114,28 @@ const PanelEditor = () => {
           </div>
         </div>
 
+        {/* Tarjeta para Gestión de expedientes */}
+        <div
+          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          onClick={() => router.push("/mostrarExpedientes")} // Ahora router está definido
+        >
+          <Image
+            src="/images/expedientes.png"
+            alt="Gestión de Expedientes"
+            width={80}
+            height={80}
+            className="mr-4"
+          />
+          <div>
+            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+              Expedientes
+            </h2>
+            <p className="text-blue text-sm">
+              Gestiona expedientes relacionados con los libros del sistema.
+            </p>
+          </div>
+        </div>
+
         {/* Tarjeta para Generación de Informes */}
         <div
           className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"

@@ -16,6 +16,8 @@ import {
   AiOutlineForm,
   AiOutlinePlusSquare,
   AiOutlineEdit,
+  AiOutlineUpload,
+  AiOutlineFolder,
 } from "react-icons/ai";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import ActualizarUsuarios from "@/components/ActualizarUsuarios";
@@ -331,6 +333,18 @@ const WorkBar = () => {
                   </Link>
                 </li>
                 <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineFolder size={24} />
+                  <Link href="/mostrarExpedientes" className="block text-lg">
+                    Expedientes
+                  </Link>
+                </li>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineUpload size={24} />
+                  <Link href="/registerFile" className="block text-lg">
+                    Subir Expedientes
+                  </Link>
+                </li>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
                   <AiOutlineTeam size={24} />
                   <Link href="/mostrarUsuarios" className="block text-lg">
                     Lista de Usuarios
@@ -369,6 +383,18 @@ const WorkBar = () => {
                   <AiOutlineForm size={24} />
                   <Link href="/registerBook" className="block text-lg">
                     Registrar Libros
+                  </Link>
+                </li>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineFolder size={24} />
+                  <Link href="/mostrarExpedientes" className="block text-lg">
+                    Expedientes
+                  </Link>
+                </li>
+                <li className="flex items-center gap-4 hover:text-[var(--color-orange)]">
+                  <AiOutlineUpload size={24} />
+                  <Link href="/registerFile" className="block text-lg">
+                    Subir Expedientes
                   </Link>
                 </li>
               </>
