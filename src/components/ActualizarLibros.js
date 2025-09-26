@@ -9,73 +9,50 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 // Normaliza string
 const norm = (x) => (x ?? "").toString().toLowerCase().trim();
 
+//Boolean es traduccion
+const mapEsTraduccionFromDB = (libro) => {
+  const v =
+    libro?.esTraduccion ??
+    libro?.es_traduccion ??
+    libro?.traduccion ??
+    libro?.es_traducción ??
+    null;
+  if (typeof v === "boolean") return v;
+  const s = (v ?? "").toString().toLowerCase().trim();
+  return s === "1" || s === "true" || s === "sí" || s === "si" || s === "yes";
+};
+
 /**
- * Mapear valor existente en BD -> valor EXACTO del <select>
- * Nueva taxonomía de formatos:
- *  - "impreso"
- *  - "Impresión bajo demanda"
- *  - "Electrónico de acceso abierto"
- *  - "Electrónico comercial"
- *  - "Otro"
- *
- * Notas:
- *  - Para datos viejos como "electronico/eléctrónico" genérico o "ambos/mixto"
- *    dejamos "" (sin selección) para no forzar una interpretación.
- *    Si el usuario no toca el campo, NO actualizamos "formato" en BD.
+ * Mapear valor existente en BD -> valor EXACTO del <select> formato
  */
-// Reemplaza SOLO esta función en ActualizarLibros
 const mapFormatoFromDB = (libro) => {
   const f = (libro?.formato ?? "").toString().toLowerCase().trim();
-
   if (!f) return "";
-
-  // impresos
   if (f === "impreso") return "impreso";
-
-  // IBD (acepta variantes con o sin paréntesis / acentos / siglas)
   if (
     f === "impresion bajo demanda" ||
     f === "impresión bajo demanda" ||
     f === "impresion bajo demanda (ibd)" ||
     f === "impresión bajo demanda (ibd)" ||
     f === "ibd"
-  ) {
+  )
     return "Impresión bajo demanda";
-  }
-
-  // Electrónico de acceso abierto
   if (
     f === "electronico de acceso abierto" ||
     f === "electrónico de acceso abierto" ||
     f === "ea" ||
     f === "acceso abierto"
-  ) {
+  )
     return "Electrónico de acceso abierto";
-  }
-
-  // Electrónico comercial
   if (
     f === "electronico comercial" ||
     f === "electrónico comercial" ||
     f === "ec" ||
     f === "comercial"
-  ) {
+  )
     return "Electrónico comercial";
-  }
-
-  // Otro
   if (f === "otro") return "Otro";
-
-  // Valores antiguos no mapeables con certeza -> sin selección
-  if (
-    f === "electronico" ||
-    f === "electrónico" ||
-    f === "ambos" ||
-    f === "mixto"
-  ) {
-    return "";
-  }
-
+  if (["electronico", "electrónico", "ambos", "mixto"].includes(f)) return "";
   return "";
 };
 
@@ -92,6 +69,8 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
       doi: libro?.doi ?? "",
       titulo: libro?.titulo ?? "",
       subtitulo: libro?.subtitulo ?? "",
+      materia: libro?.materia ?? "",
+      tematica: libro?.tematica ?? "",
       coleccion: libro?.coleccion ?? "",
       numeroEdicion: libro?.numeroEdicion ?? "",
       anioPublicacion: libro?.anioPublicacion ?? "",
@@ -99,45 +78,63 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
       tipoAutoria: libro?.tipoAutoria ?? "",
       formato: mapFormatoFromDB(libro),
       sinopsis: libro?.sinopsis ?? "",
+      tiraje_o_ibd: libro?.tiraje_o_ibd ?? "",
+      idioma: libro?.idioma ?? "",
+      esTraduccion: mapEsTraduccionFromDB(libro),
+      selectedAutorId: "", // ← se precargará en el useEffect
+      selectedCoautorIds: [],
     },
   });
 
   const [selectedFile, setSelectedFile] = useState(null); // portada
   const [selectedPDF, setSelectedPDF] = useState(null); // pdf libro completo
 
-  // Autores (solo lectura)
+  // Autores  + opciones para select)
   const [autores, setAutores] = useState({
     principal: "—",
     otros: [],
     coeditores: [],
   });
 
+  const [autoresOptions, setAutoresOptions] = useState([]);
+
+  // Cargar relaciones autor/libro y precargar selectedAutorId
   useEffect(() => {
     let mounted = true;
+
     const load = async () => {
       try {
         if (!libro?.id_libro) return;
-        const { data, error } = await supabase
+
+        // Traer relaciones con autor_id
+        const { data: rels, error: relErr } = await supabase
           .from("libro_autor")
-          .select("tipo_autor, autor:autores ( nombre_completo )")
+          .select("tipo_autor, autor_id, autor:autores ( id, nombre_completo )")
           .eq("libro_id", libro.id_libro);
 
-        if (error) throw error;
-        const rows = data || [];
+        if (relErr) throw relErr;
+        const rows = rels || [];
 
-        const getNombre = (r) => r?.autor?.nombre_completo || null;
+        // IDs de coautores actuales (para precargar el multiselect)
+        const coautorIds = rows
+          .filter((r) => norm(r?.tipo_autor || "").includes("coautor"))
+          .map((r) => r.autor_id)
+          .filter(Boolean);
+        // Autor principal por tipo_autor
         const by = (pred) => rows.find((r) => pred(norm(r?.tipo_autor || "")));
-
         const rPrincipal =
           by((t) => t.includes("principal")) ||
           by((t) => t === "autor") ||
           rows[0];
 
-        const principal = rPrincipal ? getNombre(rPrincipal) : "—";
+        const principalNombre = rPrincipal?.autor?.nombre_completo || "—";
+        const principalId = rPrincipal?.autor_id ?? null;
+
+        const getNombre = (r) => r?.autor?.nombre_completo || null;
         const otros = rows
           .map(getNombre)
           .filter(Boolean)
-          .filter((n) => norm(n) !== norm(principal));
+          .filter((n) => norm(n) !== norm(principalNombre));
 
         const coeditores = rows
           .filter((r) => {
@@ -147,34 +144,57 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
           .map(getNombre)
           .filter(Boolean);
 
-        if (mounted)
-          setAutores({ principal: principal || "—", otros, coeditores });
-      } catch {
-        /* no-op */
+        if (mounted) {
+          setAutores({
+            principal: principalNombre || "—",
+            otros,
+            coeditores,
+          });
+        }
+
+        // Traer opciones de autores para el select
+        const { data: autoresData, error: autoresErr } = await supabase
+          .from("autores")
+          .select("id, nombre_completo")
+          .order("nombre_completo", { ascending: true });
+
+        if (autoresErr) throw autoresErr;
+        if (mounted) setAutoresOptions(autoresData || []);
+
+        // Rehidratar form incluyendo selectedAutorId
+        if (mounted) {
+          reset({
+            codigoRegistro: libro?.codigoRegistro ?? "",
+            isbn: libro?.isbn ?? "",
+            doi: libro?.doi ?? "",
+            titulo: libro?.titulo ?? "",
+            subtitulo: libro?.subtitulo ?? "",
+            materia: libro?.materia ?? "",
+            tematica: libro?.tematica ?? "",
+            coleccion: libro?.coleccion ?? "",
+            numeroEdicion: libro?.numeroEdicion ?? "",
+            anioPublicacion: libro?.anioPublicacion ?? "",
+            numeroPaginas: libro?.numeroPaginas ?? "",
+            tipoAutoria: libro?.tipoAutoria ?? "",
+            formato: mapFormatoFromDB(libro),
+            sinopsis: libro?.sinopsis ?? "",
+            tiraje_o_ibd: libro?.tiraje_o_ibd ?? "",
+            idioma: libro?.idioma ?? "",
+            esTraduccion: mapEsTraduccionFromDB(libro),
+            selectedAutorId: principalId ? String(principalId) : "",
+            selectedCoautorIds: coautorIds.map(String),
+          });
+        }
+      } catch (e) {
+        // opcional: toastError("No se pudieron cargar autores.");
+        console.error(e);
       }
     };
+
     load();
     return () => {
       mounted = false;
     };
-  }, [libro?.id_libro]);
-
-  // Rehidrata cuando cambie "libro"
-  useEffect(() => {
-    reset({
-      codigoRegistro: libro?.codigoRegistro ?? "",
-      isbn: libro?.isbn ?? "",
-      doi: libro?.doi ?? "",
-      titulo: libro?.titulo ?? "",
-      subtitulo: libro?.subtitulo ?? "",
-      coleccion: libro?.coleccion ?? "",
-      numeroEdicion: libro?.numeroEdicion ?? "",
-      anioPublicacion: libro?.anioPublicacion ?? "",
-      numeroPaginas: libro?.numeroPaginas ?? "",
-      tipoAutoria: libro?.tipoAutoria ?? "",
-      formato: mapFormatoFromDB(libro),
-      sinopsis: libro?.sinopsis ?? "",
-    });
   }, [libro, reset]);
 
   const handleFileChange = (e) => setSelectedFile(e.target.files?.[0] || null);
@@ -199,7 +219,7 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
           .data.publicUrl;
       }
 
-      // Subir PDF si cambió
+      // Subir PDF si cambió (opcional)
       if (selectedPDF) {
         const pdfName = `libros/${Date.now()}-${selectedPDF.name}`;
         const { error: pdfErr } = await supabase.storage
@@ -213,7 +233,7 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
           .data.publicUrl;
       }
 
-      // Construir payload: NO sobreescribir "formato" si no se selecciona nada
+      // Construir payload de libros
       const payload = {
         codigoRegistro: (data.codigoRegistro || "").trim(),
         isbn: (data.isbn || "").trim(),
@@ -244,6 +264,7 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
         payload.formato = (data.formato || "").trim();
       }
 
+      // Update libros
       const { error } = await supabase
         .from("libros")
         .update(payload, { returning: "minimal" })
@@ -251,6 +272,70 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
 
       if (error)
         throw new Error(error.message || "Error al actualizar el libro.");
+
+      // --- Actualizar coautores ---
+      const selCoIds = Array.isArray(data.selectedCoautorIds)
+        ? data.selectedCoautorIds
+            .map((v) => parseInt(String(v), 10))
+            .filter(Boolean)
+        : [];
+
+      // Evitar que el autor principal quede duplicado como coautor
+      const principalIdInt = data.selectedAutorId
+        ? parseInt(String(data.selectedAutorId), 10)
+        : null;
+      const finalCoIds = selCoIds.filter((id) => id && id !== principalIdInt);
+
+      // 1) Borrar coautores actuales (cubrimos variantes de etiqueta)
+      const { error: delCoErr } = await supabase
+        .from("libro_autor")
+        .delete()
+        .eq("libro_id", libro.id_libro)
+        .or(
+          "tipo_autor.eq.coautor,tipo_autor.eq.coautoría,tipo_autor.eq.coautoria"
+        );
+
+      if (delCoErr) throw delCoErr;
+
+      // 2) Insertar nuevos coautores (si hay)
+      if (finalCoIds.length) {
+        const relaciones = finalCoIds.map((id) => ({
+          libro_id: libro.id_libro,
+          autor_id: id,
+          tipo_autor: "coautor",
+        }));
+
+        const { error: insCoErr } = await supabase
+          .from("libro_autor")
+          .insert(relaciones);
+
+        if (insCoErr)
+          throw new Error("No fue posible actualizar los coautores.");
+      }
+
+      // Update autor principal si se seleccionó uno
+      if (data.selectedAutorId && String(data.selectedAutorId).trim() !== "") {
+        const nuevoAutorId = parseInt(String(data.selectedAutorId), 10);
+
+        // Eliminar autor principal actual (cubrimos variantes)
+        const { error: delErr } = await supabase
+          .from("libro_autor")
+          .delete()
+          .eq("libro_id", libro.id_libro)
+          .in("tipo_autor", ["autor", "autor principal", "principal"]);
+
+        if (delErr) throw delErr;
+
+        // Insertar nuevo autor principal
+        const { error: insErr } = await supabase.from("libro_autor").insert({
+          libro_id: libro.id_libro,
+          autor_id: nuevoAutorId,
+          tipo_autor: "autor",
+        });
+
+        if (insErr)
+          throw new Error("No fue posible actualizar el autor principal.");
+      }
 
       toastSuccess("Libro actualizado correctamente.");
       onUpdate?.();
@@ -285,6 +370,45 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
             onSubmit={handleSubmit(handleSubmitForm)}
             className="grid grid-cols-1 md:grid-cols-2 gap-6 px-5 pb-8"
           >
+            {/* Autor principal (editable) */}
+            <div className="md:col-span-2">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Autor principal
+              </label>
+              <select
+                {...register("selectedAutorId")}
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full bg-white"
+              >
+                <option value="">— Selecciona un autor —</option>
+                {(autoresOptions || []).map((a) => (
+                  <option key={a.id} value={String(a.id)}>
+                    {a.nombre_completo}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Coautores (editable) */}
+            <div className="md:col-span-2">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Coautores (selección múltiple)
+              </label>
+              <select
+                multiple
+                {...register("selectedCoautorIds")}
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full bg-white h-36"
+              >
+                {(autoresOptions || []).map((a) => (
+                  <option key={a.id} value={String(a.id)}>
+                    {a.nombre_completo}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Mantén Ctrl/Cmd para seleccionar varios.
+              </p>
+            </div>
+
             {/* Código de Registro */}
             <div>
               <label
@@ -366,6 +490,38 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
               />
             </div>
 
+            {/* Materia */}
+            <div>
+              <label
+                htmlFor="materia"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Materia
+              </label>
+              <input
+                type="text"
+                id="materia"
+                {...register("materia")}
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+              />
+            </div>
+
+            {/* Temática */}
+            <div>
+              <label
+                htmlFor="tematica"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Temática
+              </label>
+              <input
+                type="text"
+                id="tematica"
+                {...register("tematica")}
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+              />
+            </div>
+
             {/* Colección */}
             <div>
               <label
@@ -429,7 +585,62 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
               />
             </div>
 
-            {/* Tipo de autoría (alineado con alta) */}
+            {/* Tiraje o IBD (opcional) */}
+            <div>
+              <label
+                htmlFor="tiraje_o_ibd"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Tiraje o IBD
+              </label>
+              <input
+                type="text"
+                id="tiraje_o_ibd"
+                {...register("tiraje_o_ibd")}
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+              />
+            </div>
+
+            {/* Idioma (opcional, select) */}
+            <div>
+              <label
+                htmlFor="idioma"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Idioma
+              </label>
+              <select
+                id="idioma"
+                {...register("idioma")}
+                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full bg-white"
+              >
+                <option value="">—</option>
+                <option value="español">Español</option>
+                <option value="ingles">Inglés</option>
+                <option value="frances">Francés</option>
+                <option value="aleman">Alemán</option>
+                <option value="portugues">Portugués</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+
+            {/* Es traducción (booleano) */}
+            <div className="flex items-center gap-2 mt-1">
+              <input
+                type="checkbox"
+                id="esTraduccion"
+                {...register("esTraduccion")}
+                className="h-5 w-5 text-blue-600"
+              />
+              <label
+                htmlFor="esTraduccion"
+                className="text-sm text-gray-700 font-bold"
+              >
+                Es traducción al Español
+              </label>
+            </div>
+
+            {/* Tipo de autoría */}
             <div>
               <label
                 htmlFor="tipoAutoria"
@@ -448,7 +659,7 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
               </select>
             </div>
 
-            {/* Formato (nueva taxonomía) */}
+            {/* Formato */}
             <div>
               <label
                 htmlFor="formato"
@@ -505,12 +716,17 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 accept=".jpg,.jpeg,.png"
               />
+              {libro?.portada ? (
+                <div className="text-xs text-blue mt-1 break-words">
+                  Actual: {libro.portada}
+                </div>
+              ) : null}
             </div>
 
             {/* PDF del libro */}
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Archivo PDF del libro (completo)
+                Archivo PDF del libro (opcional)
               </label>
               <input
                 type="file"
@@ -518,58 +734,11 @@ const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 accept=".pdf"
               />
-            </div>
-
-            {/* Autores (chips, solo lectura) */}
-            <div className="md:col-span-2">
-              <div className="text-sm text-gray-700 font-bold mb-1">
-                Autor principal
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="logo-pill text-blue text-xs whitespace-nowrap">
-                  {autores.principal || "—"}
-                </span>
-              </div>
-            </div>
-
-            <div className="md:col-span-2">
-              <div className="text-sm text-gray-700 font-bold mb-1">
-                Otros autores
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {autores.otros?.length ? (
-                  autores.otros.map((n) => (
-                    <span
-                      key={n}
-                      className="logo-pill text-blue text-xs whitespace-nowrap"
-                    >
-                      {n}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-blue text-xs">—</span>
-                )}
-              </div>
-            </div>
-
-            <div className="md:col-span-2">
-              <div className="text-sm text-gray-700 font-bold mb-1">
-                Coeditores
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {autores.coeditores?.length ? (
-                  autores.coeditores.map((n) => (
-                    <span
-                      key={n}
-                      className="logo-pill text-blue text-xs whitespace-nowrap"
-                    >
-                      {n}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-blue text-xs">—</span>
-                )}
-              </div>
+              {libro?.archivo_pdf ? (
+                <div className="text-xs text-blue mt-1 break-words">
+                  Actual: {libro.archivo_pdf}
+                </div>
+              ) : null}
             </div>
 
             {/* Botones */}
