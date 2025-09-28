@@ -26,6 +26,7 @@ import ActualizarAutores from "./ActualizarAutores";
 import AutorForm from "./AutorForm";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { toast } from "react-hot-toast";
+import EditorialLogo from "./EditorialLogo";
 
 const WorkBar = () => {
   const [userData, setUserData] = useState(null);
@@ -208,12 +209,7 @@ const WorkBar = () => {
           isOpen ? "hidden" : "block"
         }`}
       >
-        <Image
-          src="/images/editorial-ug.png"
-          alt="Logo editorial GTO"
-          width={200}
-          height={200}
-        />
+        <EditorialLogo />
 
         {/* Botón a la derecha (mismo estilo azul del sidebar) */}
         <Link
@@ -243,12 +239,10 @@ const WorkBar = () => {
       >
         {/* Logo lateral */}
         <div className="h-24 flex items-center justify-center border-b border-[var(--color-gray-300)] p-4 mt-40">
-          <Image
-            src="/images/editorial-ug.png"
-            alt="Logo Librería UG"
-            width={200}
-            height={100}
-            className="object-contain rounded-md"
+          <EditorialLogo
+            className="scale-[.8] origin-left shrink-0"
+            imageClassName="h-12 w-auto"
+            priority
           />
         </div>
 

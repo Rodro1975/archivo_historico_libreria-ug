@@ -16,6 +16,7 @@ import {
   FaBuilding,
   FaLink,
 } from "react-icons/fa";
+import EditorialLogo from "./EditorialLogo";
 
 const enlacesOficiales = [
   {
@@ -61,12 +62,10 @@ const ModalInformacion = ({ open, onClose }) => {
         </h2>
 
         <div className="flex flex-col items-center gap-4">
-          <Image
-            src="/images/editorial-ug.png"
-            alt="Logo Editorial UG"
-            width={200}
-            height={100}
-            className="mb-4"
+          <EditorialLogo
+            className="shrink-0"
+            imageClassName="h-10 md:h-12 w-auto" // ~20% más chico
+            priority
           />
 
           {/* Contacto directo */}

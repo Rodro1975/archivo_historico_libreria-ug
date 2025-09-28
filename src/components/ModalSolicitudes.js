@@ -18,6 +18,7 @@ import FormularioBd from "./FormularioBd";
 import FormularioVisitaGuiada from "./FormularioVisitaGuiada";
 import FormularioEspacioTrabajo from "./FormularioEspacioTrabajo";
 import FormularioTalleres from "./FormularioTalleres";
+import EditorialLogo from "./EditorialLogo";
 
 const ModalSolicitudes = ({ open, onClose, lector }) => {
   const [activeForm, setActiveForm] = useState(null); // Estado unificado
@@ -40,12 +41,10 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
               ¿Necesitas ayuda? ¡llena tu solicitud!
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Image
-                src="/images/editorial-ug.png"
-                alt="Logo Editorial UG"
-                width={200}
-                height={100}
-                className="mb-4 col-span-full mx-auto"
+              <EditorialLogo
+                className="shrink-0"
+                imageClassName="h-10 md:h-12 w-auto" // ~20% más chico
+                priority
               />
 
               {/* Botón Préstamo */}

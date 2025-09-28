@@ -11,6 +11,7 @@ import ModalInformacion from "@/components/ModalInformacion";
 import ModalBuscarLibros from "@/components/ModalBuscarLibros";
 import ModalSolicitudes from "./ModalSolicitudes";
 import ModalVerSolicitudes from "./ModalVerSolicitudes";
+import EditorialLogo from "./EditorialLogo";
 
 const PanelReader = ({ userData }) => {
   const router = useRouter();
@@ -146,14 +147,7 @@ const PanelReader = ({ userData }) => {
 
             {/* Encabezado con logo y saludo */}
             <div className="relative text-center mb-8">
-              <Image
-                src="/images/editorial-ug.png"
-                alt="Editorial UG Logo"
-                width={180}
-                height={180}
-                className="mx-auto mb-6"
-                priority
-              />
+              <EditorialLogo />
 
               {userData?.primer_nombre && (
                 <div className="space-y-1">

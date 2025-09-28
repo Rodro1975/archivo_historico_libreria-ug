@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import "animate.css";
+import EditorialLogo from "@/components/EditorialLogo";
 
 const NavBar = () => {
   const router = useRouter();
@@ -73,20 +74,7 @@ const NavBar = () => {
         </Link>
 
         {/* Logo Editorial UG */}
-        <Link
-          href="https://www.ugto.mx/editorial/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
-          <Image
-            src="/images/editorial-ug.png"
-            alt="Editorial UG"
-            width={170}
-            height={56}
-            className="h-14 w-auto"
-          />
-        </Link>
+        <EditorialLogo />
 
         {/* Hamburguesa (móvil) */}
         <button

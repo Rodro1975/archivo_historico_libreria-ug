@@ -151,7 +151,7 @@ export default function MostrarExpedientesPage() {
     <Suspense fallback={<p>Cargando...</p>}>
       <div className="min-h-screen bg-blue">
         <WorkBar />
-        <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
+        <h1 className="text-4xl text-yellow text-center font-bold mt-28 mb-8">
           Lista de Expedientes
         </h1>
 

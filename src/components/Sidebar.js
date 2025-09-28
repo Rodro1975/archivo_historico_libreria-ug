@@ -13,7 +13,7 @@ import {
 } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
-
+import EditorialLogo from "./EditorialLogo";
 import ModalCorreo from "./ModalCorreo";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { toast } from "react-hot-toast";
@@ -235,13 +235,11 @@ const Sidebar = () => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 z-40 shadow-lg h-screen flex flex-col`}
       >
-        <div className="h-24 flex items-center justify-center border-b border-[var(--color-gray-300)] p-4 rounded-md mt-40">
-          <Image
-            src="/images/editorial-ug.png"
-            alt="Logo Librería UG"
-            width={200}
-            height={100}
-            className="object-contain rounded-md"
+        <div className="h-24 flex items-center justify-start border-b border-[var(--color-gray-300)] p-4 rounded-md mt-40">
+          <EditorialLogo
+            className="scale-[.8] origin-left shrink-0"
+            imageClassName="h-12 w-auto"
+            priority
           />
         </div>
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import supabase from "@/lib/supabase";
 import { FaSearch } from "react-icons/fa";
 import { toastError } from "@/lib/toastUtils";
+import EditorialLogo from "./EditorialLogo";
 
 const ModalBuscarLibros = ({ open, onClose }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,13 +58,7 @@ const ModalBuscarLibros = ({ open, onClose }) => {
         </h2>
 
         <div className="flex flex-col items-center gap-4">
-          <Image
-            src="/images/editorial-ug.png"
-            alt="Logo Editorial UG"
-            width={200}
-            height={100}
-            className="mb-4"
-          />
+          <EditorialLogo />
 
           {/* Barra de búsqueda */}
           <div className="flex flex-col items-center mb-4">

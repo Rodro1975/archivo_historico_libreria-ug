@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
+import EditorialLogo from "./EditorialLogo";
 
 export default function ModalVerSolicitudes({ open, onClose }) {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -57,11 +58,10 @@ export default function ModalVerSolicitudes({ open, onClose }) {
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden">
         <div className="flex justify-between items-center bg-blue text-yellow px-6 py-4">
           <div className="flex items-center gap-4">
-            <Image
-              src="/images/editorial-ug.png"
-              alt="Editorial UG"
-              width={40}
-              height={40}
+            <EditorialLogo
+              className="shrink-0"
+              imageClassName="h-10 md:h-12 w-auto" // ~20% más chico
+              priority
             />
             <h2 className="text-xl font-bold">
               Seguimiento de tus Solicitudes
