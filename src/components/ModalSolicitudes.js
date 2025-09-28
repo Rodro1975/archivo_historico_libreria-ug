@@ -41,11 +41,14 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
               ¿Necesitas ayuda? ¡llena tu solicitud!
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <EditorialLogo
-                className="shrink-0"
-                imageClassName="h-10 md:h-12 w-auto" // ~20% más chico
-                priority
-              />
+              {/* Logo centrado debajo del título */}
+              <div className="flex justify-center mb-6">
+                <EditorialLogo
+                  className="shrink-0"
+                  imageClassName="h-10 md:h-12 w-auto" // ~20% más chico
+                  priority
+                />
+              </div>
 
               {/* Botón Préstamo */}
               <button
