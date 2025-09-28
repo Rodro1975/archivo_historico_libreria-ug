@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import {
   FaBible,
   FaBook,
@@ -23,6 +22,8 @@ import EditorialLogo from "./EditorialLogo";
 const ModalSolicitudes = ({ open, onClose, lector }) => {
   const [activeForm, setActiveForm] = useState(null); // Estado unificado
 
+  if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white max-w-2xl w-full p-6 rounded-lg shadow-lg relative overflow-y-auto max-h-[90vh]">
@@ -40,16 +41,18 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
             <h2 className="text-2xl font-bold text-blue mb-4 text-center">
               ¿Necesitas ayuda? ¡llena tu solicitud!
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Logo centrado debajo del título */}
-              <div className="flex justify-center mb-6">
-                <EditorialLogo
-                  className="shrink-0"
-                  imageClassName="h-10 md:h-12 w-auto" // ~20% más chico
-                  priority
-                />
-              </div>
 
+            {/* Logo centrado debajo del título (fuera del grid) */}
+            <div className="flex justify-center mb-6">
+              <EditorialLogo
+                className="shrink-0"
+                imageClassName="h-10 md:h-12 w-auto" // ~20% más chico
+                priority
+              />
+            </div>
+
+            {/* Grid de opciones */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Botón Préstamo */}
               <button
                 onClick={() => setActiveForm("prestamo")}
@@ -61,7 +64,7 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                     Solicitud de préstamo de un Libro
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
               </button>
 
               {/* Botón Lectura Digital */}
@@ -75,10 +78,10 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                     Solicitud para Lectura digital
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
               </button>
 
-              {/* Botón donacion de libros */}
+              {/* Botón Donación de libros */}
               <button
                 onClick={() => setActiveForm("donacion")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
@@ -89,10 +92,10 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                     Donación de libros
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
               </button>
 
-              {/* Botón solicitud bd */}
+              {/* Botón Solicitud BD */}
               <button
                 onClick={() => setActiveForm("bd")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
@@ -103,10 +106,10 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                     Solicitud de Autores o libros en la base de datos
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
               </button>
 
-              {/* Botón visita guiada */}
+              {/* Botón Visita guiada */}
               <button
                 onClick={() => setActiveForm("visita")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
@@ -117,7 +120,7 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                     Solicitud para una visita guiada
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
               </button>
 
               {/* Botón Espacio de Trabajo */}
@@ -131,10 +134,10 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                     Solicitud para un espacio de trabajo
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
               </button>
 
-              {/* Botón talleres */}
+              {/* Botón Talleres */}
               <button
                 onClick={() => setActiveForm("talleres")}
                 className="group relative overflow-hidden rounded-xl bg-blue p-6 transition-all hover:shadow-lg hover:scale-105 w-full"
@@ -145,9 +148,10 @@ const ModalSolicitudes = ({ open, onClose, lector }) => {
                     Solicitud de inscripción a talleres
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <div className="absolute inset-0 bg-blue/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
               </button>
             </div>
+
             {/* Botón de cerrar alternativo */}
             <button
               onClick={onClose}
