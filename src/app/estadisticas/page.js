@@ -95,34 +95,25 @@ export default function EstadisticasPage() {
           ruta="/estadisticas/libros/paginas"
         />
         <CardEstadistica
-          titulo="🏫 Libros por Campus"
+          titulo="🏫 Libros por RG/Campus/CNMS"
           descripcion="Cantidad de libros registrados por cada campus universitario."
           ruta="/estadisticas/libros/campus"
         />
+        <CardEstadistica
+          titulo="🏫 Libros por División / Secretaría / Escuela"
+          descripcion="Agrupa los registros por división académica, secretarías o escuelas, con filtro por año."
+          ruta="/estadisticas/libros/division"
+        />
+
         <CardEstadistica
           titulo="✍️ Autores más frecuentes"
           descripcion="Autores con más publicaciones registradas."
           ruta="/estadisticas/autores/frecuencia"
         />
         <CardEstadistica
-          titulo="📋 Vigencia de Autores"
-          descripcion="Cantidad de autores activos e inactivos."
-          ruta="/estadisticas/autores/vigencia"
-        />
-        <CardEstadistica
           titulo="🏛️ Autores por Estructura"
           descripcion="Distribución de autores por dependencia y unidad académica."
           ruta="/estadisticas/autores/estructura"
-        />
-        <CardEstadistica
-          titulo="🧑‍💼 Autores por Cargo"
-          descripcion="Cantidad de autores agrupados por su cargo."
-          ruta="/estadisticas/autores/cargo"
-        />
-        <CardEstadistica
-          titulo="📅 Autores por Año y Vigencia"
-          descripcion="Cantidad de autores registrados por año, diferenciando su estado de vigencia."
-          ruta="/estadisticas/autores/creacion"
         />
 
         {rol === "Administrador" && (
@@ -146,11 +137,6 @@ export default function EstadisticasPage() {
               titulo="📊 Estado de solicitudes"
               descripcion="Distribución de solicitudes según su estado actual."
               ruta="/estadisticas/lectores/estados"
-            />
-            <CardEstadistica
-              titulo="🛡️ Usuarios por Rol"
-              descripcion="Distribución de usuarios según su nivel de acceso al sistema."
-              ruta="/estadisticas/usuarios/rol"
             />
             <CardEstadistica
               titulo="📅 Registro de usuarios por año"

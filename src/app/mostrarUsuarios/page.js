@@ -33,9 +33,11 @@ const MostrarUsuariosPage = () => {
   // Función de búsqueda
   const handleSearch = useCallback(
     (term) => {
-      const lower = term.toLowerCase();
+      const lower = (term || "").toLowerCase();
       setFilteredUsuarios(
-        usuarios.filter((u) => u.apellido_paterno.toLowerCase().includes(lower))
+        usuarios.filter((u) =>
+          (u.apellido_paterno || "").toLowerCase().includes(lower)
+        )
       );
     },
     [usuarios]
@@ -143,7 +145,7 @@ const MostrarUsuariosPage = () => {
 
         {searchTerm && (
           <p className="text-sm text-gray-500 text-center mb-2">
-            Haz clic en Limpiar para ver todos los libros.
+            Haz clic en Limpiar para ver todos los usuarios.
           </p>
         )}
 
@@ -152,17 +154,11 @@ const MostrarUsuariosPage = () => {
           <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
             <thead>
               <tr>
-                <th className="border px-4 py-2">Id Usuario</th>
-                <th className="border px-4 py-2">Primer Nombre</th>
-                <th className="border px-4 py-2">Segundo Nombre</th>
-                <th className="border px-4 py-2">Apellido Paterno</th>
-                <th className="border px-4 py-2">Apellido Materno</th>
-                <th className="border px-4 py-2">Email</th>
-                <th className="border px-4 py-2">Teléfono</th>
-                <th className="border px-4 py-2">Justificación</th>
+                <th className="border px-4 py-2">ID</th>
                 <th className="border px-4 py-2">Rol</th>
-                <th className="border px-4 py-2">Es Autor</th>
-                <th className="border px-4 py-2">Foto</th>
+                <th className="border px-4 py-2">Apellido Paterno</th>
+                <th className="border px-4 py-2">Primer Nombre</th>
+                <th className="border px-4 py-2">Correo</th>
                 <th className="border px-4 py-2">Acciones</th>
               </tr>
             </thead>
@@ -170,22 +166,14 @@ const MostrarUsuariosPage = () => {
               {filteredUsuarios.map((usuario) => (
                 <tr key={usuario.id}>
                   <td className="border px-4 py-2">{usuario.id}</td>
-                  <td className="border px-4 py-2">{usuario.primer_nombre}</td>
-                  <td className="border px-4 py-2">{usuario.segundo_nombre}</td>
+                  <td className="border px-4 py-2">{usuario.role ?? "—"}</td>
                   <td className="border px-4 py-2">
-                    {usuario.apellido_paterno}
+                    {usuario.apellido_paterno ?? "—"}
                   </td>
                   <td className="border px-4 py-2">
-                    {usuario.apellido_materno}
+                    {usuario.primer_nombre ?? "—"}
                   </td>
-                  <td className="border px-4 py-2">{usuario.email}</td>
-                  <td className="border px-4 py-2">{usuario.telefono}</td>
-                  <td className="border px-4 py-2">{usuario.justificacion}</td>
-                  <td className="border px-4 py-2">{usuario.role}</td>
-                  <td className="border px-4 py-2">
-                    {usuario.es_autor ? "Sí" : "No"}
-                  </td>
-                  <td className="border px-4 py-2">{usuario.foto}</td>
+                  <td className="border px-4 py-2">{usuario.email ?? "—"}</td>
                   <td className="border px-4 py-2 space-y-2">
                     <button
                       onClick={() => setUserToDelete(usuario)}

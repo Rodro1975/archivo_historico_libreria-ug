@@ -15,6 +15,8 @@ import html2canvas from "html2canvas";
 import WorkBar from "@/components/WorkBar";
 import Image from "next/image";
 
+const COLORS = ["#facc15", "#60a5fa"]; // amarillo y azul claro
+
 export default function UsuariosEsAutorPage() {
   const [data, setData] = useState([]);
   const [rol, setRol] = useState(null);
@@ -116,14 +118,22 @@ export default function UsuariosEsAutorPage() {
               fill="#8884d8"
               label
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
+              {data.length > 0 &&
+                data.map((_, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
             </Pie>
-            <Tooltip />
+
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1e3a8a",
+                color: "#fff",
+                borderColor: "#facc15",
+              }}
+              itemStyle={{ color: "#fff" }}
+              labelStyle={{ color: "#facc15" }}
+            />
+
             <Legend />
           </PieChart>
         </ResponsiveContainer>

@@ -64,13 +64,21 @@ export default function EstadisticasLibros() {
 
     const conteo = {};
     libros.forEach((libro) => {
-      const anio = libro.anioPublicacion?.trim() || "Desconocido";
+      const anio =
+        libro.anioPublicacion != null
+          ? String(libro.anioPublicacion)
+          : "Desconocido";
       conteo[anio] = (conteo[anio] || 0) + 1;
     });
 
     const datosFormateados = Object.entries(conteo)
       .map(([anio, cantidad]) => ({ anio, cantidad }))
-      .sort((a, b) => a.anio.localeCompare(b.anio));
+      .sort((a, b) => {
+        const ax = a.anio === "Desconocido";
+        const bx = b.anio === "Desconocido";
+        if (ax !== bx) return ax ? 1 : -1; // "Desconocido" al final
+        return Number(a.anio) - Number(b.anio);
+      });
 
     setData(datosFormateados);
   };

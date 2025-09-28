@@ -8,6 +8,25 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import { FaSearch } from "react-icons/fa";
 
+/** Helper local: separa nombre completo → { apellido, nombre }
+ *  Heurística simple:
+ *  - 1 token: nombre
+ *  - 2 tokens: [nombre] [apellido]
+ *  - 3+ tokens: últimos 2 = apellidos; el resto = nombre
+ */
+function splitNombreES(full = "") {
+  const clean = (full || "").normalize("NFKC").replace(/\s+/g, " ").trim();
+  if (!clean) return { apellido: "", nombre: "" };
+
+  const parts = clean.split(" ");
+  if (parts.length === 1) return { apellido: "", nombre: parts[0] };
+  if (parts.length === 2) return { apellido: parts[1], nombre: parts[0] };
+
+  const apellido = parts.slice(-2).join(" ");
+  const nombre = parts.slice(0, -2).join(" ");
+  return { apellido, nombre };
+}
+
 export default function MostrarSolicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -70,7 +89,7 @@ export default function MostrarSolicitudes() {
     }
   };
 
-  //helper local para manejar colores de estado
+  // helper local para manejar colores de estado
   const claseEstado = (estadoRaw) => {
     const e = (estadoRaw || "pendiente").toLowerCase();
     if (e === "aprobado") return "text-aprobado";
@@ -91,6 +110,7 @@ export default function MostrarSolicitudes() {
         <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
           Gestión de Solicitudes de Lectores
         </h1>
+
         {/* Barra de búsqueda */}
         <div className="mb-6 flex items-center justify-center">
           <div className="w-full max-w-md flex items-center">
@@ -143,6 +163,7 @@ export default function MostrarSolicitudes() {
             <table className="min-w-full divide-y divide-blue text-blue text-sm">
               <thead className="bg-yellow text-blue uppercase text-xs">
                 <tr>
+                  <th className="px-4 py-3 text-left">Apellido</th>
                   <th className="px-4 py-3 text-left">Nombre</th>
                   <th className="px-4 py-3 text-left">Tipo</th>
                   <th className="px-4 py-3 text-left">Detalle</th>
@@ -152,37 +173,41 @@ export default function MostrarSolicitudes() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((s) => (
-                  <tr
-                    key={s.id}
-                    className="border-t border-gray-200 hover:bg-yellow/20 transition"
-                  >
-                    <td className="px-4 py-3">{s.nombre}</td>
-                    <td className="px-4 py-3">{s.tipo}</td>
-                    <td className="px-4 py-3">{s.detalle}</td>
-                    <td
-                      className={`px-4 py-3 font-semibold ${claseEstado(
-                        s.estado
-                      )}`}
+                {filtered.map((s) => {
+                  const { apellido, nombre } = splitNombreES(s.nombre || "");
+                  return (
+                    <tr
+                      key={s.id}
+                      className="border-t border-gray-200 hover:bg-yellow/20 transition"
                     >
-                      {labelEstado(s.estado)}
-                    </td>
-                    <td className="px-4 py-3">
-                      {new Date(s.creado_en).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => {
-                          setSelected(s);
-                          setRespuesta(s.respuesta || "");
-                        }}
-                        className="bg-blue text-white px-3 py-1 rounded-lg hover:bg-yellow transition"
+                      <td className="px-4 py-3">{apellido}</td>
+                      <td className="px-4 py-3">{nombre}</td>
+                      <td className="px-4 py-3">{s.tipo}</td>
+                      <td className="px-4 py-3">{s.detalle}</td>
+                      <td
+                        className={`px-4 py-3 font-semibold ${claseEstado(
+                          s.estado
+                        )}`}
                       >
-                        Revisar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {labelEstado(s.estado)}
+                      </td>
+                      <td className="px-4 py-3">
+                        {new Date(s.creado_en).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => {
+                            setSelected(s);
+                            setRespuesta(s.respuesta || "");
+                          }}
+                          className="bg-blue text-white px-3 py-1 rounded-lg hover:bg-yellow transition"
+                        >
+                          Revisar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -197,8 +222,21 @@ export default function MostrarSolicitudes() {
               Solicitud de {selected.tipo}
             </h2>
             <p className="mb-2 text-blue">
-              <strong>Nombre:</strong> {selected.nombre}
+              <strong>Nombre completo:</strong> {selected.nombre}
             </p>
+            {(() => {
+              const { apellido, nombre } = splitNombreES(selected.nombre || "");
+              return (
+                <>
+                  <p className="mb-2 text-blue">
+                    <strong>Apellido:</strong> {apellido}
+                  </p>
+                  <p className="mb-2 text-blue">
+                    <strong>Nombre:</strong> {nombre}
+                  </p>
+                </>
+              );
+            })()}
             <p className="mb-2 text-blue">
               <strong>Detalle:</strong> {selected.detalle}
             </p>

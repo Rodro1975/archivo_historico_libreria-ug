@@ -19,18 +19,20 @@ export default function MostrarSoportePage() {
 
   async function fetchSoportes() {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("soporte")
-      .select(
-        "*, usuarios:usuario_id(primer_nombre, apellido_paterno), atendido:atendida_por(primer_nombre, apellido_paterno)"
-      );
+    try {
+      const { data, error } = await supabase.from("soporte").select(`
+        *,
+        usuarios:usuario_id ( primer_nombre, apellido_paterno )
+      `);
 
-    if (error) {
-      toastError("Error al cargar soporte: " + error.message, toastStyle);
-      return;
+      if (error) throw error;
+
+      setSoportes(Array.isArray(data) ? data : []);
+    } catch (e) {
+      toastError("Error al cargar soporte: " + (e?.message ?? String(e)));
+    } finally {
+      setLoading(false);
     }
-    setSoportes(data);
-    setLoading(false);
   }
 
   async function fetchUsuarios() {
@@ -38,7 +40,7 @@ export default function MostrarSoportePage() {
       .from("usuarios")
       .select("id, primer_nombre, apellido_paterno");
     if (error) {
-      toastError("Error al cargar usuarios: " + error.message, toastStyle);
+      toastError("Error al cargar usuarios: " + error.message);
       return;
     }
     setUsuarios(data);
@@ -63,9 +65,9 @@ export default function MostrarSoportePage() {
       .eq("id", id);
 
     if (error) {
-      toastError("Error al actualizar: " + error.message, toastStyle);
+      toastError("Error al actualizar: " + error.message);
     } else {
-      toastSuccess("Solicitud actualizada", toastStyle);
+      toastSuccess("Solicitud actualizada");
       fetchSoportes();
     }
   }
