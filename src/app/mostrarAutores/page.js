@@ -7,6 +7,22 @@ import ActualizarAutores from "@/components/ActualizarAutores";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
+/** Heurística simple para separar Apellido / Nombre en español.
+ * - 1 token: nombre
+ * - 2 tokens: [nombre] [apellido]
+ * - 3+ tokens: últimos 2 = apellidos; el resto = nombre(s)
+ */
+function splitNombreES(full = "") {
+  const clean = (full || "").normalize("NFKC").replace(/\s+/g, " ").trim();
+  if (!clean) return { apellido: "", nombre: "" };
+  const parts = clean.split(" ");
+  if (parts.length === 1) return { apellido: "", nombre: parts[0] };
+  if (parts.length === 2) return { apellido: parts[1], nombre: parts[0] };
+  const apellido = parts.slice(-2).join(" ");
+  const nombre = parts.slice(0, -2).join(" ");
+  return { apellido, nombre };
+}
+
 const MostrarAutoresPage = () => {
   const [autores, setAutores] = useState([]);
   const [filteredAutores, setFilteredAutores] = useState([]);
@@ -35,7 +51,7 @@ const MostrarAutoresPage = () => {
           dependencias ( nombre ),
           unidades_academicas ( nombre )
         `
-        ); // 👈 se quitó 'vigencia' y 'cargo' del select, se agrego 'institucion_tipo' e 'institucion_nombre'
+        ); // se mantienen los campos visibles y relaciones
 
       if (supabaseError) throw supabaseError;
       setAutores(data || []);
@@ -48,13 +64,17 @@ const MostrarAutoresPage = () => {
     }
   }, []);
 
+  // Búsqueda por apellido/nombre (y también por nombre completo)
   const handleSearch = useCallback(
     (term) => {
-      const lower = term.toLowerCase();
+      const lower = (term || "").toLowerCase();
       setFilteredAutores(
-        autores.filter((a) =>
-          (a?.nombre_completo || "").toLowerCase().includes(lower)
-        )
+        autores.filter((a) => {
+          const full = a?.nombre_completo || "";
+          const { apellido, nombre } = splitNombreES(full);
+          const hay = `${apellido} ${nombre} ${full}`.toLowerCase();
+          return hay.includes(lower);
+        })
       );
     },
     [autores]
@@ -128,6 +148,7 @@ const MostrarAutoresPage = () => {
             </button>
           )}
         </div>
+
         <style jsx>{`
           .clip-hexagon {
             clip-path: polygon(
@@ -152,79 +173,81 @@ const MostrarAutoresPage = () => {
           <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
             <thead>
               <tr>
-                <th className="border px-4 py-2">Nombre Completo</th>
+                <th className="border px-4 py-2">Apellido</th>
+                <th className="border px-4 py-2">Nombre</th>
                 <th className="border px-4 py-2">Institución</th>
                 <th className="border px-4 py-2">
                   Rectoría/Campus/CNMS/Secretaría
                 </th>
                 <th className="border px-4 py-2">División/Escuela</th>
                 <th className="border px-4 py-2">Correo Institucional</th>
-                {/* 👇 Se elimina columna Vigencia */}
                 <th className="border px-4 py-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {filteredAutores.length > 0 ? (
-                filteredAutores.map((autor) => (
-                  <tr key={autor.id}>
-                    <td className="border px-4 py-2">
-                      {autor.nombre_completo}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {autor.institucion_tipo === "UG"
-                        ? "UG"
-                        : autor.institucion_tipo === "Externa"
-                        ? `Externa${
-                            autor.institucion_nombre
-                              ? " – " + autor.institucion_nombre
-                              : ""
-                          }`
-                        : "—"}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {/* Muestra nombre de la FK si existe; si no, el id como fallback */}
-                      {autor?.dependencias?.nombre ??
-                        autor?.dependencia_id ??
-                        "—"}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {autor?.unidades_academicas?.nombre ??
-                        autor?.unidad_academica_id ??
-                        "—"}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {autor.correo_institucional}
-                    </td>
-                    {/* 👇 Sin columna vigencia */}
-                    <td className="border px-4 py-2">
-                      <button
-                        onClick={() => {
-                          setAutorAEliminar(autor);
-                          setShowConfirm(true);
-                        }}
-                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded mb-2"
-                      >
-                        <FaTrash />
-                        Eliminar
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCurrentAutor(autor);
-                          setIsEditing(true);
-                        }}
-                        className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                        title="Modificar autor"
-                      >
-                        <FaEdit />
-                        Modificar
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                filteredAutores.map((autor) => {
+                  const { apellido, nombre } = splitNombreES(
+                    autor?.nombre_completo || ""
+                  );
+                  return (
+                    <tr key={autor.id}>
+                      <td className="border px-4 py-2">{apellido || "—"}</td>
+                      <td className="border px-4 py-2">{nombre || "—"}</td>
+                      <td className="border px-4 py-2">
+                        {autor.institucion_tipo === "UG"
+                          ? "UG"
+                          : autor.institucion_tipo === "Externa"
+                          ? `Externa${
+                              autor.institucion_nombre
+                                ? " – " + autor.institucion_nombre
+                                : ""
+                            }`
+                          : "—"}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {autor?.dependencias?.nombre ??
+                          autor?.dependencia_id ??
+                          "—"}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {autor?.unidades_academicas?.nombre ??
+                          autor?.unidad_academica_id ??
+                          "—"}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {autor.correo_institucional}
+                      </td>
+                      <td className="border px-4 py-2">
+                        <button
+                          onClick={() => {
+                            setAutorAEliminar(autor);
+                            setShowConfirm(true);
+                          }}
+                          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded mb-2"
+                        >
+                          <FaTrash />
+                          Eliminar
+                        </button>
+                        <button
+                          onClick={() => {
+                            setCurrentAutor(autor);
+                            setIsEditing(true);
+                          }}
+                          className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
+                          title="Modificar autor"
+                        >
+                          <FaEdit />
+                          Modificar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  {/* colSpan de 6 porque ya no está la columna “Vigencia” */}
-                  <td colSpan="6" className="text-center py-4">
+                  {/* 7 columnas visibles */}
+                  <td colSpan="7" className="text-center py-4">
                     No se encontraron autores
                   </td>
                 </tr>
