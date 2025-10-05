@@ -10,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import FormReader from "@/components/FormReader";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 const LoginForm = () => {
   const {
@@ -27,20 +28,45 @@ const LoginForm = () => {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      // 1) Obtener token del widget
+      const token = window?.turnstile?.getResponse?.();
+      if (!token) {
+        toastError("Completa la verificación de seguridad.");
+        return;
+      }
 
-    if (error) {
-      toastError(`Error: ${error.message}`);
-      setError(error.message);
-    } else {
-      toastSuccess("Inicio de sesión exitoso");
-      router.push("/dashboard");
+      // 2) Verificar en tu API
+      const ver = await fetch("/api/turnstile/verify", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!ver.ok) {
+        const info = await ver.json().catch(() => ({}));
+        toastError(info?.error || "Verificación de seguridad fallida.");
+        return;
+      }
+
+      // 3) Si el captcha es válido, procede con Supabase
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) {
+        toastError(`Error: ${error.message}`);
+        setError(error.message);
+      } else {
+        toastSuccess("Inicio de sesión exitoso");
+        router.push("/dashboard");
+      }
+    } finally {
+      setLoading(false);
+      // Opcional: resetear el widget para siguientes intentos
+      window?.turnstile?.reset?.();
     }
-
-    setLoading(false);
   };
 
   return (
@@ -176,6 +202,10 @@ const LoginForm = () => {
                 <i className="fas fa-user-plus mr-2 text-blue" />
                 <span>Crear cuenta</span>
               </button>
+              <div className="sm:col-span-2 flex justify-center mt-2">
+                {/* 🔒 Widget Turnstile */}
+                <TurnstileWidget />
+              </div>
             </div>
             {/* Ayuda sobre opciones de registro (popover independiente) */}
             <div className="mt-2 relative flex justify-center">

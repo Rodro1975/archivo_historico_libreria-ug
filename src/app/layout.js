@@ -7,6 +7,7 @@ import "./globals.css";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script"; // 👈 agrega esto
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -28,12 +29,18 @@ export default function RootLayout({ children }) {
           return "Archivo Histórico de la Editorial UG";
       }
     };
-
     document.title = getTitle();
   }, [pathname]);
 
   return (
     <html lang="es">
+      <head>
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit"
+          strategy="afterInteractive"
+        />
+      </head>
+
       <body className="antialiased">
         {/* Toaster global con estilo institucional */}
         <Toaster
