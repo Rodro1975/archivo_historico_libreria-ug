@@ -7,6 +7,10 @@ import ActualizarAutores from "@/components/ActualizarAutores";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
+// ✅ NEW: importa hook y componente de paginación
+import usePageSlice from "@/hooks/usePageSlice";
+import Pagination from "@/components/Pagination";
+
 /** Heurística simple para separar Apellido / Nombre en español.
  * - 1 token: nombre
  * - 2 tokens: [nombre] [apellido]
@@ -106,6 +110,22 @@ const MostrarAutoresPage = () => {
     handleSearch(searchTerm);
   }, [searchTerm, handleSearch]);
 
+  // ✅ NEW: paginación de 5 en 5 sobre el arreglo YA filtrado
+  const {
+    page,
+    setPage,
+    total,
+    totalPages,
+    start,
+    end,
+    pageItems, // <- usa esto en el <tbody>
+  } = usePageSlice(filteredAutores, 5);
+
+  // ✅ NEW: si cambia el término de búsqueda, vuelve a la página 1
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, setPage]);
+
   if (loading) return <p className="text-center mt-8">Cargando autores...</p>;
   if (error)
     return <p className="text-red-500 text-center mt-8">Error: {error}</p>;
@@ -126,7 +146,7 @@ const MostrarAutoresPage = () => {
             placeholder="Buscar por apellido de autor"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 rounded border bg-yellow text-blue placeholder-blue-900 font-bold"
+            className="w-full p-2 rounded border bg-gray text-blue placeholder-blue-900 font-bold"
           />
           <button
             className="w-12 h-12 bg-orange text-blue flex items-center justify-center transform rotate-30 clip-hexagon"
@@ -170,7 +190,7 @@ const MostrarAutoresPage = () => {
 
         {/* Tabla */}
         <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
-          <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
+          <table className="min-w-full bg-white border border-gray-300 text-blue mb-2">
             <thead>
               <tr>
                 <th className="border px-4 py-2">Apellido</th>
@@ -185,8 +205,9 @@ const MostrarAutoresPage = () => {
               </tr>
             </thead>
             <tbody>
+              {/* ✅ CHANGED: usa pageItems en lugar de filteredAutores */}
               {filteredAutores.length > 0 ? (
-                filteredAutores.map((autor) => {
+                pageItems.map((autor) => {
                   const { apellido, nombre } = splitNombreES(
                     autor?.nombre_completo || ""
                   );
@@ -224,17 +245,18 @@ const MostrarAutoresPage = () => {
                             setAutorAEliminar(autor);
                             setShowConfirm(true);
                           }}
-                          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded mb-2"
+                          className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
                         >
                           <FaTrash />
                           Eliminar
                         </button>
+
                         <button
                           onClick={() => {
                             setCurrentAutor(autor);
                             setIsEditing(true);
                           }}
-                          className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
+                          className="ml-2 inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
                           title="Modificar autor"
                         >
                           <FaEdit />
@@ -254,6 +276,18 @@ const MostrarAutoresPage = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* ✅ NEW: paginación debajo de la tabla */}
+        <div className="w-full max-w-screen-lg mx-auto px-4 mb-10">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            start={start}
+            end={end}
+            onPageChange={setPage}
+          />
         </div>
 
         {/* Modal de confirmación */}

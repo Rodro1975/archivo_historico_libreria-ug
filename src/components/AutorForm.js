@@ -7,33 +7,54 @@ import { z } from "zod";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
+// ✅ NEW: helper unificado de email (reemplaza regex locales)
+import { validateEmailByInstitution } from "@/lib/emailValidators";
 
-// ✅ Schema: reglas condicionales UG/Externa
+/* ==============  Zod: validación  ============== */
+
+// helper para convertir selects a número o undefined
+const toInt = (v) =>
+  v === "" || v === null || typeof v === "undefined" ? undefined : Number(v);
+
 const AutorSchema = z
   .object({
-    nombre_completo: z.string().min(5, "Mínimo 5 caracteres"),
-    correo_institucional: z.string().email("Email inválido"),
+    nombre_completo: z
+      .string()
+      .trim()
+      .min(5, "Mínimo 5 caracteres")
+      // Solo letras Unicode y espacios entre palabras:
+      .regex(
+        /^[\p{L}]+(?:\s+[\p{L}]+)*$/u,
+        "Solo letras y espacios. Sin números ni símbolos."
+      )
+      .transform((v) => v.replace(/\s+/g, " ")), // colapsa espacios
+    correo_institucional: z.string().min(1, "Email inválido"),
     institucion_tipo: z.enum(["UG", "Externa"], {
       required_error: "Selecciona la institución",
       invalid_type_error: "Selecciona la institución",
     }),
     institucion_nombre: z.string().optional(), // requerido si Externa
-    // Para selects numéricos, permitimos undefined y validamos condicionalmente
-    dependencia_id: z.number().int().optional(),
-    unidad_academica_id: z.number().int().optional(),
+    dependencia_id: z.preprocess(toInt, z.number().int().positive().optional()),
+    unidad_academica_id: z.preprocess(
+      toInt,
+      z.number().int().positive().optional()
+    ),
   })
   .superRefine((val, ctx) => {
     const correo = val.correo_institucional?.toLowerCase?.().trim() || "";
 
-    // UG: correo @ugto.mx y dependencia obligatoria; NO nombre de institución
+    // ✅ CHANGED: validación unificada de email por modalidad (UG / Externa)
+    const emailErr = validateEmailByInstitution(val.institucion_tipo, correo);
+    if (emailErr) {
+      ctx.addIssue({
+        path: ["correo_institucional"],
+        code: z.ZodIssueCode.custom,
+        message: emailErr,
+      });
+    }
+
+    // UG: dependencia obligatoria; no debe capturarse institucion_nombre
     if (val.institucion_tipo === "UG") {
-      if (!correo.endsWith("@ugto.mx")) {
-        ctx.addIssue({
-          path: ["correo_institucional"],
-          code: z.ZodIssueCode.custom,
-          message: "Debe ser un correo institucional @ugto.mx",
-        });
-      }
       if (!val.dependencia_id) {
         ctx.addIssue({
           path: ["dependencia_id"],
@@ -50,7 +71,7 @@ const AutorSchema = z
       }
     }
 
-    // Externa: nombre obligatorio; NO dependencia ni unidad
+    // Externa: nombre obligatorio; no aplicar dependencia/unidad
     if (val.institucion_tipo === "Externa") {
       if (!val.institucion_nombre || val.institucion_nombre.trim() === "") {
         ctx.addIssue({
@@ -59,14 +80,14 @@ const AutorSchema = z
           message: "Indica el nombre de la institución externa",
         });
       }
-      if (val.dependencia_id !== undefined) {
+      if (typeof val.dependencia_id !== "undefined") {
         ctx.addIssue({
           path: ["dependencia_id"],
           code: z.ZodIssueCode.custom,
           message: "No aplica dependencia para institución externa",
         });
       }
-      if (val.unidad_academica_id !== undefined) {
+      if (typeof val.unidad_academica_id !== "undefined") {
         ctx.addIssue({
           path: ["unidad_academica_id"],
           code: z.ZodIssueCode.custom,
@@ -94,8 +115,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
       dependencia_id: undefined,
       unidad_academica_id: undefined,
     },
-    // 👇 clave: los campos no renderizados NO se envían
-    shouldUnregister: true,
+    shouldUnregister: true, // los campos no renderizados NO se envían
   });
 
   const tipoInstitucion = watch("institucion_tipo");
@@ -105,7 +125,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
   const [unidades, setUnidades] = useState([]);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
 
-  // 🔹 Cargar dependencias ACTIVAS y ordenadas
+  // Cargar dependencias ACTIVAS y ordenadas
   useEffect(() => {
     supabase
       .from("dependencias")
@@ -122,13 +142,11 @@ export default function AutorForm({ onRefreshUsuarios }) {
       });
   }, []);
 
-  // 🔹 Cargar unidades ACTIVAS filtradas por la dependencia elegida
+  // Cargar unidades ACTIVAS filtradas por la dependencia elegida
   useEffect(() => {
-    // Si no es UG, o no hay dependencia, no mostramos unidades
     if (tipoInstitucion !== "UG" || !dependenciaSeleccionada) {
       setUnidades([]);
       setLoadingUnidades(false);
-      // limpiar unidad si cambia dependencia o se cambia a Externa
       setValue("unidad_academica_id", undefined, { shouldValidate: true });
       return;
     }
@@ -153,7 +171,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
       });
   }, [tipoInstitucion, dependenciaSeleccionada, setValue]);
 
-  // 🔹 Si seleccionan Externa, limpiar dep/unidad (no deben viajar)
+  // Si seleccionan Externa, limpiar dep/unidad (no deben viajar)
   useEffect(() => {
     if (tipoInstitucion === "Externa") {
       setValue("dependencia_id", undefined, { shouldValidate: true });
@@ -178,9 +196,9 @@ export default function AutorForm({ onRefreshUsuarios }) {
       if (usersData) usuarioId = usersData.id;
     }
 
-    // 2) Armar payload según institución
+    // 2) Payload según institución
     const payload = {
-      usuario_id: usuarioId,
+      usuario_id: usuarioId, // FK, ON DELETE SET NULL → puede ir null
       nombre_completo: formData.nombre_completo.trim(),
       correo_institucional: formData.correo_institucional.trim(),
       institucion_tipo: formData.institucion_tipo,
@@ -259,6 +277,8 @@ export default function AutorForm({ onRefreshUsuarios }) {
               </label>
               <input
                 {...register("nombre_completo")}
+                pattern="^[\p{L}]+(?:\s+[\p{L}]+)*$"
+                title="Solo letras y espacios. Sin números ni símbolos."
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Ingresa el nombre completo"
               />
@@ -317,12 +337,24 @@ export default function AutorForm({ onRefreshUsuarios }) {
                 Correo
               </label>
               <input
+                type="email"
                 {...register("correo_institucional")}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder={
                   tipoInstitucion === "UG"
                     ? "usuario@ugto.mx"
                     : "usuario@dominio.com"
+                }
+                // ✅ CHANGED: solo ayuda visual; la validación real la hace Zod + helper
+                pattern={
+                  tipoInstitucion === "UG"
+                    ? "[A-Za-z0-9._%+-]+@ugto\\.mx"
+                    : "[^\\s@]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,63}"
+                }
+                title={
+                  tipoInstitucion === "UG"
+                    ? "Debe ser un correo institucional @ugto.mx"
+                    : "Correo válido con TLD de letras (p. ej., .com, .mx, .org, .net, etc.)"
                 }
               />
               {errors.correo_institucional && (
@@ -336,7 +368,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
                 </p>
               ) : tipoInstitucion === "Externa" ? (
                 <p className="text-xs text-gray-500 mt-1">
-                  Se acepta cualquier dominio de correo válido.
+                  Se acepta cualquier dominio de correo válido (TLD de letras).
                 </p>
               ) : null}
             </div>

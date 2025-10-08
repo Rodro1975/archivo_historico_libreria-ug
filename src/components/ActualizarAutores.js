@@ -5,12 +5,18 @@ import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
+// CHANGED: importar el helper unificado
+import { validateEmailByInstitution } from "@/lib/emailValidators";
+
+// Mantengo tu validación de nombre tal cual
+const NAME_REGEX = /^[\p{L}]+(?:\s+[\p{L}]+)*$/u;
+
+// REMOVED: EMAIL_REGEX_STRICT e isValidDomainLike locales (los sustituye el helper)
 
 const esUGCorreo = (correo = "") =>
   (correo || "").toLowerCase().trim().endsWith("@ugto.mx");
 
 const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
-  // Deducir tipo si viene NULL (por migraciones antiguas)
   const tipoInicial = useMemo(() => {
     if (
       autor?.institucion_tipo === "UG" ||
@@ -37,20 +43,17 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
       institucion_tipo: tipoInicial,
       institucion_nombre: autor?.institucion_nombre ?? "",
     },
-    shouldUnregister: true, // lo no renderizado no viaja en submit
+    shouldUnregister: true,
   });
 
-  // Reloj de campos
   const tipoInstitucion = watch("institucion_tipo");
   const dependenciaSeleccionada = watch("dependencia_id");
 
-  // Catálogos
   const [dependencias, setDependencias] = useState([]);
   const [unidades, setUnidades] = useState([]);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cargar dependencias activas
   useEffect(() => {
     supabase
       .from("dependencias")
@@ -64,7 +67,6 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
       });
   }, []);
 
-  // Cargar unidades activas filtradas por dependencia (cuando aplique)
   useEffect(() => {
     if (tipoInstitucion !== "UG" || !dependenciaSeleccionada) {
       setUnidades([]);
@@ -92,7 +94,6 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
       });
   }, [tipoInstitucion, dependenciaSeleccionada, setValue]);
 
-  // Reset al cambiar de autor (si reabren modal sobre otro registro)
   useEffect(() => {
     const deducido =
       autor?.institucion_tipo ??
@@ -108,7 +109,6 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
     });
   }, [autor, reset]);
 
-  // Si cambian a Externa, limpiar dep/unidad
   useEffect(() => {
     if (tipoInstitucion === "Externa") {
       setValue("dependencia_id", undefined, { shouldValidate: true });
@@ -119,29 +119,33 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
   const onSubmit = async (data) => {
     try {
       const correoTrim = (data.correo_institucional || "").trim().toLowerCase();
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!emailRegex.test(correoTrim)) {
-        return toastError("Email inválido.");
+      // CHANGED: una sola validación unificada con el helper
+      const emailErr = validateEmailByInstitution(
+        data.institucion_tipo,
+        correoTrim
+      );
+      if (emailErr) return toastError(emailErr);
+
+      // Reglas adicionales de negocio (no de email)
+      if (data.institucion_tipo === "UG" && !data.dependencia_id) {
+        return toastError("Debes seleccionar una dependencia.");
+      }
+      if (
+        data.institucion_tipo === "Externa" &&
+        !(data.institucion_nombre || "").trim()
+      ) {
+        return toastError("Indica el nombre de la institución externa.");
       }
 
-      if (data.institucion_tipo === "UG") {
-        if (!correoTrim.endsWith("@ugto.mx")) {
-          return toastError("Para UG el correo debe ser @ugto.mx.");
-        }
-        if (!data.dependencia_id) {
-          return toastError("Debes seleccionar una dependencia.");
-        }
-      } else if (data.institucion_tipo === "Externa") {
-        if (!data.institucion_nombre || data.institucion_nombre.trim() === "") {
-          return toastError("Indica el nombre de la institución externa.");
-        }
-      } else {
-        return toastError("Selecciona el tipo de institución.");
-      }
+      // Normalizar nombre (igual que antes)
+      const nombreNorm = (data.nombre_completo || "")
+        .normalize("NFKC")
+        .replace(/\s+/g, " ")
+        .trim();
 
       const payload = {
-        nombre_completo: (data.nombre_completo || "").trim(),
+        nombre_completo: nombreNorm,
         correo_institucional: correoTrim,
         institucion_tipo: data.institucion_tipo,
         institucion_nombre:
@@ -156,7 +160,6 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
               ? Number(data.unidad_academica_id)
               : null
             : null,
-        // cargo (deprecado) y vigencia usan defaults de BD
         fecha_modificacion: new Date(),
       };
 
@@ -216,8 +219,21 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
                 Nombre Completo
               </label>
               <input
-                {...register("nombre_completo", { required: "Requerido" })}
+                {...register("nombre_completo", {
+                  required: "Requerido",
+                  minLength: { value: 5, message: "Mínimo 5 caracteres" },
+                  validate: (v) => {
+                    const val = (v || "").normalize("NFKC").trim();
+                    if (!NAME_REGEX.test(val)) {
+                      return "Solo letras y espacios. Sin números ni símbolos.";
+                    }
+                    return true;
+                  },
+                })}
+                pattern="^[\p{L}]+(?:\s+[\p{L}]+)*$"
+                title="Solo letras y espacios. Sin números ni símbolos."
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                placeholder="Ingresa el nombre completo"
               />
               {errors.nombre_completo && (
                 <span className="text-red-500 text-sm">
@@ -254,7 +270,14 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
                   Nombre de la institución (Externa)
                 </label>
                 <input
-                  {...register("institucion_nombre")}
+                  {...register("institucion_nombre", {
+                    validate: (v) => {
+                      if (tipoInstitucion !== "Externa") return true;
+                      return (v || "").trim() !== ""
+                        ? true
+                        : "Indica el nombre de la institución externa";
+                    },
+                  })}
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                   placeholder="Ej. Universidad Nacional"
                 />
@@ -337,17 +360,13 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
                 type="email"
                 {...register("correo_institucional", {
                   required: "Requerido",
+                  // CHANGED: misma lógica que submit pero a nivel de campo
                   validate: (v) => {
-                    const correo = (v || "").trim().toLowerCase();
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(correo)) return "Email inválido.";
-                    if (
-                      tipoInstitucion === "UG" &&
-                      !correo.endsWith("@ugto.mx")
-                    ) {
-                      return "Para UG el correo debe ser @ugto.mx";
-                    }
-                    return true;
+                    const msg = validateEmailByInstitution(
+                      tipoInstitucion,
+                      v || ""
+                    );
+                    return msg || true;
                   },
                 })}
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
@@ -368,7 +387,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
                 </p>
               ) : tipoInstitucion === "Externa" ? (
                 <p className="text-xs text-gray-500 mt-1">
-                  Se acepta cualquier dominio de correo válido.
+                  Se acepta cualquier dominio de correo válido permitido.
                 </p>
               ) : null}
             </div>
