@@ -136,7 +136,10 @@ const RegisterBookSchema = z.object({
   ),
   coleccion: z
     .preprocess(
-      (v) => (typeof v === "string" ? v.trim() : v),
+      (v) => {
+        const s = typeof v === "string" ? v.trim() : v;
+        return s === "" || s == null ? undefined : s; // <- vacío pasa a undefined
+      },
       z
         .string()
         .max(100, { message: "Máximo 100 caracteres." })
@@ -716,10 +719,13 @@ export default function BookForm() {
               <input
                 type="text"
                 id="coleccion"
-                {...register("coleccion")}
                 placeholder="Opcional"
-                // vacío o contiene alguna letra
-                pattern="(^$|.*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*)"
+                {...register("coleccion", {
+                  setValueAs: (v) =>
+                    typeof v === "string" && v.trim() === ""
+                      ? undefined
+                      : v.trim(),
+                })}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               />
 

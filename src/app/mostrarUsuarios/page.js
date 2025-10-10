@@ -7,6 +7,10 @@ import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
+// 👇 imports para paginación
+import usePageSlice from "@/hooks/usePageSlice";
+import Pagination from "@/components/Pagination";
+
 const MostrarUsuariosPage = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [filteredUsuarios, setFilteredUsuarios] = useState([]);
@@ -23,9 +27,11 @@ const MostrarUsuariosPage = () => {
     const { data, error } = await supabase.from("usuarios").select("*");
     if (error) {
       setError(error.message);
+      setUsuarios([]);
+      setFilteredUsuarios([]);
     } else {
-      setUsuarios(data);
-      setFilteredUsuarios(data);
+      setUsuarios(data || []);
+      setFilteredUsuarios(data || []);
     }
     setLoading(false);
   };
@@ -35,7 +41,7 @@ const MostrarUsuariosPage = () => {
     (term) => {
       const lower = (term || "").toLowerCase();
       setFilteredUsuarios(
-        usuarios.filter((u) =>
+        (usuarios || []).filter((u) =>
           (u.apellido_paterno || "").toLowerCase().includes(lower)
         )
       );
@@ -59,7 +65,7 @@ const MostrarUsuariosPage = () => {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "usuarios" },
         () => {
-          console.log("Cambio en usuarios detectado, recargando lista...");
+          // recargar lista al detectar cambios
           fetchUsuarios();
         }
       )
@@ -70,6 +76,22 @@ const MostrarUsuariosPage = () => {
       supabase.removeChannel(subscription);
     };
   }, []);
+
+  // ✅ Paginación sobre la lista filtrada
+  const {
+    page,
+    setPage,
+    total,
+    totalPages,
+    start,
+    end,
+    pageItems, // <- usar en el tbody
+  } = usePageSlice(filteredUsuarios, 5); // 5por página
+
+  // ✅ Volver a la página 1 si cambia el término de búsqueda o cambia el total
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, filteredUsuarios.length, setPage]);
 
   // Función para eliminar un usuario
   const handleDelete = async () => {
@@ -107,7 +129,7 @@ const MostrarUsuariosPage = () => {
             placeholder="Buscar por apellido paterno"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 rounded border bg-yellow text-blue placeholder-blue-900 font-bold"
+            className="w-full p-2 rounded border bg-gray text-blue placeholder-blue-900 font-bold"
           />
           <button
             className="w-12 h-12 bg-orange text-blue flex items-center justify-center transform rotate-30 clip-hexagon"
@@ -163,43 +185,66 @@ const MostrarUsuariosPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsuarios.map((usuario) => (
-                <tr key={usuario.id}>
-                  <td className="border px-4 py-2">{usuario.id}</td>
-                  <td className="border px-4 py-2">{usuario.role ?? "—"}</td>
-                  <td className="border px-4 py-2">
-                    {usuario.apellido_paterno ?? "—"}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {usuario.primer_nombre ?? "—"}
-                  </td>
-                  <td className="border px-4 py-2">{usuario.email ?? "—"}</td>
-                  <td className="border px-4 py-2 space-y-2">
-                    <button
-                      onClick={() => setUserToDelete(usuario)}
-                      className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                    >
-                      <FaTrash />
-                      Eliminar
-                    </button>
-                    <button
-                      onClick={() => {
-                        setCurrentUsuario(usuario);
-                        setIsEditing(true);
-                      }}
-                      className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                    >
-                      <FaEdit />
-                      Modificar
-                    </button>
+              {pageItems.length > 0 ? (
+                pageItems.map((usuario) => (
+                  <tr key={usuario.id}>
+                    <td className="border px-4 py-2">{usuario.id}</td>
+                    <td className="border px-4 py-2">{usuario.role ?? "—"}</td>
+                    <td className="border px-4 py-2">
+                      {usuario.apellido_paterno ?? "—"}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {usuario.primer_nombre ?? "—"}
+                    </td>
+                    <td className="border px-4 py-2">{usuario.email ?? "—"}</td>
+                    <td className="border px-4 py-2">
+                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                        <button
+                          onClick={() => {
+                            setCurrentUsuario(usuario);
+                            setIsEditing(true);
+                          }}
+                          className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                          title="Modificar usuario"
+                        >
+                          <FaEdit />
+                          Modificar
+                        </button>
+                        <button
+                          onClick={() => setUserToDelete(usuario)}
+                          className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                        >
+                          <FaTrash />
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="text-center py-4" colSpan={6}>
+                    No se encontraron usuarios
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Modal de confirmacion */}
+        {/* Controles de paginación */}
+        <div className="max-w-screen-lg mx-auto px-4 mb-10">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            start={start}
+            end={end}
+            onPageChange={(p) => setPage(p)}
+          />
+        </div>
+
+        {/* Modal de confirmación */}
         {userToDelete && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">

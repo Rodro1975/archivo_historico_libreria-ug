@@ -162,7 +162,7 @@ export default function MostrarExpedientesPage() {
             placeholder="Buscar por código, título, tipo o nota"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 rounded border bg-yellow text-blue placeholder-blue-900 font-bold"
+            className="w-full p-2 rounded border bg-gray text-blue placeholder-blue-900 font-bold"
           />
           <button
             className="w-12 h-12 bg-orange text-blue flex items-center justify-center transform rotate-30 clip-hexagon"
@@ -239,34 +239,41 @@ export default function MostrarExpedientesPage() {
                       {fmtDate(r.created_at)}
                     </td>
                     <td className="border px-4 py-2">{r.notas ?? "—"}</td>
-                    <td className="border px-4 py-2 space-y-2">
-                      <button
-                        onClick={() => openRow(r)}
-                        className="flex items-center gap-2 bg-blue hover:bg-blue-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                        title="Abrir"
-                      >
-                        <FaExternalLinkAlt />
-                        Abrir
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCurrentRow(r);
-                          setIsEditing(true);
-                        }}
-                        className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                        title="Modificar"
-                      >
-                        <FaEdit />
-                        Modificar
-                      </button>
-                      <button
-                        onClick={() => setRowToDelete(r)}
-                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                        title="Eliminar"
-                      >
-                        <FaTrash />
-                        Eliminar
-                      </button>
+                    <td className="border px-4 py-2">
+                      <div className="flex flex-col gap-2">
+                        {/* Abrir (ghost con azul HEX) */}
+                        <button
+                          onClick={() => openRow(r)}
+                          className="inline-flex items-center gap-2 rounded-md border border-[#0F3D91]/70 bg-transparent px-4 py-1.5 text-sm font-medium text-[#0F3D91] hover:bg-[#0F3D91]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F3D91]/30 transition-colors"
+                          title="Abrir"
+                        >
+                          <FaExternalLinkAlt />
+                          Abrir
+                        </button>
+
+                        {/* Modificar (ghost ámbar) */}
+                        <button
+                          onClick={() => {
+                            setCurrentRow(r);
+                            setIsEditing(true);
+                          }}
+                          className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                          title="Modificar"
+                        >
+                          <FaEdit />
+                          Modificar
+                        </button>
+
+                        {/* Eliminar (ghost rojo) */}
+                        <button
+                          onClick={() => setRowToDelete(r)}
+                          className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                          title="Eliminar"
+                        >
+                          <FaTrash />
+                          Eliminar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

@@ -6,6 +6,10 @@ import WorkBar from "@/components/WorkBar";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { FaSearch } from "react-icons/fa";
 
+// 👇 Paginación (mismo set que ya usas)
+import usePageSlice from "@/hooks/usePageSlice";
+import Pagination from "@/components/Pagination";
+
 export default function MostrarSoportePage() {
   const [soportes, setSoportes] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -43,7 +47,7 @@ export default function MostrarSoportePage() {
       toastError("Error al cargar usuarios: " + error.message);
       return;
     }
-    setUsuarios(data);
+    setUsuarios(data || []);
   }
 
   async function actualizarSolicitud(soporte) {
@@ -74,17 +78,38 @@ export default function MostrarSoportePage() {
 
   const estadosDisponibles = ["Pendiente", "En atención", "Solucionada"];
 
-  const soportesFiltrados = soportes.filter(
+  // Filtro por estado o prioridad
+  const soportesFiltrados = (soportes || []).filter(
     (s) =>
-      s.estado?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.prioridad?.toLowerCase().includes(searchTerm.toLowerCase())
+      (s.estado || "")
+        .toLowerCase()
+        .includes((searchTerm || "").toLowerCase()) ||
+      (s.prioridad || "")
+        .toLowerCase()
+        .includes((searchTerm || "").toLowerCase())
   );
+
+  // ✅ Paginación: 5 por página sobre el arreglo filtrado
+  const {
+    page,
+    setPage,
+    total,
+    totalPages,
+    start,
+    end,
+    pageItems, // usar en el <tbody>
+  } = usePageSlice(soportesFiltrados, 5);
+
+  // ✅ Al cambiar la búsqueda o el total filtrado, volver a página 1
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, soportesFiltrados.length, setPage]);
 
   return (
     <div className="min-h-screen bg-blue text-white">
       <WorkBar />
 
-      <h1 className="text-4xl text-yellow text-center font-bold mt-24 mb-8">
+      <h1 className="text-4xl text-yellow text-center font-bold mt-28 mb-8">
         Gestión de Soporte Técnico
       </h1>
 
@@ -95,7 +120,7 @@ export default function MostrarSoportePage() {
           placeholder="Buscar por estado o prioridad"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 rounded border bg-yellow text-blue placeholder-blue-900 font-bold"
+          className="w-full p-2 rounded border bg-gray text-blue placeholder-blue-900 font-bold"
         />
         <button
           className="w-12 h-12 bg-orange text-blue flex items-center justify-center transform rotate-30 clip-hexagon"
@@ -130,7 +155,7 @@ export default function MostrarSoportePage() {
       `}</style>
 
       <div className="overflow-x-auto max-w-6xl mx-auto px-4">
-        <table className="min-w-full bg-white text-blue border border-gray-300 mb-8">
+        <table className="min-w-full bg-white text-blue border border-gray-300 mb-4">
           <thead className="bg-gold text-blue-900">
             <tr>
               <th className="px-4 py-2">Fecha</th>
@@ -152,8 +177,8 @@ export default function MostrarSoportePage() {
                   Cargando solicitudes...
                 </td>
               </tr>
-            ) : soportesFiltrados.length > 0 ? (
-              soportesFiltrados.map((s) => (
+            ) : pageItems.length > 0 ? (
+              pageItems.map((s) => (
                 <tr key={s.id} className="border-t">
                   <td className="px-4 py-2">
                     {new Date(s.fecha_creacion).toLocaleDateString()}
@@ -275,6 +300,17 @@ export default function MostrarSoportePage() {
           </tbody>
         </table>
       </div>
+      {/* Controles de paginación (5 por página) */}
+      {!loading && soportesFiltrados.length > 0 && (
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          start={start}
+          end={end}
+          onPageChange={(p) => setPage(p)}
+        />
+      )}
     </div>
   );
 }

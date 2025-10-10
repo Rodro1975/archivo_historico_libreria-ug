@@ -8,6 +8,10 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import { FaSearch } from "react-icons/fa";
 
+// 👇 imports de paginación (mismo set que ya usas en otros módulos)
+import usePageSlice from "@/hooks/usePageSlice";
+import Pagination from "@/components/Pagination";
+
 /** Helper local: separa nombre completo → { apellido, nombre }
  *  Heurística simple:
  *  - 1 token: nombre
@@ -42,10 +46,10 @@ export default function MostrarSolicitudes() {
       .order("creado_en", { ascending: false });
 
     if (error) {
-      toastError("Error al cargar solicitudes", toastStyle);
+      toastError("Error al cargar solicitudes");
     } else {
-      setSolicitudes(data);
-      setFiltered(data);
+      setSolicitudes(data || []);
+      setFiltered(data || []);
     }
   };
 
@@ -54,12 +58,12 @@ export default function MostrarSolicitudes() {
   }, []);
 
   useEffect(() => {
-    const term = searchTerm.trim().toLowerCase();
+    const term = (searchTerm || "").trim().toLowerCase();
     if (!term) {
       setFiltered(solicitudes);
     } else {
       setFiltered(
-        solicitudes.filter((s) =>
+        (solicitudes || []).filter((s) =>
           (s.estado || "pendiente").toLowerCase().includes(term)
         )
       );
@@ -67,6 +71,7 @@ export default function MostrarSolicitudes() {
   }, [searchTerm, solicitudes]);
 
   const actualizarSolicitud = async (estado) => {
+    if (!selected?.id) return;
     setLoading(true);
     const { error } = await supabase
       .from("solicitudes")
@@ -80,9 +85,9 @@ export default function MostrarSolicitudes() {
     setLoading(false);
 
     if (error) {
-      toastError("No se pudo actualizar la solicitud", toastStyle);
+      toastError("No se pudo actualizar la solicitud");
     } else {
-      toastSuccess("Solicitud actualizada", toastStyle);
+      toastSuccess("Solicitud actualizada");
       setSelected(null);
       setRespuesta("");
       fetchSolicitudes();
@@ -102,6 +107,22 @@ export default function MostrarSolicitudes() {
     return e.charAt(0).toUpperCase() + e.slice(1);
   };
 
+  // ✅ Paginación: 5 por página sobre el arreglo filtrado
+  const {
+    page,
+    setPage,
+    total,
+    totalPages,
+    start,
+    end,
+    pageItems, // usar en el <tbody>
+  } = usePageSlice(filtered, 5);
+
+  // ✅ Al cambiar búsqueda o el total filtrado, vuelve a la página 1
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, filtered.length, setPage]);
+
   return (
     <div>
       <WorkBar />
@@ -119,7 +140,7 @@ export default function MostrarSolicitudes() {
               placeholder="Buscar por estado (pendiente, aprobado, rechazado)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border rounded-l p-2 flex-grow bg-gradient-to-r from-[#FFD700] to-[#FFFFFF] placeholder-[#1E3A8A] text-gray-700"
+              className="w-full p-2 rounded border bg-gray text-blue placeholder-blue-900 font-bold"
             />
             <button
               className="ml-2 w-12 h-12 bg-[#FFC107] text-[#1E3A8A] flex items-center justify-center transform rotate-30 clip-hexagon"
@@ -159,58 +180,72 @@ export default function MostrarSolicitudes() {
             No hay solicitudes registradas.
           </p>
         ) : (
-          <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-yellow">
-            <table className="min-w-full divide-y divide-blue text-blue text-sm">
-              <thead className="bg-yellow text-blue uppercase text-xs">
-                <tr>
-                  <th className="px-4 py-3 text-left">Apellido</th>
-                  <th className="px-4 py-3 text-left">Nombre</th>
-                  <th className="px-4 py-3 text-left">Tipo</th>
-                  <th className="px-4 py-3 text-left">Detalle</th>
-                  <th className="px-4 py-3 text-left">Estado</th>
-                  <th className="px-4 py-3 text-left">Fecha</th>
-                  <th className="px-4 py-3 text-left">Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((s) => {
-                  const { apellido, nombre } = splitNombreES(s.nombre || "");
-                  return (
-                    <tr
-                      key={s.id}
-                      className="border-t border-gray-200 hover:bg-yellow/20 transition"
-                    >
-                      <td className="px-4 py-3">{apellido}</td>
-                      <td className="px-4 py-3">{nombre}</td>
-                      <td className="px-4 py-3">{s.tipo}</td>
-                      <td className="px-4 py-3">{s.detalle}</td>
-                      <td
-                        className={`px-4 py-3 font-semibold ${claseEstado(
-                          s.estado
-                        )}`}
+          <>
+            <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-yellow">
+              <table className="min-w-full divide-y divide-blue text-blue text-sm">
+                <thead className="bg-yellow text-blue uppercase text-xs">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Apellido</th>
+                    <th className="px-4 py-3 text-left">Nombre</th>
+                    <th className="px-4 py-3 text-left">Tipo</th>
+                    <th className="px-4 py-3 text-left">Detalle</th>
+                    <th className="px-4 py-3 text-left">Estado</th>
+                    <th className="px-4 py-3 text-left">Fecha</th>
+                    <th className="px-4 py-3 text-left">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageItems.map((s) => {
+                    const { apellido, nombre } = splitNombreES(s.nombre || "");
+                    return (
+                      <tr
+                        key={s.id}
+                        className="border-t border-gray-200 hover:bg-yellow/20 transition"
                       >
-                        {labelEstado(s.estado)}
-                      </td>
-                      <td className="px-4 py-3">
-                        {new Date(s.creado_en).toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => {
-                            setSelected(s);
-                            setRespuesta(s.respuesta || "");
-                          }}
-                          className="bg-blue text-white px-3 py-1 rounded-lg hover:bg-yellow transition"
+                        <td className="px-4 py-3">{apellido}</td>
+                        <td className="px-4 py-3">{nombre}</td>
+                        <td className="px-4 py-3">{s.tipo}</td>
+                        <td className="px-4 py-3">{s.detalle}</td>
+                        <td
+                          className={`px-4 py-3 font-semibold ${claseEstado(
+                            s.estado
+                          )}`}
                         >
-                          Revisar
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                          {labelEstado(s.estado)}
+                        </td>
+                        <td className="px-4 py-3">
+                          {new Date(s.creado_en).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => {
+                              setSelected(s);
+                              setRespuesta(s.respuesta || "");
+                            }}
+                            className="bg-blue text-white px-3 py-1 rounded-lg hover:bg-yellow transition"
+                          >
+                            Revisar
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Controles de paginación (5 por página) */}
+            <div className="mt-4">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                total={total}
+                start={start}
+                end={end}
+                onPageChange={(p) => setPage(p)}
+              />
+            </div>
+          </>
         )}
       </main>
 
