@@ -6,6 +6,8 @@ import WorkBar from "@/components/WorkBar";
 import ActualizarLibros from "@/components/ActualizarLibros";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
+import usePageSlice from "@/hooks/usePageSlice";
+import Pagination from "@/components/Pagination";
 
 // Helpers
 const norm = (x) => (x ?? "").toString().toLowerCase().trim();
@@ -68,7 +70,6 @@ const mapFormato = (l) => {
   const f = raw.toLowerCase().trim();
   if (!f) return "—";
 
-  // Nuevas opciones de la UI
   if (f === "impreso") return "Impreso";
   if (
     f === "impresión bajo demanda" ||
@@ -104,12 +105,11 @@ const mapFormato = (l) => {
   return raw;
 };
 
-// Helpers:
+// Helpers de campos visibles
 const anio = (l) => (l?.anioPublicacion ? String(l.anioPublicacion) : "—");
 const paginas = (l) => (l?.numeroPaginas ? String(l.numeroPaginas) : "—");
 const edicion = (l) => l?.numeroEdicion ?? "—";
 const isbnUG = (l) => (l?.isbn ? l.isbn : "—"); // por ahora mapea "ISBN UG" -> isbn
-
 const sinopsisCorta = (l) => {
   const s = l?.sinopsis?.trim();
   if (!s) return "—";
@@ -176,7 +176,7 @@ const MostrarLibrosPage = () => {
         ids.forEach((id) => {
           const rows = byLibro[id] || [];
           const p = pickPrincipal(rows);
-          pMap[id] = p;
+          pMap[id] = p || "—";
           oMap[id] = pickOtros(rows, p);
           cMap[id] = pickCoeditores(rows);
         });
@@ -200,6 +200,15 @@ const MostrarLibrosPage = () => {
   useEffect(() => {
     fetchLibros();
   }, [fetchLibros]);
+
+  // ✅ Paginación sobre el arreglo filtrado (5 por página)
+  const { page, setPage, total, totalPages, start, end, pageItems } =
+    usePageSlice(filteredLibros, 5);
+
+  // ✅ Si cambia el término de búsqueda, vuelve a la página 1
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, setPage]);
 
   // Búsqueda por título o subtítulo (insensible a acentos)
   useEffect(() => {
@@ -254,7 +263,7 @@ const MostrarLibrosPage = () => {
           placeholder="Buscar por título o subtítulo"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 rounded border bg-yellow text-blue placeholder-blue-900 font-bold"
+          className="w-full p-2 rounded border bg-gray text-blue placeholder-blue-900 font-bold"
         />
         <button
           className="w-12 h-12 bg-orange text-blue flex items-center justify-center transform rotate-30 clip-hexagon"
@@ -300,7 +309,6 @@ const MostrarLibrosPage = () => {
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
           <thead>
             <tr>
-              {/* Quitamos Id Libro */}
               <th className="border px-4 py-2">Código de Registro</th>
               <th className="border px-4 py-2">Título</th>
               <th className="border px-4 py-2">Subtítulo</th>
@@ -319,60 +327,90 @@ const MostrarLibrosPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredLibros.map((l) => (
-              <tr key={l?.id_libro || l?.codigoRegistro || Math.random()}>
-                <td className="border px-4 py-2">{l?.codigoRegistro ?? "—"}</td>
-                <td className="border px-4 py-2">{l?.titulo ?? "—"}</td>
-                <td className="border px-4 py-2">{l?.subtitulo || "—"}</td>
-                <td className="border px-4 py-2">
-                  {principalMap[l?.id_libro] ?? "—"}
-                </td>
-                <td className="border px-4 py-2">
-                  {otrosMap[l?.id_libro]?.length
-                    ? otrosMap[l?.id_libro].join("; ")
-                    : "—"}
-                </td>
-                <td className="border px-4 py-2">{l?.coleccion ?? "—"}</td>
-                <td className="border px-4 py-2">{edicion(l)}</td>
-                <td className="border px-4 py-2">{anio(l)}</td>
-                <td className="border px-4 py-2">{mapFormato(l)}</td>
-                <td className="border px-4 py-2">{paginas(l)}</td>
-                <td className="border px-4 py-2">{isbnUG(l)}</td>
-                <td className="border px-4 py-2">{l?.tipoAutoria ?? "—"}</td>
-                <td className="border px-4 py-2">
-                  {coeditoresMap[l?.id_libro]?.length
-                    ? coeditoresMap[l?.id_libro].join("; ")
-                    : "—"}
-                </td>
-                <td className="border px-4 py-2">{sinopsisCorta(l)}</td>
-                <td className="border px-4 py-2">
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => {
-                        setCurrentLibro(l);
-                        setIsEditing(true);
-                      }}
-                      className="flex items-center gap-2 bg-gold hover:bg-yellow shadow-md hover:shadow-lg text-blue-900 px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                    >
-                      <FaEdit />
-                      Modificar
-                    </button>
-                    <button
-                      onClick={() => {
-                        setLibroAEliminar(l);
-                        setShowConfirm(true);
-                      }}
-                      className="flex items-center gap-2 bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg text-white px-5 py-2 rounded-lg transition duration-300 cursor-pointer select-none"
-                    >
-                      <FaTrash />
-                      Eliminar
-                    </button>
-                  </div>
+            {filteredLibros.length > 0 ? (
+              pageItems.map((libro, idx) => (
+                <tr key={libro?.id_libro ?? libro?.codigoRegistro ?? idx}>
+                  <td className="border px-4 py-2">
+                    {libro?.codigoRegistro ?? "—"}
+                  </td>
+                  <td className="border px-4 py-2">{libro?.titulo ?? "—"}</td>
+                  <td className="border px-4 py-2">
+                    {libro?.subtitulo || "—"}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {principalMap[libro?.id_libro] ?? "—"}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {otrosMap[libro?.id_libro]?.length
+                      ? otrosMap[libro?.id_libro].join("; ")
+                      : "—"}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {libro?.coleccion ?? "—"}
+                  </td>
+                  <td className="border px-4 py-2">{edicion(libro)}</td>
+                  <td className="border px-4 py-2">{anio(libro)}</td>
+                  <td className="border px-4 py-2">{mapFormato(libro)}</td>
+                  <td className="border px-4 py-2">{paginas(libro)}</td>
+                  <td className="border px-4 py-2">{isbnUG(libro)}</td>
+                  <td className="border px-4 py-2">
+                    {libro?.tipoAutoria ?? "—"}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {coeditoresMap[libro?.id_libro]?.length
+                      ? coeditoresMap[libro?.id_libro].join("; ")
+                      : "—"}
+                  </td>
+                  <td className="border px-4 py-2">{sinopsisCorta(libro)}</td>
+                  <td className="border px-4 py-2">
+                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                      <button
+                        onClick={() => {
+                          setCurrentLibro(libro);
+                          setIsEditing(true);
+                        }}
+                        className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                        title="Modificar libro"
+                      >
+                        <FaEdit />
+                        Modificar
+                      </button>
+                      <button
+                        onClick={() => {
+                          setLibroAEliminar(libro);
+                          setShowConfirm(true);
+                        }}
+                        className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                      >
+                        <FaTrash />
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="border px-4 py-6 text-center" colSpan={15}>
+                  No se encontraron libros.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
+      </div>
+
+      {/* Controles de paginación */}
+      <div className="max-w-screen-lg mx-auto px-4 mb-10">
+        <Pagination
+          page={page}
+          total={total}
+          totalPages={totalPages}
+          start={start}
+          end={end}
+          onPageChange={setPage} // 👈 antes estabas pasando setPage (prop equivocada)
+          // className="opcional"
+        />
       </div>
 
       {isEditing && currentLibro ? (

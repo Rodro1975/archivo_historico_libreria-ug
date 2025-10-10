@@ -12,7 +12,15 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 // ▸ Validaciones básicas
 const tituloRegex =
   /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,:;()'"\-–—!?/&]+$/;
+// Al menos 1 letra (español incluido)
+const TITULO_DEBE_TENER_LETRA = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/;
+
 const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
+
+const MAX_EDICIONES = 50; // ajusta al numero que requieran
+
+const MIN_PAGINAS = 4;
+const MAX_PAGINAS = 2000;
 
 function isValidISBN(isbn) {
   const digits = isbn.replace(/[-\s]/g, "");
@@ -21,7 +29,7 @@ function isValidISBN(isbn) {
     let sum = 0;
     for (let i = 0; i < 9; i++) sum += (i + 1) * parseInt(digits[i], 10);
     const check = digits[9].toUpperCase();
-    sum += check === "X" ? 10 * 10 : 10 * parseInt(check, 10);
+    sum += check === "X" ? 100 : 10 * parseInt(check, 10);
     return sum % 11 === 0;
   } else if (/^\d{13}$/.test(digits)) {
     // ISBN-13
@@ -83,30 +91,86 @@ const RegisterBookSchema = z.object({
       .min(3, { message: "El título debe tener al menos 3 caracteres." })
       .max(200, { message: "Máximo 200 caracteres." })
       .regex(tituloRegex, { message: "Título con caracteres no permitidos." })
+      .refine((s) => TITULO_DEBE_TENER_LETRA.test(s), {
+        message: "El título debe contener al menos una letra.",
+      })
   ),
   subtitulo: z
     .preprocess(
       (v) => (typeof v === "string" ? v.trim() : v),
-      z.string().max(200).regex(tituloRegex)
+      z
+        .string()
+        .max(200, { message: "Máximo 200 caracteres." })
+        .regex(tituloRegex, {
+          message: "Subtítulo con caracteres no permitidos.",
+        })
+        .refine((s) => TITULO_DEBE_TENER_LETRA.test(s), {
+          message: "El subtítulo debe contener al menos una letra.",
+        })
     )
     .optional()
     .or(z.literal("")),
-  materia: z.string().min(1, { message: "La materia es requerida" }),
-  tematica: z.string().min(1, { message: "La temática es requerida" }),
+
+  materia: z.preprocess(
+    (v) => (typeof v === "string" ? v.trim() : v),
+    z
+      .string()
+      .min(1, { message: "La materia es requerida" })
+      .max(100, { message: "Máximo 100 caracteres." })
+      .regex(tituloRegex, { message: "Materia con caracteres no permitidos." })
+      .refine((s) => TITULO_DEBE_TENER_LETRA.test(s), {
+        message: "La materia debe contener al menos una letra.",
+      })
+  ),
+
+  tematica: z.preprocess(
+    (v) => (typeof v === "string" ? v.trim() : v),
+    z
+      .string()
+      .min(1, { message: "La temática es requerida" })
+      .max(100, { message: "Máximo 100 caracteres." })
+      .regex(tituloRegex, { message: "Temática con caracteres no permitidos." })
+      .refine((s) => TITULO_DEBE_TENER_LETRA.test(s), {
+        message: "La temática debe contener al menos una letra.",
+      })
+  ),
   coleccion: z
     .preprocess(
-      (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
-      z.string()
+      (v) => (typeof v === "string" ? v.trim() : v),
+      z
+        .string()
+        .max(100, { message: "Máximo 100 caracteres." })
+        .regex(tituloRegex, {
+          message: "Colección con caracteres no permitidos.",
+        })
+        .refine((s) => TITULO_DEBE_TENER_LETRA.test(s), {
+          message: "La colección debe contener al menos una letra.",
+        })
     )
     .optional(),
-  numeroEdicion: z.preprocess((val) => parseInt(val, 10), z.number().int()),
+
+  numeroEdicion: z.preprocess(
+    (val) => Number(val),
+    z
+      .number({ invalid_type_error: "Ingresa un número válido." })
+      .int({ message: "Debe ser un número entero." })
+      .min(1, { message: "La edición mínima es 1." })
+      .max(MAX_EDICIONES, { message: `La edición máxima es ${MAX_EDICIONES}.` })
+  ),
   anioPublicacion: z.preprocess((v) => {
     const s = typeof v === "string" ? v.trim() : v;
     return typeof s === "string" && s !== "" ? Number(s) : Number(s);
   }, z.number().int().min(1000).max(CURRENT_YEAR)),
   formato: z.string().min(1, { message: "El formato es requerido" }),
   campus: z.string().optional().or(z.literal("")),
-  numeroPaginas: z.preprocess((val) => parseInt(val, 10), z.number().int()),
+  numeroPaginas: z.preprocess(
+    (val) => Number(val),
+    z
+      .number({ invalid_type_error: "Ingresa un número válido." })
+      .int({ message: "Debe ser un número entero." })
+      .min(MIN_PAGINAS, { message: `El mínimo es ${MIN_PAGINAS} páginas.` })
+      .max(MAX_PAGINAS, { message: `El máximo es ${MAX_PAGINAS} páginas.` })
+  ),
   tiraje_o_ibd: z
     .preprocess(
       (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
@@ -130,6 +194,7 @@ export default function BookForm() {
   const [isbnInput, setIsbnInput] = useState("");
   const [isbnExists, setIsbnExists] = useState(false);
   const [checkingISBN, setCheckingISBN] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -307,7 +372,6 @@ export default function BookForm() {
           unidad_academica_id: autor.unidad_academica_id,
           portada: imageUrl || null,
           archivo_pdf: pdfUrl || null, // <- OPCIONAL
-          // NO seteamos depositoLegal ni depositoLegal_pdf aquí
         },
       ])
       .select("id_libro")
@@ -352,6 +416,8 @@ export default function BookForm() {
     reset();
     setSelectedFile(null);
     setSelectedPDF(null);
+    setIsbnInput("");
+    setIsbnExists(false);
   };
 
   return (
@@ -560,8 +626,10 @@ export default function BookForm() {
               <input
                 type="text"
                 id="titulo"
+                placeholder="Escribe el título del libro"
                 {...register("titulo")}
                 required
+                pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               />
               {errors.titulo && (
@@ -580,9 +648,11 @@ export default function BookForm() {
                 type="text"
                 id="subtitulo"
                 {...register("subtitulo")}
+                pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
                 placeholder="Opcional"
               />
+
               {errors.subtitulo && (
                 <p className="text-red-500 text-xs">
                   {errors.subtitulo.message}
@@ -600,10 +670,13 @@ export default function BookForm() {
               <input
                 type="text"
                 id="materia"
+                placeholder="Ej. Historia"
                 {...register("materia")}
                 required
+                pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               />
+
               {errors.materia && (
                 <p className="text-red-500 text-xs">{errors.materia.message}</p>
               )}
@@ -619,10 +692,13 @@ export default function BookForm() {
               <input
                 type="text"
                 id="tematica"
+                placeholder="Ej. Historia de latinoamerica"
                 {...register("tematica")}
                 required
+                pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               />
+
               {errors.tematica && (
                 <p className="text-red-500 text-xs">
                   {errors.tematica.message}
@@ -640,12 +716,13 @@ export default function BookForm() {
               <input
                 type="text"
                 id="coleccion"
-                {...register("coleccion", {
-                  setValueAs: (v) =>
-                    typeof v === "string" && v.trim() === "" ? undefined : v,
-                })}
+                {...register("coleccion")}
+                placeholder="Opcional"
+                // vacío o contiene alguna letra
+                pattern="(^$|.*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*)"
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               />
+
               {errors.coleccion && (
                 <p className="text-red-500 text-xs">
                   {errors.coleccion.message}
@@ -665,8 +742,13 @@ export default function BookForm() {
                 id="numeroEdicion"
                 {...register("numeroEdicion")}
                 required
+                min={1}
+                max={MAX_EDICIONES}
+                step={1}
+                placeholder={`1–${MAX_EDICIONES}`}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               />
+
               {errors.numeroEdicion && (
                 <p className="text-red-500 text-xs">
                   {errors.numeroEdicion.message}
@@ -739,8 +821,13 @@ export default function BookForm() {
                 id="numeroPaginas"
                 {...register("numeroPaginas")}
                 required
+                min={MIN_PAGINAS}
+                max={MAX_PAGINAS}
+                step={1}
+                placeholder={`${MIN_PAGINAS}–${MAX_PAGINAS}`}
                 className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
               />
+
               {errors.numeroPaginas && (
                 <p className="text-red-500 text-xs">
                   {errors.numeroPaginas.message}
@@ -758,6 +845,7 @@ export default function BookForm() {
               <input
                 type="text"
                 id="tiraje_o_ibd"
+                placeholder="Opcional"
                 {...register("tiraje_o_ibd", {
                   setValueAs: (v) =>
                     typeof v === "string" && v.trim() === "" ? undefined : v,
@@ -855,7 +943,7 @@ export default function BookForm() {
               />
             </div>
 
-            {/* PDF del libro — OPCIONAL ahora */}
+            {/* PDF del libro — OPCIONAL */}
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Archivo Libro PDF (opcional)

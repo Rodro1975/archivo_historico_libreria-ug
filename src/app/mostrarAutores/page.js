@@ -240,28 +240,30 @@ const MostrarAutoresPage = () => {
                         {autor.correo_institucional}
                       </td>
                       <td className="border px-4 py-2">
-                        <button
-                          onClick={() => {
-                            setAutorAEliminar(autor);
-                            setShowConfirm(true);
-                          }}
-                          className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
-                        >
-                          <FaTrash />
-                          Eliminar
-                        </button>
+                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                          <button
+                            onClick={() => {
+                              setCurrentAutor(autor);
+                              setIsEditing(true);
+                            }}
+                            className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                            title="Modificar autor"
+                          >
+                            <FaEdit />
+                            Modificar
+                          </button>
 
-                        <button
-                          onClick={() => {
-                            setCurrentAutor(autor);
-                            setIsEditing(true);
-                          }}
-                          className="ml-2 inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
-                          title="Modificar autor"
-                        >
-                          <FaEdit />
-                          Modificar
-                        </button>
+                          <button
+                            onClick={() => {
+                              setAutorAEliminar(autor);
+                              setShowConfirm(true);
+                            }}
+                            className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                          >
+                            <FaTrash />
+                            Eliminar
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
