@@ -98,7 +98,7 @@ const Footer = () => {
         <div className="mt-8 border-t border-gray-200 pt-4 text-center text-gray-400 text-sm md:text-base">
           <p>
             &copy; 2024 Catálogo Histórico Editorial UG | Todos los derechos
-            reservados || Diseño de Rodrigo Iván Ordoñez Chávez.
+            reservados || Desarrollo de Rodrigo Iván Ordoñez Chávez.
           </p>
         </div>
       </div>

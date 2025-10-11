@@ -39,91 +39,82 @@ export default function Home() {
       {/* Barra de navegación */}
       <NavBar />
 
-      {/* Hero*/}
+      {/* Hero — contenido sobre foto, sin tarjetas */}
       <section
-        className="
-    relative flex flex-col justify-center items-center
-    min-h-[90vh] px-4
-    bg-fixed bg-cover bg-center text-center
-  "
-        style={{ backgroundImage: "url('/images/guanajuato.jpg')" }}
+        className="relative flex flex-col items-center justify-center min-h-[92vh] px-4 text-center bg-fixed bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/heroLib.jpeg')" }} // fondo fotográfico
       >
-        {/* Overlay oscuro */}
-        <div className="absolute inset-0 bg-black opacity-40"></div>
+        {/* Viñeta y tinte para legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/75" />
+        <div className="absolute inset-0 mix-blend-multiply bg-[radial-gradient(ellipse_at_center,rgba(242,193,46,0.22)_0%,rgba(242,193,46,0.12)_48%,transparent_80%)]" />
 
-        {/* Escudo */}
+        {/* Escudo UG con luz blanca sutil detrás */}
         <div className="relative z-10">
-          <Image
-            src="/images/escudo-png.png"
-            alt="Escudo UG"
-            width={180}
-            height={180}
-            className="w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 mb-4 mt-12 sm:mb-6"
-          />
+          <span className="relative inline-block mb-4 mt-12 sm:mb-6">
+            {/* Halo blanco (detrás del logo) */}
+            <span
+              className="pointer-events-none absolute inset-0 -m-3 rounded-full opacity-80 blur-[16px] md:blur-[22px] mix-blend-screen"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(30,58,138,0.90) 0%, rgba(30,58,138,0.45) 38%, rgba(30,58,138,0.00) 72%)",
+              }}
+            />
+
+            <Image
+              src="/images/escudo-png.png"
+              alt="Escudo Universidad de Guanajuato"
+              width={180}
+              height={180}
+              className="w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 relative"
+              priority
+            />
+          </span>
         </div>
 
-        {/* Contenedor de texto y botón */}
-        <div className="relative z-10 max-w-2xl">
+        {/* Texto y CTAs sueltos sobre la foto */}
+        <div className="relative z-10 w-full max-w-4xl px-2 sm:px-6">
           <h1
-            className="text-gold font-extrabold tracking-tight
-             [text-wrap:balance] break-words
-             text-2xl sm:text-3xl md:text-5xl lg:text-6xl
-             leading-snug sm:leading-tight md:leading-[1.15]
-             mb-2 sm:mb-4"
+            className="text-white font-extrabold tracking-tight [text-wrap:balance]
+                 text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-3 sm:mb-4"
             style={{
-              textShadow: [
-                // contorno fino (8 direcciones)
-                "1px 0 0 #0C1B2A",
-                "-1px 0 0 #0C1B2A",
-                "0 1px 0 #0C1B2A",
-                "0 -1px 0 #0C1B2A",
-                "1px 1px 0 #0C1B2A",
-                "-1px -1px 0 #0C1B2A",
-                "1px -1px 0 #0C1B2A",
-                "-1px 1px 0 #0C1B2A",
-                // glow suave para separar del fondo
-                "0 2px 8px rgba(0,0,0,0.45)",
-              ].join(", "),
+              textShadow:
+                "0 1px 0 rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.45), -1px -1px 0 rgba(0,0,0,0.35), 1px 1px 0 rgba(0,0,0,0.35)",
             }}
           >
-            CATÁLOGO HISTÓRICO DE PUBLICACIONES Editorial UG
+            Catálogo <span className="text-[#F2C12E]">Editorial</span> de
+            Publicaciones
           </h1>
 
           <p
-            className="text-gold
-             text-sm sm:text-base md:text-lg
-             leading-relaxed
-             mb-4 sm:mb-6"
-            style={{
-              textShadow: [
-                // contorno fino (8 direcciones), más sutil que en el h1
-                "0.6px 0 0 #0C1B2A",
-                "-0.6px 0 0 #0C1B2A",
-                "0 0.6px 0 #0C1B2A",
-                "0 -0.6px 0 #0C1B2A",
-                "0.6px 0.6px 0 #0C1B2A",
-                "-0.6px -0.6px 0 #0C1B2A",
-                "0.6px -0.6px 0 #0C1B2A",
-                "-0.6px 0.6px 0 #0C1B2A",
-                // glow muy leve para separar del fondo
-                "0 1px 4px rgba(0,0,0,0.35)",
-              ].join(", "),
-            }}
+            className="mx-auto max-w-2xl text-white/90 text-sm sm:text-base md:text-lg leading-relaxed mb-5 sm:mb-7"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.35)" }}
           >
-            Explora nuestra colección y aprende más sobre la historia de la
-            Editorial de la UG.
+            Explora obras, autores y décadas que han marcado la historia
+            editorial de la UG. Búsqueda avanzada, fichas detalladas y
+            colecciones curadas.
           </p>
 
-          <Link
-            href="/login"
-            className="inline-block bg-yellow text-blue font-semibold
-        py-2 px-6 sm:py-3 sm:px-10 md:py-4 md:px-12
-        rounded-full transition duration-300
-        hover:bg-blue hover:text-yellow
-      "
-          >
-            Inicia Sesión y consulta
-          </Link>
+          {/* CTAs: principal + secundario */}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center rounded-full
+                   bg-[#1E3A8A] text-[#F2C12E] font-semibold
+                   px-6 py-3 shadow-[0_10px_28px_rgba(0,0,0,0.35)]
+                   transition-transform hover:scale-[1.02]
+                   hover:bg-[#F2C12E] hover:text-[#1E3A8A]"
+            >
+              Inicia sesión y consulta
+            </Link>
+            <Link
+              href="/catalogo"
+              className="inline-flex items-center justify-center rounded-full
+                   border border-white/30 text-white/90 px-6 py-3
+                   hover:bg-white/10 transition-colors"
+            >
+              Ver catálogo público
+            </Link>
+          </div>
         </div>
       </section>
 
