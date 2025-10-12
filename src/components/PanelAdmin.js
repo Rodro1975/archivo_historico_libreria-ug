@@ -14,12 +14,45 @@ const PanelAdmin = () => {
         Panel de Administración
       </h1>
 
-      {/* Estilos para el hexágono */}
+      {/* Layout responsive sin scroll: hexágonos con tamaño fluido */}
       <style jsx>{`
+        :root {
+          --hex-gap: clamp(10px, 2vw, 20px);
+        }
+
+        /* Grilla con columnas fijas por breakpoint (nunca 1 col en medianas) */
+        .hex-grid {
+          display: grid;
+          grid-template-columns: 1fr; /* xs */
+          gap: var(--hex-gap);
+          justify-items: center;
+          align-items: center;
+        }
+        @media (min-width: 640px) {
+          /* sm */
+          .hex-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          /* lg */
+          .hex-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1280px) {
+          /* xl */
+          .hex-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        /* Tarjeta hex: tamaño consistente, contenido no expande */
         .hexagon {
           position: relative;
-          width: 280px; /* Ancho de cada tarjeta hexagonal */
-          height: 260px;
+          width: 100%;
+          max-width: 240px; /* tope para uniformidad */
+          aspect-ratio: 280 / 260; /* mantiene proporción */
           clip-path: polygon(
             50% 0%,
             100% 25%,
@@ -28,227 +61,256 @@ const PanelAdmin = () => {
             0% 75%,
             0% 25%
           );
-        }
-
-        .hexagon-inner {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
           display: flex;
           align-items: center;
-          justify-content: center;
-          text-align: center; /* Centrar texto dentro del hexágono */
+          padding: clamp(12px, 1.6vw, 20px);
+          overflow: hidden; /* evita que el contenido crezca el hex */
         }
 
-        .hexagon-container {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr); /* Dos columnas por defecto */
-          gap: 20px; /* Espacio entre las tarjetas */
+        .hex-content {
+          display: flex;
+          align-items: center;
+          gap: clamp(8px, 1.2vw, 16px);
+          text-align: left;
+          width: 100%;
         }
 
-        @media (max-width: 768px) {
-          .hexagon-container {
-            grid-template-columns: 1fr; /* En pantallas pequeñas, una columna */
+        .hex-title {
+          font-size: clamp(1rem, 1.6vw, 1.15rem);
+          line-height: 1.2;
+        }
+
+        .hex-desc {
+          font-size: clamp(0.75rem, 1.1vw, 0.875rem);
+          line-height: 1.25;
+          display: -webkit-box;
+          -webkit-line-clamp: 2; /* máx 2 líneas en desktop */
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .hex-icon {
+          width: clamp(48px, 6vw, 70px);
+          height: auto;
+          flex-shrink: 0;
+        }
+
+        /* Medias: 2 cols, párrafo a 1 línea (menos altura) */
+        @media (min-width: 640px) and (max-width: 1023px) {
+          .hex-desc {
+            -webkit-line-clamp: 1;
           }
         }
 
-        @media (min-width: 1024px) {
-          .hexagon-container {
-            grid-template-columns: repeat(
-              3,
-              1fr
-            ); /* Tres columnas en pantallas grandes */
+        /* Móviles: ocultar párrafo (ya lo hacías y funciona bien) */
+        @media (max-width: 639px) {
+          .hex-desc {
+            display: none;
           }
         }
       `}</style>
 
-      {/* Contenedor de tarjetas */}
-      <div className="hexagon-container">
-        {/* Tarjeta para Gestión de Autores */}
+      {/* Contenedor de tarjetas (grid) */}
+      <div className="hex-grid">
+        {/* Autores */}
         <div
-          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
           onClick={() => console.log("Gestión de Autores")}
         >
-          <Image
-            src="/images/autores.png"
-            alt="Gestión de Autores"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            {/* Enlace con href a /libros */}
-            <Link href="/mostrarAutores">
-              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
-                Autores
-              </h2>
-            </Link>
-            <p className="text-blue text-sm">
-              Administra los Autores y sus publicaciones del sistema.
-            </p>
+          <div className="hex-content">
+            <Image
+              src="/images/autores.png"
+              alt="Gestión de Autores"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <Link href="/mostrarAutores">
+                <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
+                  Autores
+                </h2>
+              </Link>
+              <p className="hex-desc text-blue">
+                Administra los Autores y sus publicaciones del sistema.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Tarjeta para Generación de Informes */}
+        {/* Informes */}
         <div
-          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
           onClick={() => router.push("/informes")}
         >
-          <Image
-            src="/images/informe.png"
-            alt="Generación de Informes"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
-              Informes
-            </h2>
-            <p className="text-blue text-sm">
-              Genera informes detallados del sistema.
-            </p>
+          <div className="hex-content">
+            <Image
+              src="/images/informe.png"
+              alt="Generación de Informes"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+                Informes
+              </h2>
+              <p className="hex-desc text-blue">
+                Genera informes detallados del sistema.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Tarjeta para Gestión de Libros */}
+        {/* Libros */}
         <div
-          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
           onClick={() => console.log("Gestión de Libros")}
         >
-          <Image
-            src="/images/libro.png"
-            alt="Gestión de Libros"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            {/* Enlace con href a /libros */}
-            <Link href="/mostrarLibros">
-              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
-                Libros
-              </h2>
-            </Link>
-            <p className="text-blue text-sm">
-              Administra los libros y publicaciones del sistema.
-            </p>
+          <div className="hex-content">
+            <Image
+              src="/images/libro.png"
+              alt="Gestión de Libros"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <Link href="/mostrarLibros">
+                <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
+                  Libros
+                </h2>
+              </Link>
+              <p className="hex-desc text-blue">
+                Administra los libros y publicaciones del sistema.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Tarjeta para Gestión de expedientes */}
+        {/* Expedientes */}
         <div
-          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
-          onClick={() => router.push("/mostrarExpedientes")} // Ahora router está definido
+          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
+          onClick={() => router.push("/mostrarExpedientes")}
         >
-          <Image
-            src="/images/expedientes.png"
-            alt="Gestión de Expedientes"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
-              Expedientes
-            </h2>
-            <p className="text-blue text-sm">
-              Gestiona expedientes relacionados con los libros del sistema.
-            </p>
+          <div className="hex-content">
+            <Image
+              src="/images/expedientes.png"
+              alt="Gestión de Expedientes"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+                Expedientes
+              </h2>
+              <p className="hex-desc text-blue">
+                Gestiona expedientes relacionados con los libros del sistema.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Tarjeta para Gestión de Usuarios */}
+        {/* Usuarios */}
         <div
-          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
           onClick={() => console.log("Gestión de Usuarios")}
         >
-          <Image
-            src="/images/usuario.png"
-            alt="Gestión de Usuarios"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            <Link href="/mostrarUsuarios">
-              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
-                Usuarios
-              </h2>
-            </Link>
-            <p className="text-blue text-sm">
-              Administra los usuarios del sistema.
-            </p>
+          <div className="hex-content">
+            <Image
+              src="/images/usuario.png"
+              alt="Gestión de Usuarios"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <Link href="/mostrarUsuarios">
+                <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+                  Usuarios
+                </h2>
+              </Link>
+              <p className="hex-desc text-blue">
+                Administra los usuarios del sistema.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Tarjeta para Visualización de Estadísticas */}
+        {/* Estadísticas */}
         <div
-          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
           onClick={() => router.push("/estadisticas")}
         >
-          <Image
-            src="/images/analisis.png"
-            alt="Visualización de Estadísticas"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
-              Estadísticas
-            </h2>
-            <p className="text-blue text-sm">
-              Visualiza las estadísticas del sistema.
-            </p>
-          </div>
-        </div>
-        {/* Tarjeta para Gestión de Solicitudes */}
-        <div
-          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
-          onClick={() => console.log("Gestión de Usuarios")}
-        >
-          <Image
-            src="/images/solicitudes.png"
-            alt="Gestión de Solicitudes"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            <Link href="/mostrarSolicitudes">
-              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
-                Solicitudes
+          <div className="hex-content">
+            <Image
+              src="/images/analisis.png"
+              alt="Visualización de Estadísticas"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFD700]">
+                Estadísticas
               </h2>
-            </Link>
-            <p className="text-blue text-sm">
-              Administra las solicitudes de los lectores del sistema.
-            </p>
+              <p className="hex-desc text-blue">
+                Visualiza las estadísticas del sistema.
+              </p>
+            </div>
           </div>
         </div>
-        {/* Tarjeta para Visualización de Soporte */}
+
+        {/* Solicitudes */}
         <div
-          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg p-6 flex items-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl mb-6 border-l-4 border-[#FFD700]"
+          className="hexagon bg-gradient-to-l from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
+          onClick={() => console.log("Gestión de Solicitudes")}
+        >
+          <div className="hex-content">
+            <Image
+              src="/images/solicitudes.png"
+              alt="Gestión de Solicitudes"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <Link href="/mostrarSolicitudes">
+                <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+                  Solicitudes
+                </h2>
+              </Link>
+              <p className="hex-desc text-blue">
+                Administra las solicitudes de los lectores del sistema.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Soporte */}
+        <div
+          className="hexagon bg-gradient-to-r from-[#FFD700] to-[#FFA500] shadow-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-xl border-l-4 border-[#FFD700]"
           onClick={() => console.log("Gestión de soporte")}
         >
-          <Image
-            src="/images/soporte.png"
-            alt="Visualización de Soporte"
-            width={80}
-            height={80}
-            className="mr-4"
-          />
-          <div>
-            <Link href="/mostrarSoporte">
-              <h2 className="text-2xl font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
-                Soporte
-              </h2>
-            </Link>
-            <p className="text-blue text-sm">
-              Gestiona las solicitudes de soporte.
-            </p>
+          <div className="hex-content">
+            <Image
+              src="/images/soporte.png"
+              alt="Visualización de Soporte"
+              width={80}
+              height={80}
+              className="hex-icon"
+            />
+            <div>
+              <Link href="/mostrarSoporte">
+                <h2 className="hex-title font-bold text-blue transition-colors duration-300 hover:text-[#FFA500]">
+                  Soporte
+                </h2>
+              </Link>
+              <p className="hex-desc text-blue">
+                Gestiona las solicitudes de soporte.
+              </p>
+            </div>
           </div>
         </div>
       </div>
