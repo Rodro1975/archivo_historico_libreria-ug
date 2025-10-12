@@ -7,27 +7,27 @@ import { z } from "zod";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
-// ✅ NEW: helper unificado de email (reemplaza regex locales)
 import { validateEmailByInstitution } from "@/lib/emailValidators";
 
-/* ==============  Zod: validación  ============== */
-
-// helper para convertir selects a número o undefined
+// helper: convierte selects a número o undefined
 const toInt = (v) =>
   v === "" || v === null || typeof v === "undefined" ? undefined : Number(v);
 
+// normaliza nombre: trim + colapsa espacios
+const normalizeName = (s = "") => s.trim().replace(/\s+/g, " ");
+
+// Zod
 const AutorSchema = z
   .object({
     nombre_completo: z
       .string()
       .trim()
       .min(5, "Mínimo 5 caracteres")
-      // Solo letras Unicode y espacios entre palabras:
       .regex(
         /^[\p{L}]+(?:\s+[\p{L}]+)*$/u,
         "Solo letras y espacios. Sin números ni símbolos."
       )
-      .transform((v) => v.replace(/\s+/g, " ")), // colapsa espacios
+      .transform((v) => normalizeName(v)),
     correo_institucional: z.string().min(1, "Email inválido"),
     institucion_tipo: z.enum(["UG", "Externa"], {
       required_error: "Selecciona la institución",
@@ -43,7 +43,7 @@ const AutorSchema = z
   .superRefine((val, ctx) => {
     const correo = val.correo_institucional?.toLowerCase?.().trim() || "";
 
-    // ✅ CHANGED: validación unificada de email por modalidad (UG / Externa)
+    // Validación unificada por tipo
     const emailErr = validateEmailByInstitution(val.institucion_tipo, correo);
     if (emailErr) {
       ctx.addIssue({
@@ -53,7 +53,16 @@ const AutorSchema = z
       });
     }
 
-    // UG: dependencia obligatoria; no debe capturarse institucion_nombre
+    // Extra: No permitir "Externa" con correo @ugto.mx
+    if (val.institucion_tipo === "Externa" && correo.endsWith("@ugto.mx")) {
+      ctx.addIssue({
+        path: ["institucion_tipo"],
+        code: z.ZodIssueCode.custom,
+        message: 'Un correo @ugto.mx corresponde a "UG".',
+      });
+    }
+
+    // UG: dependencia obligatoria y NO capturar institucion_nombre
     if (val.institucion_tipo === "UG") {
       if (!val.dependencia_id) {
         ctx.addIssue({
@@ -71,7 +80,7 @@ const AutorSchema = z
       }
     }
 
-    // Externa: nombre obligatorio; no aplicar dependencia/unidad
+    // Externa: nombre obligatorio; no aplicar dep/unidad
     if (val.institucion_tipo === "Externa") {
       if (!val.institucion_nombre || val.institucion_nombre.trim() === "") {
         ctx.addIssue({
@@ -115,17 +124,26 @@ export default function AutorForm({ onRefreshUsuarios }) {
       dependencia_id: undefined,
       unidad_academica_id: undefined,
     },
-    shouldUnregister: true, // los campos no renderizados NO se envían
+    shouldUnregister: true,
   });
 
   const tipoInstitucion = watch("institucion_tipo");
   const dependenciaSeleccionada = watch("dependencia_id");
+  const correoWatch = watch("correo_institucional");
 
   const [dependencias, setDependencias] = useState([]);
   const [unidades, setUnidades] = useState([]);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
 
-  // Cargar dependencias ACTIVAS y ordenadas
+  // Autoseleccionar UG si el correo es @ugto.mx
+  useEffect(() => {
+    const correo = (correoWatch || "").trim().toLowerCase();
+    if (correo.endsWith("@ugto.mx") && tipoInstitucion !== "UG") {
+      setValue("institucion_tipo", "UG", { shouldValidate: true });
+    }
+  }, [correoWatch, tipoInstitucion, setValue]);
+
+  // Cargar dependencias activas
   useEffect(() => {
     supabase
       .from("dependencias")
@@ -134,15 +152,11 @@ export default function AutorForm({ onRefreshUsuarios }) {
       .order("tipo", { ascending: true })
       .order("nombre", { ascending: true })
       .then(({ data, error }) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-        setDependencias(data || []);
+        if (!error) setDependencias(data || []);
       });
   }, []);
 
-  // Cargar unidades ACTIVAS filtradas por la dependencia elegida
+  // Cargar unidades activas por dependencia (si UG)
   useEffect(() => {
     if (tipoInstitucion !== "UG" || !dependenciaSeleccionada) {
       setUnidades([]);
@@ -150,7 +164,6 @@ export default function AutorForm({ onRefreshUsuarios }) {
       setValue("unidad_academica_id", undefined, { shouldValidate: true });
       return;
     }
-
     setLoadingUnidades(true);
     supabase
       .from("unidades_academicas")
@@ -160,18 +173,12 @@ export default function AutorForm({ onRefreshUsuarios }) {
       .order("tipo", { ascending: true })
       .order("nombre", { ascending: true })
       .then(({ data, error }) => {
-        if (error) {
-          console.error(error);
-          setUnidades([]);
-          setLoadingUnidades(false);
-          return;
-        }
-        setUnidades(data || []);
+        setUnidades(error ? [] : data || []);
         setLoadingUnidades(false);
       });
   }, [tipoInstitucion, dependenciaSeleccionada, setValue]);
 
-  // Si seleccionan Externa, limpiar dep/unidad (no deben viajar)
+  // Si pasan a Externa, limpiar dep/unidad
   useEffect(() => {
     if (tipoInstitucion === "Externa") {
       setValue("dependencia_id", undefined, { shouldValidate: true });
@@ -180,56 +187,97 @@ export default function AutorForm({ onRefreshUsuarios }) {
   }, [tipoInstitucion, setValue]);
 
   const onSubmit = async (formData) => {
-    // 1) Buscar usuario por email (si existe)
-    let usuarioId = null;
-    if (formData.correo_institucional) {
-      const { data: usersData, error: userErr } = await supabase
-        .from("usuarios")
-        .select("id")
-        .eq("email", formData.correo_institucional.trim())
-        .maybeSingle();
-      if (userErr) {
-        console.error("Error buscando usuario por email:", userErr);
-        toastError("Error verificando cuenta de usuario.");
+    try {
+      const nombreNorm = normalizeName(formData.nombre_completo).toLowerCase();
+      const correoNorm = formData.correo_institucional.trim().toLowerCase();
+
+      // 0) Reglas rápidas por correo/Institución (por si el usuario forzó algo raro)
+      if (
+        correoNorm.endsWith("@ugto.mx") &&
+        formData.institucion_tipo !== "UG"
+      ) {
+        toastError(
+          'Un correo @ugto.mx corresponde a "UG". Cambia la institución.'
+        );
         return;
       }
-      if (usersData) usuarioId = usersData.id;
-    }
 
-    // 2) Payload según institución
-    const payload = {
-      usuario_id: usuarioId, // FK, ON DELETE SET NULL → puede ir null
-      nombre_completo: formData.nombre_completo.trim(),
-      correo_institucional: formData.correo_institucional.trim(),
-      institucion_tipo: formData.institucion_tipo,
-      institucion_nombre:
-        formData.institucion_tipo === "Externa"
-          ? formData.institucion_nombre.trim()
-          : null,
-      dependencia_id:
-        formData.institucion_tipo === "UG" ? formData.dependencia_id : null,
-      unidad_academica_id:
-        formData.institucion_tipo === "UG"
-          ? formData.unidad_academica_id ?? null
-          : null,
-      fecha_creacion: new Date(),
-      fecha_modificacion: new Date(),
-    };
+      // 1) Checar duplicados por correo (case-insensitive)
+      {
+        const { data: dupMail, error: errMail } = await supabase
+          .from("autores")
+          .select("id")
+          .ilike("correo_institucional", correoNorm)
+          .limit(1);
 
-    // 3) Insertar autor
-    try {
+        if (errMail) throw errMail;
+        if (dupMail && dupMail.length > 0) {
+          toastError("Ese correo ya está registrado como autor.");
+          return;
+        }
+      }
+
+      // 2) Checar duplicados por nombre completo (normalizado, case-insensitive)
+      {
+        const { data: dupName, error: errName } = await supabase
+          .from("autores")
+          .select("id, nombre_completo")
+          .ilike("nombre_completo", nombreNorm)
+          .limit(1);
+
+        if (errName) throw errName;
+        if (dupName && dupName.length > 0) {
+          toastError("Ese nombre de autor ya está registrado.");
+          return;
+        }
+      }
+
+      // 3) Vincular con usuarios (si existe por correo)
+      let usuarioId = null;
+      if (correoNorm) {
+        const { data: usersData, error: userErr } = await supabase
+          .from("usuarios")
+          .select("id")
+          .ilike("email", correoNorm)
+          .maybeSingle();
+        if (userErr) throw userErr;
+        if (usersData) usuarioId = usersData.id;
+      }
+
+      // 4) Payload por institución
+      const payload = {
+        usuario_id: usuarioId ?? null,
+        nombre_completo: normalizeName(formData.nombre_completo),
+        correo_institucional: correoNorm,
+        institucion_tipo: formData.institucion_tipo,
+        institucion_nombre:
+          formData.institucion_tipo === "Externa"
+            ? (formData.institucion_nombre || "").trim()
+            : null,
+        dependencia_id:
+          formData.institucion_tipo === "UG" ? formData.dependencia_id : null,
+        unidad_academica_id:
+          formData.institucion_tipo === "UG"
+            ? formData.unidad_academica_id ?? null
+            : null,
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
+      };
+
+      // 5) Insert autor
       const { error: insertErr } = await supabase
         .from("autores")
         .insert([payload]);
       if (insertErr) throw insertErr;
 
-      // 4) Si existe usuario, marcar es_autor
+      // 6) Marcar usuario como es_autor (si existe)
       if (usuarioId) {
         const { error: updateErr } = await supabase
           .from("usuarios")
           .update({ es_autor: true })
           .eq("id", usuarioId);
         if (updateErr) {
+          // No interrumpimos; avisamos suave
           console.error("Error actualizando es_autor:", updateErr);
           toastError(
             "Autor registrado, pero no se pudo actualizar el estado en usuarios."
@@ -242,7 +290,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
       onRefreshUsuarios?.();
     } catch (err) {
       console.error("Error registrando autor:", err);
-      toastError(`Error: ${err.message}`);
+      toastError(`Error: ${err.message || "operación fallida"}`);
     }
   };
 
@@ -345,7 +393,6 @@ export default function AutorForm({ onRefreshUsuarios }) {
                     ? "usuario@ugto.mx"
                     : "usuario@dominio.com"
                 }
-                // ✅ CHANGED: solo ayuda visual; la validación real la hace Zod + helper
                 pattern={
                   tipoInstitucion === "UG"
                     ? "[A-Za-z0-9._%+-]+@ugto\\.mx"
