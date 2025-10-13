@@ -200,25 +200,22 @@ export default function InformeLectores() {
           onClear={() => setBusqueda("")}
         />
       </div>
-
+      {/* Botones de exportación */}
       <div className="flex justify-end gap-4 mb-4">
         <button
           onClick={exportarPDF}
-          className="flex items-center gap-2 bg-orange text-gold font-bold px-6 py-3 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 group border border-yellow"
+          className="inline-flex items-center gap-2 rounded-md border border-[#D32F2F] bg-white px-5 py-2.5 text-sm font-semibold text-[#D32F2F] hover:bg-[rgba(211,47,47,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(211,47,47,0.35)] transition-colors"
         >
-          <FaFilePdf className="text-gold group-hover:text-blue transition-colors" />
-          <span className="text-gold group-hover:text-blue transition-colors">
-            PDF
-          </span>
+          <FaFilePdf className="text-[#D32F2F]" />
+          PDF
         </button>
+
         <button
           onClick={exportarExcel}
-          className="flex items-center gap-2 bg-orange text-gold font-bold px-6 py-3 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 group border border-yellow"
+          className="inline-flex items-center gap-2 rounded-md border border-[#107C41] bg-white px-5 py-2.5 text-sm font-semibold text-[#107C41] hover:bg-[rgba(16,124,65,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(16,124,65,0.35)] transition-colors"
         >
-          <FaFileExcel className="text-gold group-hover:text-blue transition-colors" />
-          <span className="text-gold group-hover:text-blue transition-colors">
-            Excel
-          </span>
+          <FaFileExcel className="text-[#107C41]" />
+          Excel
         </button>
       </div>
 
