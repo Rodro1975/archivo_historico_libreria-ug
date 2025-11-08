@@ -7,6 +7,10 @@ import ActualizarExpedientes from "@/components/ActualizarExpedientes";
 import { FaTrash, FaEdit, FaSearch, FaExternalLinkAlt } from "react-icons/fa";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
+// 👇 imports para paginación
+import usePageSlice from "@/hooks/usePageSlice";
+import Pagination from "@/components/Pagination";
+
 const fold = (s) =>
   (s ?? "")
     .toString()
@@ -97,23 +101,36 @@ export default function MostrarExpedientesPage() {
     );
   }, [searchTerm, rows]);
 
+  // ✅ Paginación (5 por página) sobre la lista filtrada
+  const {
+    page,
+    setPage,
+    total,
+    totalPages,
+    start,
+    end,
+    pageItems, // <- usar en el tbody
+  } = usePageSlice(filtered, 5);
+
+  // ✅ Reset a página 1 cuando cambie la búsqueda o el total
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, filtered.length, setPage]);
+
   const openRow = async (r) => {
     try {
-      // URL externa
       if (r.origen === "url" && r.url) {
         window.open(r.url, "_blank");
         return;
       }
-      // Archivo en Storage privado (expedientes) → origen 'upload'
       if (r.origen === "upload" && r.storage_path) {
         const { data, error } = await supabase.storage
           .from("expedientes")
-          .createSignedUrl(r.storage_path, 60); // 60s
+          .createSignedUrl(r.storage_path, 60);
         if (error) throw error;
         window.open(data.signedUrl, "_blank");
         return;
       }
-      // Fallback: PDF del libro (público) solo si es tipo 'pdf_completo'
       if (r.tipo === "pdf_completo" && r.libros?.archivo_pdf) {
         window.open(r.libros.archivo_pdf, "_blank");
         return;
@@ -220,8 +237,8 @@ export default function MostrarExpedientesPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length ? (
-                filtered.map((r) => (
+              {pageItems.length ? (
+                pageItems.map((r) => (
                   <tr key={r.id}>
                     <td className="border px-4 py-2">{r.id}</td>
                     <td className="border px-4 py-2">
@@ -286,6 +303,18 @@ export default function MostrarExpedientesPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Controles de paginación (debajo del scroll) */}
+        <div className="max-w-screen-lg mx-auto px-4 mb-10">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            start={start}
+            end={end}
+            onPageChange={(p) => setPage(p)}
+          />
         </div>
 
         {/* Modal de confirmación de borrado */}

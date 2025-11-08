@@ -145,7 +145,7 @@ export default function ContribucionesPage() {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <Chip href="https://unsplash.com">Unsplash</Chip>
-                    {/* Agrega más chips si tienes fuentes adicionales */}
+                    {/* Aquí se Agregan más chips si se tienen fuentes adicionales */}
                   </div>
                 </Card>
 

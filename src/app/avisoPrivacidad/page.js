@@ -7,8 +7,6 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 
 const AvisoPrivacidadPage = () => {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   return (

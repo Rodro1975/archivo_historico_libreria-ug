@@ -167,7 +167,7 @@ const CatalogoCompleto = () => {
         )}
       </div>
 
-      {/* Modal externo reutilizable */}
+      {/* Modal vista rapida que intercepta la página */}
       {selectedBook && (
         <BookQuickViewModal
           book={selectedBook}
