@@ -295,142 +295,122 @@ export default function AutorForm({ onRefreshUsuarios }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
-        <div className="p-10 xs:p-0 mx-auto w-full">
-          <div className="px-5 py-7 text-center">
-            <div className="flex justify-center mb-5">
-              <Image
-                src="/images/escudo-png.png"
-                alt="Escudo"
-                className="h-20"
-                width={80}
-                height={80}
-                priority
-              />
-            </div>
-            <h1 className="font-black text-3xl mb-5 text-blue">
-              Registro de Autores
-            </h1>
+    <div className="flex items-center justify-center min-h-screen px-4 py-8 bg-blue">
+      <div className="bg-white flex flex-col w-full max-w-2xl rounded-xl shadow-xl p-6 sm:p-10">
+        <div className="flex flex-col items-center mb-6">
+          <Image
+            src="/images/escudo-png.png"
+            alt="Escudo"
+            width={80}
+            height={80}
+            className="escudo"
+            priority
+          />
+          <h1 className="font-black text-2xl sm:text-3xl text-blue mb-2">
+            Registro de Autores
+          </h1>
+          <p className="text-gray-600 text-sm mb-2">
+            Completa todos los campos obligatorios{" "}
+            <span className="text-yellow-500">*</span>
+          </p>
+        </div>
+        {/* Errores globales */}
+        {Object.keys(errors).length > 0 && (
+          <div className="mb-4 p-3 rounded bg-yellow border-l-4 border-gold text-blue animate-fadeIn">
+            Corrige los campos marcados en amarillo.
           </div>
-
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
-            {/* Nombre Completo */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Nombre Completo
-              </label>
-              <input
-                {...register("nombre_completo")}
-                pattern="^[\p{L}]+(?:\s+[\p{L}]+)*$"
-                title="Solo letras y espacios. Sin números ni símbolos."
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el nombre completo"
-              />
-              {errors.nombre_completo && (
-                <span className="text-red-500 text-sm">
-                  {errors.nombre_completo.message}
-                </span>
-              )}
-            </div>
-
-            {/* Institución (UG / Externa) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Institución
-              </label>
-              <select
-                {...register("institucion_tipo")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  Selecciona institución
-                </option>
-                <option value="UG">UG</option>
-                <option value="Externa">Externa</option>
-              </select>
-              {errors.institucion_tipo && (
-                <span className="text-red-500 text-sm">
-                  {errors.institucion_tipo.message}
-                </span>
-              )}
-            </div>
-
-            {/* Nombre de institución (solo si Externa) */}
-            {tipoInstitucion === "Externa" && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nombre de la institución (Externa)
-                </label>
-                <input
-                  {...register("institucion_nombre")}
-                  className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                  placeholder="Ej. Universidad Nacional"
-                />
-                {errors.institucion_nombre && (
-                  <span className="text-red-500 text-sm">
-                    {errors.institucion_nombre.message}
-                  </span>
-                )}
-              </div>
+        )}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"
+        >
+          {/* Nombre Completo */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Nombre Completo <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              {...register("nombre_completo")}
+              pattern="^[\p{L}]+(?:\s+[\p{L}]+)*$"
+              title="Solo letras y espacios. Sin números ni símbolos."
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue placeholder:text-gray"
+              placeholder="Ingresa el nombre completo"
+            />
+            {errors.nombre_completo && (
+              <span className="text-yellow-500 text-xs">
+                {errors.nombre_completo.message}
+              </span>
             )}
-
-            {/* Correo */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Correo
+          </div>
+          {/* Institución */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Institución <span className="text-yellow-500">*</span>
+            </label>
+            <select
+              {...register("institucion_tipo")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Selecciona institución
+              </option>
+              <option value="UG">UG</option>
+              <option value="Externa">Externa</option>
+            </select>
+            {errors.institucion_tipo && (
+              <span className="text-yellow-500 text-xs">
+                {errors.institucion_tipo.message}
+              </span>
+            )}
+          </div>
+          {tipoInstitucion === "Externa" && (
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-blue">
+                Nombre de la institución{" "}
+                <span className="text-yellow-500">*</span>
               </label>
               <input
-                type="email"
-                {...register("correo_institucional")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder={
-                  tipoInstitucion === "UG"
-                    ? "usuario@ugto.mx"
-                    : "usuario@dominio.com"
-                }
-                pattern={
-                  tipoInstitucion === "UG"
-                    ? "[A-Za-z0-9._%+-]+@ugto\\.mx"
-                    : "[^\\s@]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,63}"
-                }
-                title={
-                  tipoInstitucion === "UG"
-                    ? "Debe ser un correo institucional @ugto.mx"
-                    : "Correo válido con TLD de letras (p. ej., .com, .mx, .org, .net, etc.)"
-                }
+                {...register("institucion_nombre")}
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue placeholder:text-gray"
+                placeholder="Ej. Universidad Nacional"
               />
-              {errors.correo_institucional && (
-                <span className="text-red-500 text-sm">
-                  {errors.correo_institucional.message}
+              {errors.institucion_nombre && (
+                <span className="text-yellow-500 text-xs">
+                  {errors.institucion_nombre.message}
                 </span>
               )}
-              {tipoInstitucion === "UG" ? (
-                <p className="text-xs text-gray-500 mt-1">
-                  Debe ser un correo institucional <strong>@ugto.mx</strong>.
-                </p>
-              ) : tipoInstitucion === "Externa" ? (
-                <p className="text-xs text-gray-500 mt-1">
-                  Se acepta cualquier dominio de correo válido (TLD de letras).
-                </p>
-              ) : null}
             </div>
-
-            {/* Dependencia (solo si UG) */}
-            {tipoInstitucion === "UG" && (
+          )}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Correo <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              type="email"
+              {...register("correo_institucional")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue placeholder:text-gray"
+              placeholder={
+                tipoInstitucion === "UG"
+                  ? "usuario@ugto.mx"
+                  : "usuario@dominio.com"
+              }
+            />
+            {errors.correo_institucional && (
+              <span className="text-yellow-500 text-xs">
+                {errors.correo_institucional.message}
+              </span>
+            )}
+          </div>
+          {tipoInstitucion === "UG" && (
+            <>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Rectoría / Campus / CNMS / Secretaría
+                <label className="block text-sm font-medium text-blue">
+                  Dependencia <span className="text-yellow-500">*</span>
                 </label>
                 <select
-                  {...register("dependencia_id", {
-                    setValueAs: (v) => (v === "" ? undefined : Number(v)),
-                  })}
-                  className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                  {...register("dependencia_id")}
+                  className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 >
                   <option value="">Seleccionar dependencia</option>
                   {dependencias.map((dep) => (
@@ -440,24 +420,18 @@ export default function AutorForm({ onRefreshUsuarios }) {
                   ))}
                 </select>
                 {errors.dependencia_id && (
-                  <span className="text-red-500 text-sm">
+                  <span className="text-yellow-500 text-xs">
                     {errors.dependencia_id.message}
                   </span>
                 )}
               </div>
-            )}
-
-            {/* Unidad Académica (opcional, solo si UG) */}
-            {tipoInstitucion === "UG" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-blue">
                   División / Escuela
                 </label>
                 <select
-                  {...register("unidad_academica_id", {
-                    setValueAs: (v) => (v ? Number(v) : undefined),
-                  })}
-                  className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                  {...register("unidad_academica_id")}
+                  className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                   disabled={!dependenciaSeleccionada || loadingUnidades}
                 >
                   <option value="">
@@ -474,19 +448,17 @@ export default function AutorForm({ onRefreshUsuarios }) {
                   ))}
                 </select>
               </div>
-            )}
-
-            {/* Botón de Registro */}
-            <div className="col-span-full">
-              <button
-                type="submit"
-                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
-              >
-                Registrar Autor
-              </button>
-            </div>
-          </form>
-        </div>
+            </>
+          )}
+          <div className="md:col-span-2 mt-4">
+            <button
+              type="submit"
+              className="transition duration-200 bg-yellow text-blue hover:bg-gold hover:text-white w-full py-3 rounded-lg text-md shadow-sm hover:shadow-md font-semibold animate-fadeIn"
+            >
+              Registrar Autor
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
