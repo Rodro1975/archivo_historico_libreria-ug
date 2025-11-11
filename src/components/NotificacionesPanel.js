@@ -11,6 +11,8 @@ export default function NotificacionesModal({ open, onClose, role }) {
   const [notificaciones, setNotificaciones] = useState([]);
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showConfirmNotificacion, setShowConfirmNotificacion] = useState(false);
+  const [notificacionAEliminar, setNotificacionAEliminar] = useState(null);
 
   // montar portal en client
   useEffect(() => setMounted(true), []);
@@ -286,17 +288,60 @@ export default function NotificacionesModal({ open, onClose, role }) {
           {/* Footer */}
           <div className="sticky bottom-0 bg-gray-100 border-t border-gray-200 p-3 rounded-b-lg">
             <button
-              onClick={eliminarSeleccionadas}
-              disabled={selected.length === 0}
+              onClick={() => {
+                if (selected.length > 0) {
+                  setNotificacionAEliminar(selected);
+                  setShowConfirmNotificacion(true);
+                }
+              }}
               className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={selected.length === 0}
             >
               <AiOutlineDelete size={16} />
               Eliminar seleccionadas
             </button>
+            {showConfirmNotificacion && notificacionAEliminar && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-xl text-center max-w-md">
+                  <h2 className="text-lg font-semibold mb-4 text-red-700">
+                    ¿Eliminar notificaciones?
+                  </h2>
+                  <p className="mb-6 text-gray-700">
+                    {Array.isArray(notificacionAEliminar)
+                      ? `¿Estás seguro de que deseas eliminar ${notificacionAEliminar.length} notificaciones seleccionadas? Esta acción no se puede deshacer.`
+                      : "¿Estás seguro de que deseas eliminar esta notificación? Esta acción no se puede deshacer."}
+                  </p>
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={() => setShowConfirmNotificacion(false)}
+                      className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (Array.isArray(notificacionAEliminar)) {
+                          await eliminarSeleccionadas();
+                          setSelected([]);
+                        } else {
+                          await handleDeleteNotificacion(notificacionAEliminar);
+                        }
+                        setShowConfirmNotificacion(false);
+                        setNotificacionAEliminar(null);
+                      }}
+                      className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>,
+
     document.body
   );
 }
