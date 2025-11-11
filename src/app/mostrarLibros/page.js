@@ -305,85 +305,128 @@ const MostrarLibrosPage = () => {
         </p>
       ) : null}
 
-      <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
-        <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
-          <thead>
+      <div className="overflow-x-auto w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
+        <table className="min-w-full bg-white border border-gray-300 text-blue mb-8 text-xs sm:text-sm">
+          <thead className="bg-yellow text-blue uppercase text-xs">
             <tr>
-              <th className="border px-4 py-2">Código de Registro</th>
-              <th className="border px-4 py-2">Título</th>
-              <th className="border px-4 py-2">Subtítulo</th>
-              <th className="border px-4 py-2">Autor principal</th>
-              <th className="border px-4 py-2">Coautores</th>
-              <th className="border px-4 py-2">Colección</th>
-              <th className="border px-4 py-2">Edición</th>
-              <th className="border px-4 py-2">Año</th>
-              <th className="border px-4 py-2">Formatos</th>
-              <th className="border px-4 py-2">Núm. páginas</th>
-              <th className="border px-4 py-2">ISBN UG</th>
-              <th className="border px-4 py-2">Tipo de autoría</th>
-              <th className="border px-4 py-2">Coeditores</th>
-              <th className="border px-4 py-2">Sinopsis</th>
-              <th className="border px-4 py-2">Acciones</th>
+              <th className="border px-2 sm:px-4 py-2 max-w-[7rem] whitespace-normal text-center align-middle">
+                Código
+                <br className="hidden sm:block" /> de Registro
+              </th>
+              <th className="border px-2 sm:px-4 py-2 max-w-xs truncate">
+                Título
+              </th>
+              <th className="border px-2 sm:px-4 py-2 max-w-xs truncate">
+                Subtítulo
+              </th>
+              <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                Autor
+                <br className="hidden sm:block" /> principal
+              </th>
+              <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                Coautores
+              </th>
+              <th className="border px-2 sm:px-4 py-2 truncate">Colección</th>
+              <th className="border px-2 sm:px-4 py-2">Edición</th>
+              <th className="border px-2 sm:px-4 py-2">Año</th>
+              <th className="border px-2 sm:px-4 py-2">Formatos</th>
+              <th className="border px-2 sm:px-4 py-2">
+                Núm.
+                <br className="hidden sm:block" />
+                páginas
+              </th>
+              <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                ISBN
+                <br className="hidden sm:block" />
+                UG
+              </th>
+              <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                Tipo
+                <br className="hidden sm:block" />
+                de autoría
+              </th>
+              <th className="border px-2 sm:px-4 py-2">Coeditores</th>
+              <th className="border px-2 sm:px-4 py-2 max-w-xs truncate">
+                Sinopsis
+              </th>
+              <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody>
             {filteredLibros.length > 0 ? (
               pageItems.map((libro, idx) => (
                 <tr key={libro?.id_libro ?? libro?.codigoRegistro ?? idx}>
-                  <td className="border px-4 py-2">
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                     {libro?.codigoRegistro ?? "—"}
                   </td>
-                  <td className="border px-4 py-2">{libro?.titulo ?? "—"}</td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                    {libro?.titulo ?? "—"}
+                  </td>
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                     {libro?.subtitulo || "—"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                     {principalMap[libro?.id_libro] ?? "—"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                     {otrosMap[libro?.id_libro]?.length
                       ? otrosMap[libro?.id_libro].join("; ")
                       : "—"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                     {libro?.coleccion ?? "—"}
                   </td>
-                  <td className="border px-4 py-2">{edicion(libro)}</td>
-                  <td className="border px-4 py-2">{anio(libro)}</td>
-                  <td className="border px-4 py-2">{mapFormato(libro)}</td>
-                  <td className="border px-4 py-2">{paginas(libro)}</td>
-                  <td className="border px-4 py-2">{isbnUG(libro)}</td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-2 sm:px-4 py-2 align-middle">
+                    {edicion(libro)}
+                  </td>
+                  <td className="border px-2 sm:px-4 py-2 align-middle">
+                    {anio(libro)}
+                  </td>
+                  <td className="border px-2 sm:px-4 py-2 align-middle">
+                    {mapFormato(libro)}
+                  </td>
+                  <td className="border px-2 sm:px-4 py-2 align-middle">
+                    {paginas(libro)}
+                  </td>
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                    {isbnUG(libro)}
+                  </td>
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                     {libro?.tipoAutoria ?? "—"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                     {coeditoresMap[libro?.id_libro]?.length
                       ? coeditoresMap[libro?.id_libro].join("; ")
                       : "—"}
                   </td>
-                  <td className="border px-4 py-2">{sinopsisCorta(libro)}</td>
-                  <td className="border px-4 py-2">
-                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                  <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                    {sinopsisCorta(libro)}
+                  </td>
+                  <td className="border px-2 sm:px-4 py-2 align-middle">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
                       <button
                         onClick={() => {
                           setCurrentLibro(libro);
                           setIsEditing(true);
                         }}
-                        className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                        className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-amber-500/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
                         title="Modificar libro"
                       >
                         <FaEdit />
-                        Modificar
+                        <span className="hidden sm:inline">Modificar</span>
                       </button>
                       <button
                         onClick={() => {
                           setLibroAEliminar(libro);
                           setShowConfirm(true);
                         }}
-                        className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                        className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-red-600/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                        title="Eliminar libro"
                       >
                         <FaTrash />
-                        Eliminar
+                        <span className="hidden sm:inline">Eliminar</span>
                       </button>
                     </div>
                   </td>

@@ -220,75 +220,98 @@ export default function MostrarExpedientesPage() {
           </p>
         )}
 
-        {/* Tabla */}
-        <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
-          <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
-            <thead>
+        <div className="overflow-x-auto w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
+          <table className="min-w-full bg-white border border-gray-300 text-blue mb-8 text-xs sm:text-sm">
+            <thead className="bg-yellow text-blue uppercase text-xs">
               <tr>
-                <th className="border px-4 py-2">ID</th>
-                <th className="border px-4 py-2">Código de Registro</th>
-                <th className="border px-4 py-2">Título del libro</th>
-                <th className="border px-4 py-2">Tipo</th>
-                <th className="border px-4 py-2">Origen</th>
-                <th className="border px-4 py-2">Tamaño</th>
-                <th className="border px-4 py-2">Fecha</th>
-                <th className="border px-4 py-2">Notas</th>
-                <th className="border px-4 py-2">Acciones</th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  ID
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Código de Registro
+                </th>
+                <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                  Título del libro
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Tipo
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Origen
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Tamaño
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Fecha
+                </th>
+                <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                  Notas
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
               {pageItems.length ? (
                 pageItems.map((r) => (
                   <tr key={r.id}>
-                    <td className="border px-4 py-2">{r.id}</td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                      {r.id}
+                    </td>
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                       {r.libros?.codigoRegistro ?? "—"}
                     </td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                       {r.libros?.titulo ?? "—"}
                     </td>
-                    <td className="border px-4 py-2">{r.tipo}</td>
-                    <td className="border px-4 py-2">{r.origen}</td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                      {r.tipo}
+                    </td>
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                      {r.origen}
+                    </td>
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                       {fmtSize(r.size_bytes)}
                     </td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                       {fmtDate(r.created_at)}
                     </td>
-                    <td className="border px-4 py-2">{r.notas ?? "—"}</td>
-                    <td className="border px-4 py-2">
-                      <div className="flex flex-col gap-2">
-                        {/* Abrir (ghost con azul HEX) */}
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                      {r.notas ?? "—"}
+                    </td>
+                    <td className="border px-2 sm:px-4 py-2 align-middle">
+                      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                        {/* Abrir */}
                         <button
                           onClick={() => openRow(r)}
-                          className="inline-flex items-center gap-2 rounded-md border border-[#0F3D91]/70 bg-transparent px-4 py-1.5 text-sm font-medium text-[#0F3D91] hover:bg-[#0F3D91]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F3D91]/30 transition-colors"
+                          className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-[#0F3D91]/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-[#0F3D91] hover:bg-[#0F3D91]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F3D91]/30 transition-colors"
                           title="Abrir"
                         >
                           <FaExternalLinkAlt />
-                          Abrir
+                          <span className="hidden sm:inline">Abrir</span>
                         </button>
-
-                        {/* Modificar (ghost ámbar) */}
+                        {/* Modificar */}
                         <button
                           onClick={() => {
                             setCurrentRow(r);
                             setIsEditing(true);
                           }}
-                          className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                          className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-amber-500/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
                           title="Modificar"
                         >
                           <FaEdit />
-                          Modificar
+                          <span className="hidden sm:inline">Modificar</span>
                         </button>
-
-                        {/* Eliminar (ghost rojo) */}
+                        {/* Eliminar */}
                         <button
                           onClick={() => setRowToDelete(r)}
-                          className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                          className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-red-600/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
                           title="Eliminar"
                         >
                           <FaTrash />
-                          Eliminar
+                          <span className="hidden sm:inline">Eliminar</span>
                         </button>
                       </div>
                     </td>

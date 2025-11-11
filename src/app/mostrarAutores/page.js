@@ -187,25 +187,37 @@ const MostrarAutoresPage = () => {
             Haz clic en Limpiar para ver todos los autores.
           </p>
         )}
-
-        {/* Tabla */}
-        <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
-          <table className="min-w-full bg-white border border-gray-300 text-blue mb-2">
-            <thead>
+        {/* Tabla de autores */}
+        <div className="overflow-x-auto w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
+          <table className="min-w-full bg-white border border-gray-300 text-blue mb-2 text-xs sm:text-sm">
+            <thead className="bg-yellow text-blue uppercase text-xs">
               <tr>
-                <th className="border px-4 py-2">Apellido</th>
-                <th className="border px-4 py-2">Nombre</th>
-                <th className="border px-4 py-2">Institución</th>
-                <th className="border px-4 py-2">
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Apellido
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Nombre
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Institución
+                </th>
+                <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
                   Rectoría/Campus/CNMS/Secretaría
                 </th>
-                <th className="border px-4 py-2">División/Escuela</th>
-                <th className="border px-4 py-2">Correo Institucional</th>
-                <th className="border px-4 py-2">Acciones</th>
+
+                <th className="border px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                  División/Escuela
+                </th>
+
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Correo Institucional
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
-              {/* ✅ CHANGED: usa pageItems en lugar de filteredAutores */}
               {filteredAutores.length > 0 ? (
                 pageItems.map((autor) => {
                   const { apellido, nombre } = splitNombreES(
@@ -213,9 +225,13 @@ const MostrarAutoresPage = () => {
                   );
                   return (
                     <tr key={autor.id}>
-                      <td className="border px-4 py-2">{apellido || "—"}</td>
-                      <td className="border px-4 py-2">{nombre || "—"}</td>
-                      <td className="border px-4 py-2">
+                      <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                        {apellido || "—"}
+                      </td>
+                      <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                        {nombre || "—"}
+                      </td>
+                      <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                         {autor.institucion_tipo === "UG"
                           ? "UG"
                           : autor.institucion_tipo === "Externa"
@@ -226,42 +242,42 @@ const MostrarAutoresPage = () => {
                             }`
                           : "—"}
                       </td>
-                      <td className="border px-4 py-2">
+                      <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                         {autor?.dependencias?.nombre ??
                           autor?.dependencia_id ??
                           "—"}
                       </td>
-                      <td className="border px-4 py-2">
+                      <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                         {autor?.unidades_academicas?.nombre ??
                           autor?.unidad_academica_id ??
                           "—"}
                       </td>
-                      <td className="border px-4 py-2">
+                      <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                         {autor.correo_institucional}
                       </td>
-                      <td className="border px-4 py-2">
-                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                      <td className="border px-2 sm:px-4 py-2 align-middle">
+                        <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
                           <button
                             onClick={() => {
                               setCurrentAutor(autor);
                               setIsEditing(true);
                             }}
-                            className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                            className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-amber-500/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
                             title="Modificar autor"
                           >
                             <FaEdit />
-                            Modificar
+                            <span className="hidden sm:inline">Modificar</span>
                           </button>
-
                           <button
                             onClick={() => {
                               setAutorAEliminar(autor);
                               setShowConfirm(true);
                             }}
-                            className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                            className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-red-600/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                            title="Eliminar autor"
                           >
                             <FaTrash />
-                            Eliminar
+                            <span className="hidden sm:inline">Eliminar</span>
                           </button>
                         </div>
                       </td>
@@ -270,7 +286,6 @@ const MostrarAutoresPage = () => {
                 })
               ) : (
                 <tr>
-                  {/* 7 columnas visibles */}
                   <td colSpan="7" className="text-center py-4">
                     No se encontraron autores
                   </td>

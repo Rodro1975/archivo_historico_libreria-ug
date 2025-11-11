@@ -154,20 +154,33 @@ export default function MostrarSoportePage() {
         }
       `}</style>
 
-      <div className="overflow-x-auto max-w-6xl mx-auto px-4">
-        <table className="min-w-full bg-white text-blue border border-gray-300 mb-4">
-          <thead className="bg-gold text-blue-900">
+      <div className="overflow-x-auto w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
+        <table className="min-w-full bg-white text-blue border border-gray-300 mb-4 text-xs sm:text-sm">
+          <thead className="bg-yellow text-blue uppercase text-xs">
             <tr>
-              <th className="px-4 py-2">Fecha</th>
-              <th className="px-4 py-2">Asunto</th>
-              <th className="px-4 py-2">Usuario</th>
-              <th className="px-4 py-2">Prioridad</th>
-              <th className="px-4 py-2">Estado</th>
-              <th className="px-4 py-2">Respondida</th>
-              <th className="px-4 py-2">Atendida por</th>
-              <th className="px-4 py-2">Resolución</th>
-              <th className="px-4 py-2">Solución</th>
-              <th className="px-4 py-2">Acción</th>
+              <th className="px-2 sm:px-4 py-2 whitespace-nowrap">Fecha</th>
+              <th className="px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                Asunto
+              </th>
+              <th className="px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                Usuario
+              </th>
+              <th className="px-2 sm:px-4 py-2">Prioridad</th>
+              <th className="px-2 sm:px-4 py-2">Estado</th>
+              <th className="px-2 sm:px-4 py-2 max-w-[7rem] whitespace-normal text-center align-middle">
+                Respondida
+              </th>
+              <th className="px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                Atendida
+                <br className="hidden sm:block" /> por
+              </th>
+              <th className="px-2 sm:px-4 py-2 max-w-[8rem] whitespace-normal text-center align-middle">
+                Resolución
+              </th>
+              <th className="px-2 sm:px-4 py-2 max-w-[10rem] whitespace-normal text-center align-middle">
+                Solución
+              </th>
+              <th className="px-2 sm:px-4 py-2 whitespace-nowrap">Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -180,17 +193,21 @@ export default function MostrarSoportePage() {
             ) : pageItems.length > 0 ? (
               pageItems.map((s) => (
                 <tr key={s.id} className="border-t">
-                  <td className="px-4 py-2">
+                  <td className="px-2 sm:px-4 py-2 align-middle max-w-xs truncate">
                     {new Date(s.fecha_creacion).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2">{s.asunto}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 sm:px-4 py-2 align-middle max-w-xs truncate">
+                    {s.asunto}
+                  </td>
+                  <td className="px-2 sm:px-4 py-2 align-middle max-w-xs truncate">
                     {s.usuarios
                       ? `${s.usuarios.primer_nombre} ${s.usuarios.apellido_paterno}`
                       : "—"}
                   </td>
-                  <td className="px-4 py-2">{s.prioridad}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 sm:px-4 py-2 align-middle">
+                    {s.prioridad}
+                  </td>
+                  <td className="px-2 sm:px-4 py-2 align-middle">
                     <select
                       value={s.estado || "Pendiente"}
                       onChange={(e) =>
@@ -211,7 +228,7 @@ export default function MostrarSoportePage() {
                       ))}
                     </select>
                   </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-2 sm:px-4 py-2 text-center align-middle">
                     <input
                       type="checkbox"
                       checked={s.respondida || false}
@@ -226,7 +243,7 @@ export default function MostrarSoportePage() {
                       }
                     />
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 sm:px-4 py-2 align-middle max-w-xs truncate">
                     <select
                       value={s.atendida_por || ""}
                       onChange={(e) =>
@@ -248,7 +265,7 @@ export default function MostrarSoportePage() {
                       ))}
                     </select>
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 sm:px-4 py-2 align-middle max-w-xs truncate">
                     <input
                       type="date"
                       value={s.fecha_resolucion?.split("T")[0] || ""}
@@ -264,7 +281,7 @@ export default function MostrarSoportePage() {
                       className="border rounded px-2 py-1 w-full"
                     />
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 sm:px-4 py-2 align-middle max-w-xs truncate">
                     <textarea
                       value={s.solucion || ""}
                       onChange={(e) =>
@@ -277,10 +294,10 @@ export default function MostrarSoportePage() {
                         )
                       }
                       rows={2}
-                      className="border rounded px-2 py-1 w-full"
+                      className="border rounded px-2 py-1 w-full resize-none"
                     />
                   </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-2 sm:px-4 py-2 text-center align-middle">
                     <button
                       onClick={() => actualizarSolicitud(s)}
                       className="bg-orange text-white px-3 py-1 rounded hover:bg-yellow hover:text-blue"
@@ -300,6 +317,7 @@ export default function MostrarSoportePage() {
           </tbody>
         </table>
       </div>
+
       {/* Controles de paginación (5 por página) */}
       {!loading && soportesFiltrados.length > 0 && (
         <Pagination

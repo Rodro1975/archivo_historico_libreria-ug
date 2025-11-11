@@ -181,17 +181,31 @@ export default function MostrarSolicitudes() {
           </p>
         ) : (
           <>
-            <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-yellow">
-              <table className="min-w-full divide-y divide-blue text-blue text-sm">
+            <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-yellow max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
+              <table className="min-w-full divide-y divide-blue text-blue text-xs sm:text-sm">
                 <thead className="bg-yellow text-blue uppercase text-xs">
                   <tr>
-                    <th className="px-4 py-3 text-left">Apellido</th>
-                    <th className="px-4 py-3 text-left">Nombre</th>
-                    <th className="px-4 py-3 text-left">Tipo</th>
-                    <th className="px-4 py-3 text-left">Detalle</th>
-                    <th className="px-4 py-3 text-left">Estado</th>
-                    <th className="px-4 py-3 text-left">Fecha</th>
-                    <th className="px-4 py-3 text-left">Acción</th>
+                    <th className="px-2 sm:px-4 py-2 whitespace-nowrap text-left">
+                      Apellido
+                    </th>
+                    <th className="px-2 sm:px-4 py-2 whitespace-nowrap text-left">
+                      Nombre
+                    </th>
+                    <th className="px-2 sm:px-4 py-2 whitespace-nowrap text-left">
+                      Tipo
+                    </th>
+                    <th className="px-2 sm:px-4 py-2 max-w-[10rem] whitespace-normal text-left">
+                      Detalle
+                    </th>
+                    <th className="px-2 sm:px-4 py-2 whitespace-nowrap text-left">
+                      Estado
+                    </th>
+                    <th className="px-2 sm:px-4 py-2 whitespace-nowrap text-left">
+                      Fecha
+                    </th>
+                    <th className="px-2 sm:px-4 py-2 whitespace-nowrap text-left">
+                      Acción
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -202,27 +216,35 @@ export default function MostrarSolicitudes() {
                         key={s.id}
                         className="border-t border-gray-200 hover:bg-yellow/20 transition"
                       >
-                        <td className="px-4 py-3">{apellido}</td>
-                        <td className="px-4 py-3">{nombre}</td>
-                        <td className="px-4 py-3">{s.tipo}</td>
-                        <td className="px-4 py-3">{s.detalle}</td>
+                        <td className="px-2 sm:px-4 py-2 max-w-xs truncate">
+                          {apellido}
+                        </td>
+                        <td className="px-2 sm:px-4 py-2 max-w-xs truncate">
+                          {nombre}
+                        </td>
+                        <td className="px-2 sm:px-4 py-2">{s.tipo}</td>
+                        {/* Detalle truncado y ajustado */}
+                        <td className="px-2 sm:px-4 py-2 max-w-[10rem] truncate">
+                          {s.detalle}
+                        </td>
+                        {/* Estado destacado si aplica */}
                         <td
-                          className={`px-4 py-3 font-semibold ${claseEstado(
+                          className={`px-2 sm:px-4 py-2 font-semibold ${claseEstado(
                             s.estado
                           )}`}
                         >
                           {labelEstado(s.estado)}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-2 sm:px-4 py-2">
                           {new Date(s.creado_en).toLocaleString()}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-2 sm:px-4 py-2">
                           <button
                             onClick={() => {
                               setSelected(s);
                               setRespuesta(s.respuesta || "");
                             }}
-                            className="bg-blue text-white px-3 py-1 rounded-lg hover:bg-yellow transition"
+                            className="bg-blue text-white px-3 py-1 rounded-lg hover:bg-yellow hover:text-blue transition border border-blue focus:outline-none focus:ring-2 focus:ring-blue/30"
                           >
                             Revisar
                           </button>

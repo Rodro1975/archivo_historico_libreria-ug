@@ -172,50 +172,69 @@ const MostrarUsuariosPage = () => {
         )}
 
         {/* Tabla */}
-        <div className="overflow-x-auto w-full max-w-screen-lg mx-auto px-4">
-          <table className="min-w-full bg-white border border-gray-300 text-blue mb-8">
-            <thead>
+        <div className="overflow-x-auto w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
+          <table className="min-w-full bg-white border border-gray-300 text-blue mb-8 text-xs sm:text-sm">
+            <thead className="bg-yellow text-blue uppercase text-xs">
               <tr>
-                <th className="border px-4 py-2">ID</th>
-                <th className="border px-4 py-2">Rol</th>
-                <th className="border px-4 py-2">Apellido Paterno</th>
-                <th className="border px-4 py-2">Primer Nombre</th>
-                <th className="border px-4 py-2">Correo</th>
-                <th className="border px-4 py-2">Acciones</th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap align-middle">
+                  ID
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap align-middle">
+                  Rol
+                </th>
+                <th className="border px-2 sm:px-4 py-2 max-w-xs truncate whitespace-nowrap align-middle">
+                  Apellido Paterno
+                </th>
+                <th className="border px-2 sm:px-4 py-2 max-w-xs truncate whitespace-nowrap align-middle">
+                  Primer Nombre
+                </th>
+                <th className="border px-2 sm:px-4 py-2 max-w-xs truncate whitespace-nowrap align-middle">
+                  Correo
+                </th>
+                <th className="border px-2 sm:px-4 py-2 whitespace-nowrap align-middle">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
               {pageItems.length > 0 ? (
                 pageItems.map((usuario) => (
                   <tr key={usuario.id}>
-                    <td className="border px-4 py-2">{usuario.id}</td>
-                    <td className="border px-4 py-2">{usuario.role ?? "—"}</td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-2 sm:px-4 py-2 align-middle">
+                      {usuario.id}
+                    </td>
+                    <td className="border px-2 sm:px-4 py-2 align-middle">
+                      {usuario.role ?? "—"}
+                    </td>
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                       {usuario.apellido_paterno ?? "—"}
                     </td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
                       {usuario.primer_nombre ?? "—"}
                     </td>
-                    <td className="border px-4 py-2">{usuario.email ?? "—"}</td>
-                    <td className="border px-4 py-2">
-                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    <td className="border px-2 sm:px-4 py-2 max-w-xs truncate align-middle">
+                      {usuario.email ?? "—"}
+                    </td>
+                    <td className="border px-2 sm:px-4 py-2 align-middle">
+                      <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
                         <button
                           onClick={() => {
                             setCurrentUsuario(usuario);
                             setIsEditing(true);
                           }}
-                          className="inline-flex items-center gap-2 rounded-md border border-amber-500/70 bg-transparent px-4 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
+                          className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-amber-500/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30 transition-colors"
                           title="Modificar usuario"
                         >
                           <FaEdit />
-                          Modificar
+                          <span className="hidden sm:inline">Modificar</span>
                         </button>
                         <button
                           onClick={() => setUserToDelete(usuario)}
-                          className="inline-flex items-center gap-2 rounded-md border border-red-600/70 bg-transparent px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                          className="inline-flex items-center gap-1 sm:gap-2 rounded-md border border-red-600/70 bg-transparent px-2 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600/30 transition-colors"
+                          title="Eliminar usuario"
                         >
                           <FaTrash />
-                          Eliminar
+                          <span className="hidden sm:inline">Eliminar</span>
                         </button>
                       </div>
                     </td>
