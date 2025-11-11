@@ -42,7 +42,7 @@ export default function FileForm() {
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitted },
   } = useForm({
     defaultValues: {
       libro_id: "",
@@ -192,120 +192,130 @@ export default function FileForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
-        <div className="p-10 xs:p-0 mx-auto w-full">
-          {/* Header unificado: escudo + título */}
-          <div className="px-5 py-7 text-center">
-            <div className="flex justify-center mb-5">
-              <Image
-                src="/images/escudo-png.png"
-                alt="Escudo"
-                className="h-20"
-                width={80}
-                height={80}
-                priority
-              />
-            </div>
-            <h1 className="font-black text-3xl mb-5 text-blue">
-              Subir Expedientes
-            </h1>
+    <div className="flex items-center justify-center min-h-screen px-4 py-8 bg-blue">
+      <div className="bg-white flex flex-col w-full max-w-2xl rounded-xl shadow-xl p-6 sm:p-10">
+        <div className="flex flex-col items-center mb-6">
+          <Image
+            src="/images/escudo-png.png"
+            alt="Escudo"
+            width={80}
+            height={80}
+            className="escudo"
+            priority
+          />
+          <h1 className="font-black text-2xl sm:text-3xl text-blue mb-2">
+            Subir Expedientes
+          </h1>
+          <p className="text-gray-600 text-sm mb-2">
+            Completa los campos obligatorios{" "}
+            <span className="text-yellow-500">*</span>
+          </p>
+        </div>
+        {/* Errores globales */}
+        {isSubmitted && Object.keys(errors).length > 0 && (
+          <div className="mb-4 p-3 rounded bg-yellow border-l-4 border-gold text-blue animate-fadeIn">
+            Corrige los campos marcados en amarillo.
+          </div>
+        )}
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"
+        >
+          {/* Libro */}
+          <div className="md:col-span-2">
+            <label className="block text-blue text-sm font-semibold mb-2">
+              Libro <span className="text-yellow-500">*</span>
+            </label>
+            <select
+              {...register("libro_id")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              defaultValue=""
+            >
+              <option value="">— Selecciona un libro —</option>
+              {libros.map((l) => (
+                <option key={l.id_libro} value={l.id_libro}>
+                  {l.codigoRegistro} — {l.titulo}
+                </option>
+              ))}
+            </select>
+            {errors.libro_id && (
+              <span className="text-yellow-500 text-xs">Campo requerido</span>
+            )}
           </div>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 px-5 pb-8"
-          >
-            {/* Libro */}
-            <div className="mb-4 md:col-span-2">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Libro*
-              </label>
-              <select
-                {...register("libro_id")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full bg-white"
-              >
-                <option value="">— Selecciona un libro —</option>
-                {libros.map((l) => (
-                  <option key={l.id_libro} value={l.id_libro}>
-                    {l.codigoRegistro} — {l.titulo}
-                  </option>
-                ))}
-              </select>
-              {errors.libro_id && (
-                <p className="text-red-500 text-xs">Campo requerido</p>
-              )}
-            </div>
+          {/* Tipo */}
+          <div>
+            <label className="block text-blue text-sm font-semibold mb-2">
+              Tipo <span className="text-yellow-500">*</span>
+            </label>
+            <select
+              {...register("tipo")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              defaultValue=""
+            >
+              <option value="">— Selecciona un tipo —</option>
+              {TYPE_OPTIONS.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+            {errors.tipo && (
+              <span className="text-yellow-500 text-xs">Campo requerido</span>
+            )}
+          </div>
 
-            {/* Tipo */}
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Tipo*
-              </label>
-              <select
-                {...register("tipo")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full bg-white"
-              >
-                <option value="">— Selecciona un tipo —</option>
-                {TYPE_OPTIONS.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Nota */}
+          <div>
+            <label className="block text-blue text-sm font-semibold mb-2">
+              Nota (opcional)
+            </label>
+            <input
+              type="text"
+              {...register("nota")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Descripción corta"
+            />
+          </div>
 
-            {/* Nota */}
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Nota (opcional)
-              </label>
-              <input
-                type="text"
-                {...register("nota")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Descripción corta"
-              />
-            </div>
+          {/* Archivo */}
+          <div>
+            <label className="block text-blue text-sm font-semibold mb-2">
+              Archivo (opcional)
+            </label>
+            <input
+              type="file"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              accept="application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,.pdf,.zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*"
+            />
+          </div>
 
-            {/* Archivo */}
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Archivo (opcional)
-              </label>
-              <input
-                type="file"
-                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                accept="application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,.pdf,.zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*"
-              />
-            </div>
+          {/* URL */}
+          <div>
+            <label className="block text-blue text-sm font-semibold mb-2">
+              URL (opcional)
+            </label>
+            <input
+              type="url"
+              {...register("url")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="https://…"
+            />
+          </div>
 
-            {/* URL */}
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                URL (opcional)
-              </label>
-              <input
-                type="url"
-                {...register("url")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="https://…"
-              />
-            </div>
-
-            {/* Submit */}
-            <div className="md:col-span-2">
-              <button
-                type="submit"
-                disabled={uploading}
-                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
-              >
-                {uploading ? "Subiendo…" : "Registrar expediente"}
-              </button>
-            </div>
-          </form>
-        </div>
+          {/* Submit */}
+          <div className="md:col-span-2 lg:col-span-3 mt-4">
+            <button
+              type="submit"
+              disabled={uploading}
+              className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold animate-fadeIn"
+            >
+              {uploading ? "Subiendo…" : "Registrar expediente"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -134,6 +135,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
   const [dependencias, setDependencias] = useState([]);
   const [unidades, setUnidades] = useState([]);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
+  const router = useRouter();
 
   // Autoseleccionar UG si el correo es @ugto.mx
   useEffect(() => {
@@ -292,6 +294,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
       console.error("Error registrando autor:", err);
       toastError(`Error: ${err.message || "operación fallida"}`);
     }
+    router.push("/mostrarAutores");
   };
 
   return (
@@ -453,7 +456,7 @@ export default function AutorForm({ onRefreshUsuarios }) {
           <div className="md:col-span-2 mt-4">
             <button
               type="submit"
-              className="transition duration-200 bg-yellow text-blue hover:bg-gold hover:text-white w-full py-3 rounded-lg text-md shadow-sm hover:shadow-md font-semibold animate-fadeIn"
+              className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-3 rounded-lg text-md shadow-sm hover:shadow-md font-semibold animate-fadeIn"
             >
               Registrar Autor
             </button>

@@ -3,6 +3,7 @@
 
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import supabase from "@/lib/supabase";
@@ -197,6 +198,7 @@ export default function BookForm() {
   const [isbnInput, setIsbnInput] = useState("");
   const [isbnExists, setIsbnExists] = useState(false);
   const [checkingISBN, setCheckingISBN] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -204,7 +206,7 @@ export default function BookForm() {
     setValue,
     watch,
     reset,
-    formState: { errors, touchedFields },
+    formState: { errors, touchedFields, isSubmitted, submitCount },
   } = useForm({
     resolver: zodResolver(RegisterBookSchema),
     defaultValues: {
@@ -213,8 +215,8 @@ export default function BookForm() {
       formato: "",
       idioma: "",
     },
-    mode: "onBlur",
-    reValidateMode: "onSubmit",
+    mode: "onsubmit",
+    reValidateMode: "onchange",
   });
 
   // Mantener ISBN como campo controlado
@@ -421,68 +423,78 @@ export default function BookForm() {
     setSelectedPDF(null);
     setIsbnInput("");
     setIsbnExists(false);
+    router.push("/mostrarLibros");
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
+    <div className="flex items-center justify-center min-h-screen px-2 md:px-8 xl:px-20 py-8 bg-blue">
+      <div className="bg-white flex flex-col w-full max-w-3xl md:max-w-4xl lg:max-w-5xl xl:max-w-7xl rounded-xl shadow-xl p-6 md:p-10">
         <div className="p-10 xs:p-0 mx-auto w-full">
-          <div className="px-5 py-7 text-center">
-            <div className="flex justify-center mb-5">
-              <Image
-                src="/images/escudo-png.png"
-                alt="Escudo"
-                className="h-20"
-                width={80}
-                height={80}
-                priority
-              />
-            </div>
-            <h1 className="font-black text-3xl mb-5 text-blue">
+          <div className="flex flex-col items-center mb-6">
+            <Image
+              src="/images/escudo-png.png"
+              alt="Escudo"
+              width={80}
+              height={80}
+              className="escudo"
+              priority
+            />
+            <h1 className="font-black text-2xl sm:text-3xl text-blue mb-2">
               Registro de Libros
             </h1>
+            <p className="text-gray-600 text-sm mb-2">
+              Completa todos los campos obligatorios{" "}
+              <span className="text-yellow-500">*</span>
+            </p>
           </div>
+          {/* Errores globales */}
+          {isSubmitted && Object.keys(errors).length > 0 && (
+            <div className="mb-4 p-3 rounded bg-yellow border-l-4 border-gold text-blue animate-fadeIn">
+              Corrige los campos marcados en amarillo.
+            </div>
+          )}
 
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4"
           >
             {/* Autor principal */}
-            <div className="mb-4 col-span-full">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Selecciona Autor Principal*
+            <div className="md:col-span-2">
+              <label className="block text-blue text-sm font-semibold mb-2">
+                Selecciona Autor Principal{" "}
+                <span className="text-yellow-500">*</span>
               </label>
               <select
                 {...register("selectedAutorId")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+                defaultValue=""
               >
-                <option value="">— Selecciona un autor —</option>
+                <option value="" disabled>
+                  Selecciona un autor
+                </option>
                 {autoresOptions.map((a) => (
                   <option key={a.id} value={a.id}>
-                    {a.id} — {a.nombre_completo}
+                    {a.nombre_completo}
                   </option>
                 ))}
               </select>
               {errors.selectedAutorId && (
-                <p className="text-red-500 text-xs">
+                <span className="text-red-500 text-xs">
                   {errors.selectedAutorId.message}
-                </p>
+                </span>
               )}
             </div>
 
             {/* Tipo autoría */}
-            <div className="mb-4">
-              <label
-                htmlFor="tipoAutoria"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Tipo Autoría*
+            <div>
+              <label className="block text-blue text-sm font-semibold mb-2">
+                Tipo Autoría <span className="text-yellow-500">*</span>
               </label>
               <select
-                id="tipoAutoria"
                 {...register("tipoAutoria")}
                 required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+                defaultValue=""
               >
                 <option value="" disabled>
                   Selecciona un tipo de autoría
@@ -492,26 +504,28 @@ export default function BookForm() {
                 <option value="colectiva">Colectiva</option>
               </select>
               {errors.tipoAutoria && (
-                <p className="text-red-500 text-xs">
+                <span className="text-red-500 text-xs">
                   {errors.tipoAutoria.message}
-                </p>
+                </span>
               )}
             </div>
 
             {/* Coautores */}
             {(tipoAutoria === "coautoría" || tipoAutoria === "colectiva") && (
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Coautores
+              <div>
+                <label className="block text-blue text-sm font-semibold mb-2">
+                  Coautores <span className="text-yellow-500">*</span>
                 </label>
                 {coautores.map((c, i) => (
                   <div key={i} className="flex items-center gap-3 mb-2">
                     <select
                       value={c}
                       onChange={(e) => updateCoautor(i, e.target.value)}
-                      className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                      className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                     >
-                      <option value="">— Selecciona coautor —</option>
+                      <option value="" disabled>
+                        Selecciona coautor
+                      </option>
                       {autoresOptions.map((a) => (
                         <option key={a.id} value={a.id}>
                           {a.nombre_completo}
@@ -538,19 +552,18 @@ export default function BookForm() {
             )}
 
             {/* Campos del libro */}
-            <div className="mb-4">
-              <label
-                htmlFor="codigoRegistro"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Código Registro*
+
+            {/* Código de registro */}
+            <div>
+              <label className="block text-blue text-sm font-semibold mb-2">
+                Código Registro <span className="text-yellow-500">*</span>
               </label>
               <input
                 type="text"
                 id="codigoRegistro"
                 {...register("codigoRegistro")}
                 required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
               {errors.codigoRegistro && (
                 <p className="text-red-500 text-xs">
@@ -559,13 +572,10 @@ export default function BookForm() {
               )}
             </div>
 
-            {/* ISBN controlado */}
-            <div className="mb-4 flex flex-col">
-              <label
-                htmlFor="isbn"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                ISBN*
+            {/* ISBN */}
+            <div>
+              <label className="block text-blue text-sm font-semibold mb-2">
+                ISBN <span className="text-yellow-500">*</span>
               </label>
               <div className="flex items-center gap-2 w-full">
                 <input
@@ -578,17 +588,20 @@ export default function BookForm() {
                   maxLength={17}
                   autoComplete="off"
                   required
-                  className={`flex-grow rounded-lg px-3 py-2 text-sm text-blue focus:outline-none focus:ring-2 w-full ${
+                  className={`flex-grow rounded-lg px-3 py-2 text-sm text-blue w-full border ${
                     isbnExists
                       ? "border-red-500 focus:border-red-500 focus:ring-red-400"
-                      : "border-yellow focus:border-blue focus:ring-gold border"
-                  }`}
+                      : "border-yellow focus:border-gold focus:ring-yellow"
+                  } focus:outline-none focus:ring-2 transition`}
+                  style={{
+                    background: "white",
+                  }}
                 />
                 <button
                   type="button"
                   onClick={handleCalculateCheckDigit}
                   disabled={checkingISBN}
-                  className="inline-flex items-center bg-blue text-white font-medium px-3 py-2 rounded-md hover:bg-blue-600 transition"
+                  className="inline-flex items-center bg-yellow text-blue font-semibold px-3 py-2 rounded-md hover:bg-gold hover:text-white focus:outline-none transition"
                 >
                   {checkingISBN ? "Verificando..." : "Calcular"}
                 </button>
@@ -600,18 +613,16 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="doi"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
+            {/* DOI */}
+            <div>
+              <label className="block text-blue text-sm font-semibold mb-2">
                 DOI
               </label>
               <input
                 type="text"
                 id="doi"
                 {...register("doi")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 placeholder="Ej. 10.1000/xyz123 (opcional)"
               />
               {errors.doi && (
@@ -619,12 +630,10 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="titulo"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Título*
+            {/* Titulo */}
+            <div>
+              <label className="block text-blue text-sm font-bold mb-2">
+                Título <span className="text-yellow-500">*</span>
               </label>
               <input
                 type="text"
@@ -633,18 +642,16 @@ export default function BookForm() {
                 {...register("titulo")}
                 required
                 pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
               {errors.titulo && (
                 <p className="text-red-500 text-xs">{errors.titulo.message}</p>
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="subtitulo"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
+            {/* Subtítulo */}
+            <div>
+              <label className="block text-blue text-sm font-bold mb-2">
                 Subtítulo
               </label>
               <input
@@ -652,7 +659,7 @@ export default function BookForm() {
                 id="subtitulo"
                 {...register("subtitulo")}
                 pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 placeholder="Opcional"
               />
 
@@ -663,12 +670,10 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="materia"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Materia*
+            {/* Materia */}
+            <div>
+              <label className="block text-blue text-sm font-bold mb-2">
+                Materia<span className="text-yellow-500">*</span>
               </label>
               <input
                 type="text"
@@ -677,7 +682,7 @@ export default function BookForm() {
                 {...register("materia")}
                 required
                 pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
 
               {errors.materia && (
@@ -685,12 +690,10 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="tematica"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Temática*
+            {/* Temática */}
+            <div>
+              <label className="block text-blue text-sm font-bold mb-2">
+                Temática<span className="text-yellow-500">*</span>
               </label>
               <input
                 type="text"
@@ -699,7 +702,7 @@ export default function BookForm() {
                 {...register("tematica")}
                 required
                 pattern=".*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ].*"
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
 
               {errors.tematica && (
@@ -709,11 +712,9 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="coleccion"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
+            {/* Colección */}
+            <div>
+              <label className="block text-blue text-sm font-bold mb-2">
                 Colección
               </label>
               <input
@@ -726,7 +727,7 @@ export default function BookForm() {
                       ? undefined
                       : v.trim(),
                 })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
 
               {errors.coleccion && (
@@ -736,12 +737,10 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="numeroEdicion"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Número de Edición*
+            {/* Número de Edición */}
+            <div>
+              <label className="block text-blue text-sm font-bold mb-2">
+                Número de Edición<span className="text-yellow-500">*</span>
               </label>
               <input
                 type="number"
@@ -752,7 +751,7 @@ export default function BookForm() {
                 max={MAX_EDICIONES}
                 step={1}
                 placeholder={`1–${MAX_EDICIONES}`}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
 
               {errors.numeroEdicion && (
@@ -762,12 +761,10 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="anioPublicacion"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Año de Publicación*
+            {/* Año de Publicación */}
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Año de Publicación<span className="text-yellow-500">*</span>
               </label>
               <input
                 type="text"
@@ -777,7 +774,7 @@ export default function BookForm() {
                 pattern="\d{4}"
                 {...register("anioPublicacion")}
                 required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 placeholder="Ejemplo: 1980"
                 autoComplete="off"
               />
@@ -788,18 +785,16 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="formato"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Formato*
+            {/* Formato */}
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Formato<span className="text-yellow-500">*</span>
               </label>
               <select
                 id="formato"
                 {...register("formato")}
                 required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               >
                 <option value="" disabled>
                   Selecciona un formato de impresión
@@ -815,12 +810,10 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="numeroPaginas"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Número de Páginas*
+            {/* Número de páginas */}
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Número de Páginas<span className="text-yellow-500">*</span>
               </label>
               <input
                 type="number"
@@ -831,9 +824,8 @@ export default function BookForm() {
                 max={MAX_PAGINAS}
                 step={1}
                 placeholder={`${MIN_PAGINAS}–${MAX_PAGINAS}`}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
-
               {errors.numeroPaginas && (
                 <p className="text-red-500 text-xs">
                   {errors.numeroPaginas.message}
@@ -841,11 +833,9 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="tiraje_o_ibd"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
+            {/* Tiraje o IBD */}
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
                 Tiraje o IBD
               </label>
               <input
@@ -856,7 +846,7 @@ export default function BookForm() {
                   setValueAs: (v) =>
                     typeof v === "string" && v.trim() === "" ? undefined : v,
                 })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               />
               {errors.tiraje_o_ibd && (
                 <p className="text-red-500 text-xs">
@@ -865,20 +855,20 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="idioma"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Idioma*
+            {/* Idioma */}
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Idioma<span className="text-yellow-500">*</span>
               </label>
               <select
                 id="idioma"
                 {...register("idioma")}
                 required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
               >
-                <option value="">— Selecciona un idioma —</option>
+                <option value="" disabled>
+                  Selecciona un idioma
+                </option>
                 <option value="español">Español</option>
                 <option value="ingles">Inglés</option>
                 <option value="frances">Francés</option>
@@ -891,11 +881,9 @@ export default function BookForm() {
               )}
             </div>
 
-            <div className="mb-4">
-              <label
-                htmlFor="esTraduccion"
-                className="inline-flex items-center text-gray-700 text-sm font-bold"
-              >
+            {/* Es traducción */}
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
                 <input
                   type="checkbox"
                   id="esTraduccion"
@@ -906,19 +894,17 @@ export default function BookForm() {
               </label>
             </div>
 
+            {/* Sinopsis */}
             <div className="mb-4 col-span-full">
-              <label
-                htmlFor="sinopsis"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Sinopsis*
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Sinopsis<span className="text-yellow-500">*</span>
               </label>
               <textarea
                 id="sinopsis"
                 {...register("sinopsis")}
                 required
                 rows={4}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 placeholder="Ingresa la sinopsis del libro (máximo 500 caracteres)"
               />
               {errors.sinopsis && (
@@ -931,41 +917,38 @@ export default function BookForm() {
               </div>
             </div>
 
-            {/* Portada (puedes dejarla requerida si así estaba) */}
-            <div className="mb-4">
-              <label
-                htmlFor="portada"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Portada*
+            {/* Portada */}
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Portada<span className="text-yellow-500">*</span>
               </label>
               <input
                 type="file"
                 id="portada"
                 onChange={handleFileChange}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 accept=".jpg,.jpeg,.png"
                 required
               />
             </div>
 
             {/* PDF del libro — OPCIONAL */}
-            <div className="mb-4">
+            <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Archivo Libro PDF (opcional)
               </label>
               <input
                 type="file"
                 onChange={handlePDFChange}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 accept=".pdf"
               />
             </div>
 
-            <div className="col-span-full">
+            <div className="md:col-span-2 mt-4">
               <button
                 type="submit"
-                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
+                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-3 rounded-lg text-md shadow-sm hover:shadow-md font-semibold animate-fadeIn"
               >
                 Registrar Libro
               </button>

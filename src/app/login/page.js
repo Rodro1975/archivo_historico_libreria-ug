@@ -76,7 +76,7 @@ const LoginForm = () => {
         <div className="flex flex-1 items-center justify-center py-10">
           {/* Contenedor principal */}
           <div
-            className="bg-gray-100 w-full max-w-sm rounded-lg shadow-lg p-4 sm:p-6 mx-auto"
+            className="bg-gray-100 w-full max-w-sm rounded-lg shadow-lg p-4 sm:p-8 mx-auto"
             style={{ maxHeight: "90vh" }}
           >
             <div className="text-center mb-4">
@@ -99,10 +99,8 @@ const LoginForm = () => {
               onSubmit={handleSubmit(onSubmit)}
               autoComplete="on"
             >
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-blue"
-              >
+              {/* Email */}
+              <label className="block text-sm font-medium text-blue">
                 Correo Electrónico
               </label>
               <input
@@ -112,7 +110,7 @@ const LoginForm = () => {
                   required: "El correo es obligatorio",
                 })}
                 autoComplete="email"
-                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 required
               />
               {errors.email && (
@@ -121,10 +119,8 @@ const LoginForm = () => {
                 </p>
               )}
 
-              <label
-                htmlFor="login-password"
-                className="block text-sm font-semibold text-blue"
-              >
+              {/* Password */}
+              <label className="block text-sm font-medium text-blue">
                 Contraseña
               </label>
               <input
@@ -134,7 +130,7 @@ const LoginForm = () => {
                   required: "La contraseña es obligatoria",
                 })}
                 autoComplete="current-password"
-                className="mt-1 w-full border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2"
+                className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
                 required
               />
 

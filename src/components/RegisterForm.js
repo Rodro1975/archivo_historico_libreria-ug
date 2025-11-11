@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -9,6 +10,8 @@ import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { toast } from "react-hot-toast";
+
+const toastStyle = {};
 
 // Esquema de validación con Zod
 const RegisterSchema = z
@@ -71,7 +74,7 @@ export default function RegisterForm() {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false); // Nuevo estado de loading
-
+  const router = useRouter();
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -216,7 +219,8 @@ export default function RegisterForm() {
         `✅ Usuario ${data.primer_nombre} ${data.apellido_paterno} registrado exitosamente`,
         toastStyle
       );
-
+      // Redirigir a la página de mostrar usuarios
+      router.push("/mostrarUsuarios");
       // Limpiar formulario y estado
       reset();
       setSelectedFile(null);
@@ -238,323 +242,284 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen mt-40 mb-20 mr-10 ml-10">
-      {/* formulario de registro */}
-      <div className="bg-gray-100 flex flex-col sm:py-12 md:w-full md:max-w-4xl rounded-lg shadow-lg">
-        <div className="p-10 xs:p-0 mx-auto w-full">
-          <div className="px-5 py-7 text-center">
-            <div className="flex justify-center mb-5">
-              <Image
-                src="/images/escudo-png.png"
-                alt="Escudo"
-                className="h-20"
-                width={80}
-                height={80}
-                priority
-              />
-            </div>
-            <h1 className="font-black text-3xl mb-5 text-blue">
-              Registro de Usuarios
-            </h1>
-          </div>
-          <form
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            {/* Campos de Nombre */}
-            <div className="mb-4">
-              <label
-                htmlFor="primer_nombre"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Primer Nombre
-              </label>
-              <input
-                type="text"
-                id="primer_nombre"
-                {...register("primer_nombre", {
-                  required: "Este campo es obligatorio",
-                })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Primer Nombre"
-                disabled={loading} // Deshabilitar durante carga
-              />
-              {errors.primer_nombre && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.primer_nombre.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="segundo_nombre"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Segundo Nombre
-              </label>
-              <input
-                type="text"
-                id="segundo_nombre"
-                {...register("segundo_nombre", {
-                  required: "Este campo es obligatorio",
-                })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Segundo Nombre"
-                disabled={loading}
-              />
-              {errors.segundo_nombre && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.segundo_nombre.message}
-                </p>
-              )}
-            </div>
-
-            {/* Campos de Apellido */}
-            <div className="mb-4">
-              <label
-                htmlFor="apellido_paterno"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Apellido Paterno
-              </label>
-              <input
-                type="text"
-                id="apellido_paterno"
-                {...register("apellido_paterno", {
-                  required: "Este campo es obligatorio",
-                })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Apellido Paterno"
-                disabled={loading}
-              />
-              {errors.apellido_paterno && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.apellido_paterno.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="apellido_materno"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Apellido Materno
-              </label>
-              <input
-                type="text"
-                id="apellido_materno"
-                {...register("apellido_materno", {
-                  required: "Este campo es obligatorio",
-                })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Apellido Materno"
-                disabled={loading}
-              />
-              {errors.apellido_materno && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.apellido_materno.message}
-                </p>
-              )}
-            </div>
-
-            {/* Campos de Datos */}
-            <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                {...register("email", {
-                  required: "Este campo es obligatorio",
-                })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Email"
-                disabled={loading}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="telefono"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Teléfono
-              </label>
-              <input
-                type="text"
-                id="telefono"
-                {...register("telefono", {})}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa el Teléfono (Opcional)"
-                disabled={loading}
-              />
-              {errors.telefono && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.telefono.message}
-                </p>
-              )}
-            </div>
-
-            {/* Selección de Rol */}
-            <div className="mb-4 col-span-full">
-              <label
-                htmlFor="role"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Rol
-              </label>
-              <select
-                id="role"
-                {...register("role", { required: "Este campo es obligatorio" })}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                disabled={loading}
-              >
-                <option value="">Selecciona un rol</option>
-                {roles.map((rol) => (
-                  <option key={rol} value={rol}>
-                    {rol}
-                  </option>
-                ))}
-              </select>
-              {errors.role && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.role.message}
-                </p>
-              )}
-            </div>
-
-            {/* Justificación */}
-            <div className="mb-4 col-span-full">
-              <label
-                htmlFor="justificacion"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Justificación
-              </label>
-              <textarea
-                id="justificacion"
-                {...register("justificacion", {
-                  required: "Este campo es obligatorio",
-                })}
-                maxLength={300}
-                placeholder="Explica por qué necesitas acceso a la plataforma"
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                disabled={loading}
-                rows={4}
-              />
-              {errors.justificacion && (
-                <span className="text-red-600">
-                  {errors.justificacion.message}
-                </span>
-              )}
-            </div>
-
-            {/* Contraseña */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Password
-              </label>
-              <input
-                {...register("password", {
-                  required: "Este campo es obligatorio",
-                })}
-                type="password"
-                id="password"
-                required
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Ingresa una Contraseña"
-                disabled={loading}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmar_password"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Confirmar Contraseña
-              </label>
-              <input
-                type="password"
-                id="confirmar_password"
-                {...register("confirmar_password")}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                placeholder="Confirma la contraseña"
-                disabled={loading}
-              />
-              {errors.confirmar_password && (
-                <p className="text-red-500 text-xs italic">
-                  {errors.confirmar_password.message}
-                </p>
-              )}
-            </div>
-
-            {/* Campo para seleccionar la foto */}
-            <div className="mb-4">
-              <label
-                htmlFor="foto"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Foto *
-              </label>
-              <input
-                type="file"
-                id="foto"
-                onChange={handleFileChange}
-                className="border border-yellow rounded-lg px-3 py-2 text-sm text-blue focus:border-blue focus:ring-gold focus:ring-2 focus:outline-none w-full"
-                accept=".jpg, .jpeg, .png"
-                required
-                disabled={loading}
-              />
-              {selectedFile && (
-                <p className="text-green-600 text-xs mt-1">
-                  ✅ Foto seleccionada: {selectedFile.name}
-                </p>
-              )}
-            </div>
-
-            {/* Botón de Registro */}
-            <div className="col-span-full">
-              <button
-                type="submit"
-                disabled={loading}
-                className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue mr-2"></div>
-                    Registrando...
-                  </span>
-                ) : (
-                  "Registrar Usuario"
-                )}
-              </button>
-              <p className="text-center mt-4 text-sm text-blue">
-                Al hacer clic en &quot;Registrar Usuario&quot;, aceptas nuestros
-                Términos de Servicio y Políticas de Privacidad.
-              </p>
-            </div>
-          </form>
+    <div className="flex items-center justify-center min-h-screen px-2 md:px-8 xl:px-20 py-8 bg-blue">
+      <div className="bg-white flex flex-col w-full max-w-3xl md:max-w-4xl lg:max-w-5xl xl:max-w-7xl rounded-xl shadow-xl p-6 md:p-10">
+        <div className="flex flex-col items-center mb-6">
+          <Image
+            src="/images/escudo-png.png"
+            alt="Escudo"
+            width={80}
+            height={80}
+            className="escudo"
+            priority
+          />
+          <h1 className="font-black text-2xl sm:text-3xl text-blue mb-2">
+            Registro de Usuarios
+          </h1>
+          <p className="text-gray-600 text-sm mb-2">
+            Completa todos los campos obligatorios{" "}
+            <span className="text-yellow-500">*</span>
+          </p>
         </div>
+        {/* Errores globales */}
+        {Object.keys(errors).length > 0 && (
+          <div className="mb-4 p-3 rounded bg-yellow border-l-4 border-gold text-blue animate-fadeIn">
+            Corrige los campos marcados en amarillo.
+          </div>
+        )}
+        <form
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {/* Primer Nombre */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Primer Nombre <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              id="primer_nombre"
+              type="text"
+              {...register("primer_nombre")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Ingresa el Primer Nombre"
+              disabled={loading}
+            />
+            {errors.primer_nombre && (
+              <span className="text-yellow-500 text-xs">
+                {errors.primer_nombre.message}
+              </span>
+            )}
+          </div>
+
+          {/* Segundo Nombre */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Segundo Nombre <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              id="segundo_nombre"
+              type="text"
+              {...register("segundo_nombre")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Ingresa el Segundo Nombre"
+              disabled={loading}
+            />
+            {errors.segundo_nombre && (
+              <span className="text-yellow-500 text-xs">
+                {errors.segundo_nombre.message}
+              </span>
+            )}
+          </div>
+
+          {/* Apellido Paterno */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Apellido Paterno <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              id="apellido_paterno"
+              type="text"
+              {...register("apellido_paterno")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Ingresa el Apellido Paterno"
+              disabled={loading}
+            />
+            {errors.apellido_paterno && (
+              <span className="text-yellow-500 text-xs">
+                {errors.apellido_paterno.message}
+              </span>
+            )}
+          </div>
+
+          {/* Apellido Materno */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Apellido Materno <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              id="apellido_materno"
+              type="text"
+              {...register("apellido_materno")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Ingresa el Apellido Materno"
+              disabled={loading}
+            />
+            {errors.apellido_materno && (
+              <span className="text-yellow-500 text-xs">
+                {errors.apellido_materno.message}
+              </span>
+            )}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Email <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              id="email"
+              type="email"
+              {...register("email")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Ingresa el Email"
+              disabled={loading}
+            />
+            {errors.email && (
+              <span className="text-yellow-500 text-xs">
+                {errors.email.message}
+              </span>
+            )}
+          </div>
+
+          {/* Teléfono */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Teléfono
+            </label>
+            <input
+              id="telefono"
+              type="text"
+              {...register("telefono")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Ingresa el Teléfono (Opcional)"
+              disabled={loading}
+            />
+            {errors.telefono && (
+              <span className="text-yellow-500 text-xs">
+                {errors.telefono.message}
+              </span>
+            )}
+          </div>
+
+          {/* Selección de Rol */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Rol <span className="text-yellow-500">*</span>
+            </label>
+            <select
+              id="role"
+              {...register("role")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              disabled={loading}
+            >
+              <option value="">Selecciona un rol</option>
+              {roles.map((rol) => (
+                <option key={rol} value={rol}>
+                  {rol}
+                </option>
+              ))}
+            </select>
+            {errors.role && (
+              <span className="text-yellow-500 text-xs">
+                {errors.role.message}
+              </span>
+            )}
+          </div>
+
+          {/* Justificación */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Justificación <span className="text-yellow-500">*</span>
+            </label>
+            <textarea
+              id="justificacion"
+              {...register("justificacion")}
+              maxLength={300}
+              placeholder="Explica por qué necesitas acceso a la plataforma"
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              disabled={loading}
+              rows={4}
+            />
+            {errors.justificacion && (
+              <span className="text-yellow-500 text-xs">
+                {errors.justificacion.message}
+              </span>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Contraseña <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              id="password"
+              type="password"
+              {...register("password")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Ingresa una Contraseña"
+              disabled={loading}
+            />
+            {errors.password && (
+              <span className="text-yellow-500 text-xs">
+                {errors.password.message}
+              </span>
+            )}
+          </div>
+
+          {/* Confirmar Password */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Confirmar Contraseña <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              id="confirmar_password"
+              type="password"
+              {...register("confirmar_password")}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              placeholder="Confirma la contraseña"
+              disabled={loading}
+            />
+            {errors.confirmar_password && (
+              <span className="text-yellow-500 text-xs">
+                {errors.confirmar_password.message}
+              </span>
+            )}
+          </div>
+
+          {/* Foto */}
+          <div>
+            <label className="block text-sm font-medium text-blue">
+              Foto <span className="text-yellow-500">*</span>
+            </label>
+            <input
+              type="file"
+              id="foto"
+              onChange={handleFileChange}
+              className="border border-yellow focus:border-gold focus:ring-yellow focus:ring-2 focus:outline-none w-full rounded-lg px-3 py-2 text-sm text-blue bg-white"
+              accept=".jpg, .jpeg, .png"
+              required
+              disabled={loading}
+            />
+            {selectedFile && (
+              <span className="text-green-700 text-xs mt-1">
+                ✅ Foto seleccionada: {selectedFile.name}
+              </span>
+            )}
+          </div>
+
+          {/* Botón de Registro */}
+          <div className="md:col-span-2 mt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="transition duration-200 bg-yellow text-blue hover:bg-blue hover:text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block disabled:opacity-50 disabled:cursor-not-allowed animate-fadeIn"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue mr-2"></div>
+                  Registrando...
+                </span>
+              ) : (
+                "Registrar Usuario"
+              )}
+            </button>
+            <p className="text-center mt-4 text-sm text-blue">
+              Al hacer clic en &quot;Registrar Usuario&quot;, aceptas nuestros
+              Términos de Servicio y Políticas de Privacidad.
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );
