@@ -109,7 +109,7 @@ export default function FileForm() {
       }
 
       // Subida a Storage (si hay archivo) o guardado de URL externa
-      let origen = selectedFile ? "upload" : "url"; // 👈 clave para pasar el CHECK
+      let origen = selectedFile ? "upload" : "url"; //  clave para pasar el CHECK
       let storage_path = null;
       let mime_type = null;
       let size_bytes = null;

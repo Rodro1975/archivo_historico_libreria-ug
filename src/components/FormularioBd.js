@@ -8,7 +8,7 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 export default function FormularioBd({ onClose }) {
   const [loading, setLoading] = useState(false);
-
+  // Hook de react-hook-form
   const {
     register,
     handleSubmit,
@@ -18,7 +18,7 @@ export default function FormularioBd({ onClose }) {
 
   const onSubmit = async (data) => {
     setLoading(true);
-
+    // Obtener el usuario actual
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -28,7 +28,7 @@ export default function FormularioBd({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Obtener el nombre del lector desde la tabla "lectores"
     const { data: lectorData, error: lectorError } = await supabase
       .from("lectores")
       .select("nombre")
@@ -40,7 +40,7 @@ export default function FormularioBd({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Construir el detalle de la solicitud
     const detalle = `Solicitud de listado de: ${data.tipo_listado}.
 Justificación: ${data.justificacion}`;
 

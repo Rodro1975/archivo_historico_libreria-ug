@@ -12,7 +12,7 @@ export default function EstadisticasPage() {
   const router = useRouter();
   const [rol, setRol] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  // Verifica que el usuario tenga rol de Editor o Administrador
   useEffect(() => {
     const verificarAcceso = async () => {
       const {

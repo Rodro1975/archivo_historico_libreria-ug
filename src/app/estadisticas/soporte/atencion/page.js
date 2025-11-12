@@ -18,7 +18,7 @@ import Image from "next/image";
 
 export default function SoporteAtendidasPage() {
   const [data, setData] = useState([]);
-
+  // FObtener datos al cargar el componente
   useEffect(() => {
     fetchData();
   }, []);
@@ -36,7 +36,7 @@ export default function SoporteAtendidasPage() {
     }
 
     const agrupado = {};
-
+    // Procesar datos para agrupar por atendida_por
     data.forEach((item) => {
       const nombre = item.usuarios
         ? `${item.usuarios.primer_nombre} ${item.usuarios.apellido_paterno}`

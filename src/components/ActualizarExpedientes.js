@@ -7,7 +7,7 @@ import Image from "next/image";
 import supabase from "@/lib/supabase";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { FaExternalLinkAlt } from "react-icons/fa";
-
+// Etiquetas legibles para los tipos de expediente
 const TYPE_LABELS = {
   pdf_completo: "PDF del libro",
   deposito_legal: "Depósito legal",
@@ -20,11 +20,11 @@ const TYPE_LABELS = {
   reporte_antiplagio: "Reporte antiplagio",
   otro: "Otro",
 };
-
+// Componente principal
 export default function ActualizarExpedientes({ row, onClose, onUpdate }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-
+  // Configuración de react-hook-form
   const {
     register,
     handleSubmit,
@@ -39,7 +39,7 @@ export default function ActualizarExpedientes({ row, onClose, onUpdate }) {
       url: row?.url ?? "",
     },
   });
-
+  // Sincroniza los valores del formulario cuando cambia la fila
   useEffect(() => {
     reset({
       libro_id: row?.libro_id ?? "",
@@ -50,7 +50,7 @@ export default function ActualizarExpedientes({ row, onClose, onUpdate }) {
   }, [row, reset]);
 
   const urlVal = watch("url");
-
+  // Función para abrir el expediente actual
   const openActual = async () => {
     try {
       if (row?.origen === "url" && row?.url) {
@@ -71,7 +71,7 @@ export default function ActualizarExpedientes({ row, onClose, onUpdate }) {
       toastError("No se pudo abrir el expediente.");
     }
   };
-
+  // Función para manejar el envío del formulario
   const onSubmit = async (data) => {
     try {
       const libroId = Number(data.libro_id);

@@ -29,7 +29,7 @@ const COLORS = [
 export default function FormatoLibros() {
   const [data, setData] = useState([]);
   const [rol, setRol] = useState(null);
-
+  // Verifica que el usuario tenga rol de Editor o Administrador
   useEffect(() => {
     const verificarRol = async () => {
       const {
@@ -59,7 +59,7 @@ export default function FormatoLibros() {
 
     verificarRol();
   }, []);
-
+  // Carga los datos de libros por formato
   const cargarDatos = async () => {
     const { data: libros, error } = await supabase
       .from("libros")
@@ -72,7 +72,7 @@ export default function FormatoLibros() {
 
     const conteo = {};
     libros.forEach((libro) => {
-      // Cambia "Electrónico" a "Electrónico (Azul)" para que se vea el color nuevo si quieres
+      // Normaliza el formato
       const formato =
         libro.formato?.trim() === "Electrónico"
           ? "Electrónico"

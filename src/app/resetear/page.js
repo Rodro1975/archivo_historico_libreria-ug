@@ -11,7 +11,7 @@ export default function ResetearPassword() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // ✅ Recuperar sesión desde el hash de la URL
+  // Recuperar sesión desde el hash de la URL
   useEffect(() => {
     const hash = window.location.hash;
     if (hash.includes("access_token")) {
@@ -32,7 +32,7 @@ export default function ResetearPassword() {
       });
     }
   }, []);
-
+  // Maneja el envío del formulario para cambiar la contraseña
   const handleReset = async (e) => {
     e.preventDefault();
 

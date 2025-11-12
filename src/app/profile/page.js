@@ -13,7 +13,7 @@ import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import ModalSoporte from "@/components/ModalSoporte";
 import ModalCambioContrasena from "@/components/ModalCambioContrasena"; // ✅ nuevo import
-
+// Estilo para los toasts
 const ProfilePage = () => {
   const router = useRouter();
 
@@ -29,7 +29,7 @@ const ProfilePage = () => {
       localStorage.removeItem("fotoSubidaExito");
     }
   }, []);
-
+  // verificar sesión y cargar datos del usuario
   useEffect(() => {
     const fetchSessionAndData = async () => {
       const {
@@ -94,7 +94,7 @@ const ProfilePage = () => {
           unidades_academicas = autor.unidad_academica;
         }
       }
-
+      // combinar datos y actualizar estado
       setUserData({
         ...usuario,
         dependencias,

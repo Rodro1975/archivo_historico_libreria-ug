@@ -24,14 +24,14 @@ const ModalCambioContrasena = ({ isOpen, onClose }) => {
       [field]: value,
     }));
   };
-
+  // Alternar visibilidad de la contraseña
   const togglePasswordVisibility = (field) => {
     setShowPasswords((prev) => ({
       ...prev,
       [field]: !prev[field],
     }));
   };
-
+  // Validar las contraseñas antes de enviar el formulario
   const validatePasswords = () => {
     if (!passwords.current.trim()) {
       toastError("Ingresa tu contraseña actual");
@@ -55,7 +55,7 @@ const ModalCambioContrasena = ({ isOpen, onClose }) => {
 
     return true;
   };
-
+  // Manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,7 +74,7 @@ const ModalCambioContrasena = ({ isOpen, onClose }) => {
         setLoading(false);
         return;
       }
-
+      // Actualizar la contraseña del usuario
       const { error: updateError } = await supabase.auth.updateUser({
         password: passwords.new,
       });
@@ -105,7 +105,7 @@ const ModalCambioContrasena = ({ isOpen, onClose }) => {
         new: "",
         confirm: "",
       });
-
+      // Cerrar el modal
       onClose();
     } catch (error) {
       console.error("Error inesperado:", error);

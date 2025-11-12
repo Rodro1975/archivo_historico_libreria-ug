@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import supabase from "@/lib/supabase";
-
+// Esquema de validación con Zod
 const RegisterUserSchema = z.object({
   primer_nombre: z
     .string()
@@ -58,7 +58,7 @@ export default function UserForm() {
   const onSubmit = async (data) => {
     try {
       // Elimina id_auth si existe en los datos
-      const { id_auth, ...userData } = data; // Asegúrate de no enviar id_auth
+      const { id_auth, ...userData } = data; // asegura no incluir id_auth
 
       const { error } = await supabase.from("usuarios").insert([userData]); // Inserta solo los datos necesarios
 

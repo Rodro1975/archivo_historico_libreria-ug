@@ -40,7 +40,7 @@ export default function FormularioDonacion({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Construir el detalle de la donación
     const detalle = `Donación de libro:
 Título: ${data.titulo}
 Autor: ${data.autor}

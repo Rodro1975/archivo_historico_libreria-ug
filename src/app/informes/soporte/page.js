@@ -12,6 +12,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { FaFilePdf, FaFileExcel, FaSearch } from "react-icons/fa";
 
+// Componente de filtro de texto
 function FiltroTexto({ value, placeholder, onChange, onClear }) {
   return (
     <div className="flex items-center w-full max-w-md mx-auto">
@@ -67,7 +68,7 @@ export default function InformeSoporte() {
     estado: "",
     prioridad: "",
   });
-
+  // Verificar acceso de administrador al cargar el componente
   useEffect(() => {
     const verificarAcceso = async () => {
       const {
@@ -152,7 +153,7 @@ export default function InformeSoporte() {
     }
     setLoading(false);
   };
-
+  // Filtrar soportes según los filtros aplicados
   const soportesFiltrados = useMemo(() => {
     return soportes.filter((s) => {
       const matchAsunto = s.asunto
@@ -243,7 +244,7 @@ export default function InformeSoporte() {
       { header: "Usuario/Lector", key: "usuario", width: 25 },
       { header: "Atendido Por", key: "atendido_por", width: 25 },
     ];
-
+    // Agregar filas al Excel
     soportesFiltrados.forEach((s) => {
       sheet.addRow({
         id: s.id,

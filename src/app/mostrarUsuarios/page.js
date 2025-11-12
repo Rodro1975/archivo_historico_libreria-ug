@@ -7,7 +7,7 @@ import ActualizarUsuarios from "@/components/ActualizarUsuarios";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
-// 👇 imports para paginación
+// imports para paginación
 import usePageSlice from "@/hooks/usePageSlice";
 import Pagination from "@/components/Pagination";
 
@@ -77,7 +77,7 @@ const MostrarUsuariosPage = () => {
     };
   }, []);
 
-  // ✅ Paginación sobre la lista filtrada
+  // Paginación sobre la lista filtrada
   const {
     page,
     setPage,
@@ -86,9 +86,9 @@ const MostrarUsuariosPage = () => {
     start,
     end,
     pageItems, // <- usar en el tbody
-  } = usePageSlice(filteredUsuarios, 5); // 5por página
+  } = usePageSlice(filteredUsuarios, 5); // 5 por página
 
-  // ✅ Volver a la página 1 si cambia el término de búsqueda o cambia el total
+  // Volver a la página 1 si cambia el término de búsqueda o cambia el total
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filteredUsuarios.length, setPage]);

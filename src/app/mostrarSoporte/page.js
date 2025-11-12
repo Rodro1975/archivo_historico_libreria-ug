@@ -6,7 +6,7 @@ import WorkBar from "@/components/WorkBar";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { FaSearch } from "react-icons/fa";
 
-// 👇 Paginación (mismo set que ya usas)
+// Paginación
 import usePageSlice from "@/hooks/usePageSlice";
 import Pagination from "@/components/Pagination";
 
@@ -20,7 +20,7 @@ export default function MostrarSoportePage() {
     fetchSoportes();
     fetchUsuarios();
   }, []);
-
+  // Función para cargar los soportes desde Supabase
   async function fetchSoportes() {
     setLoading(true);
     try {
@@ -89,7 +89,7 @@ export default function MostrarSoportePage() {
         .includes((searchTerm || "").toLowerCase())
   );
 
-  // ✅ Paginación: 5 por página sobre el arreglo filtrado
+  // Paginación: 5 por página sobre el arreglo filtrado
   const {
     page,
     setPage,
@@ -100,7 +100,7 @@ export default function MostrarSoportePage() {
     pageItems, // usar en el <tbody>
   } = usePageSlice(soportesFiltrados, 5);
 
-  // ✅ Al cambiar la búsqueda o el total filtrado, volver a página 1
+  // Al cambiar la búsqueda o el total filtrado, volver a página 1
   useEffect(() => {
     setPage(1);
   }, [searchTerm, soportesFiltrados.length, setPage]);

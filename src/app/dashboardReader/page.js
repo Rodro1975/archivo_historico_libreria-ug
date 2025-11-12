@@ -12,7 +12,7 @@ const LectorDashboard = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
+  //identifica el rol del usuario y muestra el panel correspondiente
   useEffect(() => {
     const checkSessionAndRedirect = async () => {
       const {

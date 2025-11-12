@@ -20,7 +20,7 @@ const COLORS = ["#facc15", "#60a5fa"]; // amarillo y azul claro
 export default function UsuariosEsAutorPage() {
   const [data, setData] = useState([]);
   const [rol, setRol] = useState(null);
-
+  // Verificar rol del usuario al cargar el componente
   useEffect(() => {
     const verificarRol = async () => {
       const {
@@ -50,7 +50,7 @@ export default function UsuariosEsAutorPage() {
 
     verificarRol();
   }, []);
-
+  // Cargar datos de usuarios agrupados por es_autor
   const cargarDatos = async () => {
     const { data, error } = await supabase.from("usuarios").select("es_autor");
 

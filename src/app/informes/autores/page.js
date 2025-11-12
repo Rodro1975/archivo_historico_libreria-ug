@@ -23,7 +23,7 @@ export default function InformesAutores() {
     cargo: "",
     vigente: "",
   });
-
+  // Verificar rol de usuario al cargar la página
   useEffect(() => {
     const fetchRoleAndData = async () => {
       const {
@@ -75,7 +75,7 @@ export default function InformesAutores() {
     }
     setLoading(false);
   };
-
+  // Filtrar autores según los filtros aplicados
   const autoresFiltrados = useMemo(() => {
     return autores.filter((a) => {
       const matchNombre = a.nombre_completo
@@ -137,7 +137,7 @@ export default function InformesAutores() {
       { header: "Dependencia", key: "dependencia", width: 25 },
       { header: "Vigente", key: "vigente", width: 10 },
     ];
-
+    // Agregar filas con los datos filtrados
     autoresFiltrados.forEach((a) => {
       sheet.addRow({
         nombre: a.nombre_completo || "N/A",
@@ -148,7 +148,7 @@ export default function InformesAutores() {
         vigente: a.vigencia ? "Sí" : "No",
       });
     });
-
+    // Generar y descargar el archivo Excel
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

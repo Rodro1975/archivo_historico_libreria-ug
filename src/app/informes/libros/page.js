@@ -13,6 +13,7 @@ import autoTable from "jspdf-autotable";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
+// Componente principal de Informes de Libros
 export default function InformesLibros() {
   const router = useRouter();
   const [userRole, setUserRole] = useState(null);
@@ -23,7 +24,7 @@ export default function InformesLibros() {
     idioma: "",
     tipoAutoria: "",
   });
-
+  // Verificar rol del usuario al cargar el componente
   useEffect(() => {
     const fetchRoleAndData = async () => {
       const {
@@ -169,7 +170,7 @@ export default function InformesLibros() {
           Informes de Libros
         </h1>
       </div>
-
+      {/* Filtros de búsqueda */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <FiltroTexto
           value={filtros.anio}

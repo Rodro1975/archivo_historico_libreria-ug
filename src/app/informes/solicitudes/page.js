@@ -12,6 +12,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { FaFilePdf, FaFileExcel, FaSearch } from "react-icons/fa";
 
+// Componente de filtro de texto
 function FiltroTexto({ value, placeholder, onChange, onClear }) {
   return (
     <div className="flex items-center w-full max-w-md mx-auto">
@@ -63,7 +64,7 @@ export default function InformeSolicitudes() {
   const [loading, setLoading] = useState(true);
   const [rol, setRol] = useState(null);
   const [filtros, setFiltros] = useState({ nombre: "", estado: "" });
-
+  // Verificar acceso de administrador al cargar el componente
   useEffect(() => {
     const verificarAcceso = async () => {
       const {

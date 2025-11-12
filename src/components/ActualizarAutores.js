@@ -5,14 +5,12 @@ import supabase from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
-// CHANGED: importar el helper unificado
 import { validateEmailByInstitution } from "@/lib/emailValidators";
 
-// Mantengo tu validación de nombre tal cual
+// regex mejorado para nombres con Unicode
 const NAME_REGEX = /^[\p{L}]+(?:\s+[\p{L}]+)*$/u;
 
-// REMOVED: EMAIL_REGEX_STRICT e isValidDomainLike locales (los sustituye el helper)
-
+// helper para detectar si el correo es UG
 const esUGCorreo = (correo = "") =>
   (correo || "").toLowerCase().trim().endsWith("@ugto.mx");
 
@@ -26,7 +24,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
     }
     return esUGCorreo(autor?.correo_institucional) ? "UG" : "Externa";
   }, [autor]);
-
+  // Configuración de react-hook-form
   const {
     register,
     handleSubmit,
@@ -53,7 +51,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
   const [unidades, setUnidades] = useState([]);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
   const [error, setError] = useState(null);
-
+  // Cargar dependencias al montar el componente
   useEffect(() => {
     supabase
       .from("dependencias")
@@ -66,7 +64,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
         setDependencias(data || []);
       });
   }, []);
-
+  // Cargar unidades académicas cuando cambie la dependencia seleccionada
   useEffect(() => {
     if (tipoInstitucion !== "UG" || !dependenciaSeleccionada) {
       setUnidades([]);
@@ -74,7 +72,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
       setValue("unidad_academica_id", undefined, { shouldValidate: true });
       return;
     }
-
+    // Cargar unidades académicas para la dependencia seleccionada
     setLoadingUnidades(true);
     supabase
       .from("unidades_academicas")
@@ -93,7 +91,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
         setLoadingUnidades(false);
       });
   }, [tipoInstitucion, dependenciaSeleccionada, setValue]);
-
+  // Resetear el formulario cuando cambie el autor
   useEffect(() => {
     const deducido =
       autor?.institucion_tipo ??
@@ -108,7 +106,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
       institucion_nombre: autor?.institucion_nombre ?? "",
     });
   }, [autor, reset]);
-
+  // Limpiar campos específicos al cambiar el tipo de institución
   useEffect(() => {
     if (tipoInstitucion === "Externa") {
       setValue("dependencia_id", undefined, { shouldValidate: true });
@@ -120,7 +118,7 @@ const ActualizarAutores = ({ autor, onClose, onUpdate }) => {
     try {
       const correoTrim = (data.correo_institucional || "").trim().toLowerCase();
 
-      // CHANGED: una sola validación unificada con el helper
+      // una sola validación unificada con el helper
       const emailErr = validateEmailByInstitution(
         data.institucion_tipo,
         correoTrim

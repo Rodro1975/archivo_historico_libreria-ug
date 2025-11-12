@@ -6,16 +6,17 @@ import supabase from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+// Página para que el usuario pueda solicitar el reseteo de su contraseña
 export default function RecuperarPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+  // Maneja el envío del formulario para solicitar el reseteo de contraseña
   const handleReset = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const redirectUrl = `${window.location.origin}/resetear`; // Página donde el usuario podrá cambiar su password
+    const redirectUrl = `${window.location.origin}/resetear`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,

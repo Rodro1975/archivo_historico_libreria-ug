@@ -19,7 +19,7 @@ import html2canvas from "html2canvas";
 export default function PaginasLibros() {
   const [data, setData] = useState([]);
   const [rol, setRol] = useState(null);
-
+  // Verifica que el usuario tenga rol de Editor o Administrador
   useEffect(() => {
     const verificarRol = async () => {
       const {
@@ -59,7 +59,7 @@ export default function PaginasLibros() {
       toastError("Error al cargar libros");
       return;
     }
-
+    // Procesa los datos para contar libros en rangos de páginas
     const intervalos = {
       "1-100": 0,
       "101-200": 0,

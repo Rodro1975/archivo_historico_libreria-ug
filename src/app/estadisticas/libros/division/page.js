@@ -17,7 +17,7 @@ import Image from "next/image";
 import html2canvas from "html2canvas";
 import { toastError } from "@/lib/toastUtils";
 
-// 🔧 Si tu tabla no se llama "unidades_academicas", cámbiala aquí:
+// Nombre de la tabla de unidades académicas
 const UA_TABLE = "unidades_academicas";
 
 export default function LibrosPorDivSecEsc() {

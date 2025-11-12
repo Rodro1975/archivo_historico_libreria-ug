@@ -17,7 +17,7 @@ export default function FormularioPrestamoLibro({ onClose }) {
     reset,
     formState: { errors },
   } = useForm();
-
+  // Cargar la lista de libros disponibles al montar el componente
   useEffect(() => {
     const fetchLibros = async () => {
       setCargandoLibros(true);
@@ -50,7 +50,7 @@ export default function FormularioPrestamoLibro({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Obtener el nombre del lector desde la tabla "lectores"
     const { data: lectorData, error: lectorError } = await supabase
       .from("lectores")
       .select("nombre")
@@ -62,7 +62,7 @@ export default function FormularioPrestamoLibro({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Crear el detalle de la solicitud
     const detalle = `Libro solicitado: ${data.libro_id}. Motivo: ${data.motivo}`;
 
     const { error } = await supabase.from("solicitudes").insert(
@@ -74,7 +74,7 @@ export default function FormularioPrestamoLibro({ onClose }) {
       },
       { returning: "minimal" }
     );
-
+    // Manejar la respuesta de la inserción
     setLoading(false);
     if (error) {
       toastError(`Error al enviar la solicitud: ${error.message}`);

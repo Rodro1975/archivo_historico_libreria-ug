@@ -20,7 +20,7 @@ import html2canvas from "html2canvas";
 export default function PrioridadSoportePage() {
   const [data, setData] = useState([]);
   const [rol, setRol] = useState(null);
-
+  // Verificar rol del usuario al cargar el componente
   useEffect(() => {
     const verificarRol = async () => {
       const {
@@ -50,7 +50,7 @@ export default function PrioridadSoportePage() {
 
     verificarRol();
   }, []);
-
+  // Cargar datos de soporte agrupados por prioridad
   const cargarDatos = async () => {
     const { data, error } = await supabase
       .from("soporte")

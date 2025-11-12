@@ -1,3 +1,4 @@
+// register/page.js
 "use client";
 
 import WorkBar from "@/components/WorkBar";

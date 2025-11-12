@@ -55,7 +55,7 @@ const mapFormatoFromDB = (libro) => {
   if (["electronico", "electrónico", "ambos", "mixto"].includes(f)) return "";
   return "";
 };
-
+// Componente ActualizarLibros
 const ActualizarLibros = ({ libro, onClose, onUpdate }) => {
   const {
     register,

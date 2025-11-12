@@ -29,7 +29,7 @@ const COLORS = [
 export default function IdiomaLibros() {
   const [data, setData] = useState([]);
   const [rol, setRol] = useState(null);
-
+  // Verifica que el usuario tenga rol de Editor o Administrador
   useEffect(() => {
     const verificarRol = async () => {
       const {
@@ -69,13 +69,13 @@ export default function IdiomaLibros() {
       toastError("Error al cargar libros");
       return;
     }
-
+    // Procesa los datos para contar libros por idioma
     const conteo = {};
     libros.forEach((libro) => {
       const idioma = libro.idioma?.trim() || "Desconocido";
       conteo[idioma] = (conteo[idioma] || 0) + 1;
     });
-
+    // Formatea los datos para Recharts
     const datosFormateados = Object.entries(conteo).map(
       ([idioma, cantidad]) => ({
         name: idioma,

@@ -18,7 +18,7 @@ export default function InformesAutoresFrecuentes() {
   const [userRole, setUserRole] = useState(null);
   const [autores, setAutores] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  // Verificar rol del usuario al cargar el componente
   useEffect(() => {
     const fetchRoleAndData = async () => {
       const {
@@ -64,7 +64,7 @@ export default function InformesAutoresFrecuentes() {
     }
     setLoading(false);
   };
-
+  // Funciones para exportar PDF y Excel
   const exportarPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(14);

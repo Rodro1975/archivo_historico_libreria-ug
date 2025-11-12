@@ -10,7 +10,7 @@ export default function ModalVerSolicitudes({ open, onClose }) {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lectorId, setLectorId] = useState(null);
-  const hasShownToast = useRef(false); // ✅ Evita toast duplicado
+  const hasShownToast = useRef(false); //  Evita toast duplicado
 
   useEffect(() => {
     const obtenerSolicitudes = async () => {
@@ -47,7 +47,7 @@ export default function ModalVerSolicitudes({ open, onClose }) {
 
     if (open) {
       obtenerSolicitudes();
-      hasShownToast.current = false; // ✅ Reinicia el control al reabrir modal
+      hasShownToast.current = false; // Reinicia el control al reabrir modal
     }
   }, [open]);
 

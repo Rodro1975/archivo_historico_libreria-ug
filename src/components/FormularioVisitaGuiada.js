@@ -8,17 +8,17 @@ import { toastError, toastSuccess } from "@/lib/toastUtils";
 
 export default function FormularioVisitaGuiada({ onClose }) {
   const [loading, setLoading] = useState(false);
-
+  // Inicializar react-hook-form
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
-
+  // Manejar el envío del formulario
   const onSubmit = async (data) => {
     setLoading(true);
-
+    // Obtener el usuario autenticado
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -28,7 +28,7 @@ export default function FormularioVisitaGuiada({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Obtener el nombre del lector desde la tabla "lectores"
     const { data: lectorData, error: lectorError } = await supabase
       .from("lectores")
       .select("nombre")
@@ -40,13 +40,13 @@ export default function FormularioVisitaGuiada({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Construir el detalle de la solicitud
     const detalle = `Solicitud de visita guiada:
 Fecha solicitada: ${data.fecha}
 Número de personas: ${data.numero_personas}
 Motivo: ${data.motivo}
 Comentarios adicionales: ${data.comentarios || "Ninguno"}`;
-
+    // Insertar la solicitud en la tabla "solicitudes"
     const { error } = await supabase.from("solicitudes").insert(
       {
         lector_id: user.id,

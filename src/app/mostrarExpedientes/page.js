@@ -7,7 +7,7 @@ import ActualizarExpedientes from "@/components/ActualizarExpedientes";
 import { FaTrash, FaEdit, FaSearch, FaExternalLinkAlt } from "react-icons/fa";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
-// 👇 imports para paginación
+// Hooks y componentes de paginación
 import usePageSlice from "@/hooks/usePageSlice";
 import Pagination from "@/components/Pagination";
 
@@ -18,7 +18,7 @@ const fold = (s) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
-
+// Formatear tamaño en bytes a KB, MB, GB
 const fmtSize = (b) => {
   if (b === null || b === undefined) return "—";
   if (b < 1024) return `${b} B`;
@@ -29,7 +29,7 @@ const fmtSize = (b) => {
   const gb = mb / 1024;
   return `${gb.toFixed(1)} GB`;
 };
-
+// Formatear fecha ISO a local
 const fmtDate = (iso) => {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -46,7 +46,7 @@ export default function MostrarExpedientesPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentRow, setCurrentRow] = useState(null);
   const [rowToDelete, setRowToDelete] = useState(null);
-
+  // Fetch de todos los expedientes
   const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -101,18 +101,11 @@ export default function MostrarExpedientesPage() {
     );
   }, [searchTerm, rows]);
 
-  // ✅ Paginación (5 por página) sobre la lista filtrada
-  const {
-    page,
-    setPage,
-    total,
-    totalPages,
-    start,
-    end,
-    pageItems, // <- usar en el tbody
-  } = usePageSlice(filtered, 5);
+  // Paginación (5 por página) sobre la lista filtrada
+  const { page, setPage, total, totalPages, start, end, pageItems } =
+    usePageSlice(filtered, 5);
 
-  // ✅ Reset a página 1 cuando cambie la búsqueda o el total
+  // Reset a página 1 cuando cambie la búsqueda o el total
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filtered.length, setPage]);
@@ -219,7 +212,7 @@ export default function MostrarExpedientesPage() {
             Haz clic en Limpiar para ver todos los expedientes.
           </p>
         )}
-
+        {/* Tabla de expedientes */}
         <div className="overflow-x-auto w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
           <table className="min-w-full bg-white border border-gray-300 text-blue mb-8 text-xs sm:text-sm">
             <thead className="bg-yellow text-blue uppercase text-xs">

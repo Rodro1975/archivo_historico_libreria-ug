@@ -67,7 +67,7 @@ export default function InformeUsuarios() {
     email: "",
     role: "",
   });
-
+  // Verificar acceso de administrador al cargar el componente
   useEffect(() => {
     const verificarAcceso = async () => {
       const {
@@ -97,7 +97,7 @@ export default function InformeUsuarios() {
 
     verificarAcceso();
   }, [router]);
-
+  // Función para cargar usuarios desde la base de datos
   const cargarUsuarios = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -129,7 +129,7 @@ export default function InformeUsuarios() {
     }
     setLoading(false);
   };
-
+  // Filtrar usuarios según los filtros aplicados
   const usuariosFiltrados = useMemo(() => {
     return usuarios.filter((u) => {
       const nombreCompleto = [

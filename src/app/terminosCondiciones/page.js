@@ -6,6 +6,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 
+// Página de Términos y Condiciones
 const AvisoPrivacidadPage = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -13,7 +13,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [toastShown, setToastShown] = useState(false);
   const router = useRouter();
-
+  //identifica el rol del usuario y muestra el panel correspondiente
   useEffect(() => {
     const checkSession = async () => {
       const {

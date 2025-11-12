@@ -21,7 +21,7 @@ export default function InformesDependenciaAcademica() {
   const [filtros, setFiltros] = useState({
     dependencia: "",
   });
-
+  // Verificar rol del usuario al cargar el componente
   useEffect(() => {
     const fetchRoleAndData = async () => {
       const {
@@ -74,7 +74,7 @@ export default function InformesDependenciaAcademica() {
     }
     setLoading(false);
   };
-
+  // Filtrar libros según los filtros aplicados
   const librosFiltrados = useMemo(() => {
     return libros.filter((libro) => {
       const dependenciaNombre =

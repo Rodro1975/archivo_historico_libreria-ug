@@ -19,7 +19,7 @@ import WorkBar from "@/components/WorkBar";
 export default function InformesInicio() {
   const router = useRouter();
   const [role, setRole] = useState(null);
-
+  // Obtener rol del usuario al cargar el componente
   useEffect(() => {
     const getRole = async () => {
       const {

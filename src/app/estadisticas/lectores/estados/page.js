@@ -20,7 +20,7 @@ import Image from "next/image";
 export default function SolicitudesPorEstado() {
   const [data, setData] = useState([]);
   const [rol, setRol] = useState(null);
-
+  // Verifica que el usuario tenga rol de Editor o Administrador
   useEffect(() => {
     const verificarRol = async () => {
       const {

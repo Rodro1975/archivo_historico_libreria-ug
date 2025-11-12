@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import supabase from "@/lib/supabase";
 import Image from "next/image";
 import emailjs from "emailjs-com";
-import { toastSuccess, toastError } from "@/lib/toastUtils"; // ✅ implementación correcta
+import { toastSuccess, toastError } from "@/lib/toastUtils";
 
 emailjs.init("1Z9rEYtD53y4HwJCo"); // Tu Public Key
-
+// Opciones de asunto para el formulario de soporte
 const ASUNTOS = [
   { value: "", label: "Selecciona el asunto" },
   {
@@ -57,7 +57,7 @@ export default function ModalSoporte({ isOpen = true, onClose, userId }) {
   const [prioridad, setPrioridad] = useState("");
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState("Usuario");
-
+  // Obtener el nombre del usuario al montar el componente
   useEffect(() => {
     const fetchUserName = async () => {
       if (!userId) return;
@@ -106,7 +106,7 @@ export default function ModalSoporte({ isOpen = true, onClose, userId }) {
         setLoading(false);
         return;
       }
-
+      // Enviar correo de notificación
       await emailjs.send("service_t0p7qz9", "template_r7bizxo", {
         name: userName,
         title: asunto,

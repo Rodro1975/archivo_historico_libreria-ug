@@ -18,7 +18,7 @@ import ModalCorreo from "./ModalCorreo";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 import { toast } from "react-hot-toast";
 import NotificacionesPanel from "./NotificacionesPanel";
-
+// Componente Sidebar
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [role, setRole] = useState(null);
@@ -28,7 +28,7 @@ const Sidebar = () => {
   const [userEmail, setUserEmail] = useState("");
   const [modalCorreoOpen, setModalCorreoOpen] = useState(false);
   const router = useRouter();
-
+  // Obtener el rol del usuario al montar el componente
   useEffect(() => {
     const fetchUserRole = async () => {
       setLoading(true);
@@ -42,7 +42,7 @@ const Sidebar = () => {
           setRole(null);
           return;
         }
-
+        // Obtener el rol desde la tabla "usuarios"
         const { data, error } = await supabase
           .from("usuarios")
           .select("role")
@@ -64,7 +64,7 @@ const Sidebar = () => {
 
     fetchUserRole();
   }, []);
-
+  // Obtener el conteo de notificaciones no leídas
   useEffect(() => {
     const fetchNotificationCount = async () => {
       try {
@@ -98,7 +98,7 @@ const Sidebar = () => {
 
     if (role) fetchNotificationCount();
   }, [role]);
-
+  // Suscribirse a cambios en notificaciones
   useEffect(() => {
     let unsubscribe = null;
 
@@ -127,7 +127,7 @@ const Sidebar = () => {
         setNotificationCount(data.length);
       }
     };
-
+    // Configurar la suscripción a notificaciones
     const subscribeToNotifications = async () => {
       const {
         data: { user },
@@ -163,7 +163,7 @@ const Sidebar = () => {
       if (unsubscribe) unsubscribe();
     };
   }, [role]);
-
+  // Obtener el email del usuario al montar el componente
   useEffect(() => {
     const fetchUserEmail = async () => {
       const {
@@ -173,7 +173,7 @@ const Sidebar = () => {
     };
     fetchUserEmail();
   }, []);
-
+  // Obtener la URL del webmail según el dominio del email
   const getWebmailUrl = (email) => {
     if (!email) return "#";
     const domain = email.split("@")[1]?.toLowerCase() || "";
@@ -183,7 +183,7 @@ const Sidebar = () => {
   };
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-
+  // Manejar el cierre de sesión
   const handleLogout = async () => {
     toast(
       (t) => (

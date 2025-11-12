@@ -8,7 +8,7 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 const UserProfileCard = ({ userData }) => {
   const [fotoUrl, setFotoUrl] = useState(userData.foto);
   const [uploading, setUploading] = useState(false);
-
+  // Manejar el cambio de foto de perfil
   const handleFotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -48,7 +48,7 @@ const UserProfileCard = ({ userData }) => {
       setUploading(false);
       return;
     }
-
+    // Actualizar la foto en el estado local
     setFotoUrl(publicUrl.publicUrl);
     toastSuccess("Foto cambiada correctamente.");
     setTimeout(() => {
@@ -65,7 +65,7 @@ const UserProfileCard = ({ userData }) => {
       </p>
     );
   }
-
+  // Desestructurar los datos del usuario
   const {
     primer_nombre,
     segundo_nombre,

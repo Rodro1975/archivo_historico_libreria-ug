@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
+// Componente ActualizarUsuarios
 const ActualizarUsuarios = ({ usuario, onClose, onUpdate }) => {
   const {
     register,
@@ -15,7 +16,7 @@ const ActualizarUsuarios = ({ usuario, onClose, onUpdate }) => {
   } = useForm({
     defaultValues: usuario,
   });
-
+  // Sincronizar los valores del formulario cuando el usuario cambia
   useEffect(() => {
     reset(usuario);
   }, [usuario, reset]);

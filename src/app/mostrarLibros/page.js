@@ -201,11 +201,11 @@ const MostrarLibrosPage = () => {
     fetchLibros();
   }, [fetchLibros]);
 
-  // ✅ Paginación sobre el arreglo filtrado (5 por página)
+  // Paginación sobre el arreglo filtrado (5 por página)
   const { page, setPage, total, totalPages, start, end, pageItems } =
     usePageSlice(filteredLibros, 5);
 
-  // ✅ Si cambia el término de búsqueda, vuelve a la página 1
+  // Si cambia el término de búsqueda, vuelve a la página 1
   useEffect(() => {
     setPage(1);
   }, [searchTerm, setPage]);
@@ -304,7 +304,7 @@ const MostrarLibrosPage = () => {
           Haz clic en Limpiar para ver todos los libros.
         </p>
       ) : null}
-
+      {/* Tabla de libros */}
       <div className="overflow-x-auto w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
         <table className="min-w-full bg-white border border-gray-300 text-blue mb-8 text-xs sm:text-sm">
           <thead className="bg-yellow text-blue uppercase text-xs">

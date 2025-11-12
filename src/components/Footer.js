@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import EditorialLogo from "./EditorialLogo";
+// Componente Footer
 const Footer = () => {
   return (
     <footer

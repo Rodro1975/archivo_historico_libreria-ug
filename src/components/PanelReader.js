@@ -21,7 +21,7 @@ const PanelReader = ({ userData }) => {
   const [modalVerSolicitudesOpen, setModalVerSolicitudesOpen] = useState(false);
   const [lectorId, setLectorId] = useState(null);
   const hasShownToast = useRef(false);
-
+  // Obtener el ID del lector al montar el componente
   useEffect(() => {
     const getUserId = async () => {
       const {
@@ -31,7 +31,7 @@ const PanelReader = ({ userData }) => {
     };
     getUserId();
   }, []);
-
+  // Manejar el cierre de sesión con confirmación
   const handleLogout = async () => {
     toast(
       (t) => (
@@ -73,7 +73,7 @@ const PanelReader = ({ userData }) => {
       { duration: Infinity }
     );
   };
-
+  // Manejar la apertura de los modales con toasts
   const handleOpenBuscarLibros = () => {
     setModalBuscarOpen(true);
     if (!hasShownToast.current) {
@@ -81,7 +81,7 @@ const PanelReader = ({ userData }) => {
       hasShownToast.current = true;
     }
   };
-
+  // Abrir el modal de solicitudes
   const handleOpenSolicitudes = () => {
     setModalSolicitudesOpen(true);
     if (!hasShownToast.current) {
@@ -89,7 +89,7 @@ const PanelReader = ({ userData }) => {
       hasShownToast.current = true;
     }
   };
-
+  // Abrir el modal para ver solicitudes
   const handleOpenVerSolicitudes = () => {
     setModalVerSolicitudesOpen(true);
     toastSuccess("Mostrando tus solicitudes");

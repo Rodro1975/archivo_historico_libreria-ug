@@ -7,7 +7,7 @@ import ActualizarAutores from "@/components/ActualizarAutores";
 import { FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 import { toastSuccess, toastError } from "@/lib/toastUtils";
 
-// ✅ NEW: importa hook y componente de paginación
+// Hooks y componentes para paginación
 import usePageSlice from "@/hooks/usePageSlice";
 import Pagination from "@/components/Pagination";
 
@@ -26,7 +26,7 @@ function splitNombreES(full = "") {
   const nombre = parts.slice(0, -2).join(" ");
   return { apellido, nombre };
 }
-
+// Componente principal de la página para mostrar autores
 const MostrarAutoresPage = () => {
   const [autores, setAutores] = useState([]);
   const [filteredAutores, setFilteredAutores] = useState([]);
@@ -37,7 +37,7 @@ const MostrarAutoresPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [autorAEliminar, setAutorAEliminar] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
-
+  // Función para obtener autores desde Supabase
   const fetchAutores = useCallback(async () => {
     setLoading(true);
     try {
@@ -83,7 +83,7 @@ const MostrarAutoresPage = () => {
     },
     [autores]
   );
-
+  // Función para manejar la eliminación de un autor
   const handleDelete = async () => {
     if (!autorAEliminar) return;
     try {
@@ -110,7 +110,7 @@ const MostrarAutoresPage = () => {
     handleSearch(searchTerm);
   }, [searchTerm, handleSearch]);
 
-  // ✅ NEW: paginación de 5 en 5 sobre el arreglo YA filtrado
+  // usa el hook de paginación
   const {
     page,
     setPage,
@@ -121,7 +121,7 @@ const MostrarAutoresPage = () => {
     pageItems, // <- usa esto en el <tbody>
   } = usePageSlice(filteredAutores, 5);
 
-  // ✅ NEW: si cambia el término de búsqueda, vuelve a la página 1
+  // Si cambia el término de búsqueda, vuelve a la página 1
   useEffect(() => {
     setPage(1);
   }, [searchTerm, setPage]);

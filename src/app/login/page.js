@@ -1,3 +1,4 @@
+// src/app/login/page.js
 "use client";
 
 import React, { useState } from "react";
@@ -12,6 +13,7 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 import FormReader from "@/components/FormReader";
 import TurnstileWidget from "@/components/TurnstileWidget";
 
+// Componente principal de la página de login
 const LoginForm = () => {
   const {
     register,

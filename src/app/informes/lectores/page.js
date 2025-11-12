@@ -12,6 +12,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { FaFilePdf, FaFileExcel, FaSearch } from "react-icons/fa";
 
+// Componente de filtro de texto
 function FiltroTexto({ value, placeholder, onChange, onClear }) {
   return (
     <div className="flex items-center w-full max-w-md mx-auto">
@@ -63,7 +64,7 @@ export default function InformeLectores() {
   const [loading, setLoading] = useState(true);
   const [rol, setRol] = useState(null);
   const [busqueda, setBusqueda] = useState("");
-
+  // Verificar acceso de administrador al cargar el componente
   useEffect(() => {
     const verificarAcceso = async () => {
       const {
@@ -93,7 +94,7 @@ export default function InformeLectores() {
 
     verificarAcceso();
   }, [router]);
-
+  // Función para cargar lectores desde la base de datos
   const cargarLectores = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -143,7 +144,7 @@ export default function InformeLectores() {
       { header: "Registrado en", key: "creado_en", width: 20 },
       { header: "\u00daltimo acceso", key: "ultimo_acceso", width: 20 },
     ];
-
+    // Agregar filas al Excel
     lectoresFiltrados.forEach((l) => {
       sheet.addRow({
         nombre: l.nombre,
@@ -155,7 +156,7 @@ export default function InformeLectores() {
           : "Sin acceso",
       });
     });
-
+    // Generar y descargar el archivo Excel
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

@@ -8,7 +8,7 @@ import { toastSuccess, toastError } from "@/lib/toastUtils";
 import Image from "next/image";
 import { FaSearch } from "react-icons/fa";
 
-// 👇 imports de paginación (mismo set que ya usas en otros módulos)
+// imports de paginación (mismo set que ya usas en otros módulos)
 import usePageSlice from "@/hooks/usePageSlice";
 import Pagination from "@/components/Pagination";
 
@@ -69,7 +69,7 @@ export default function MostrarSolicitudes() {
       );
     }
   }, [searchTerm, solicitudes]);
-
+  // Función para aprobar/rechazar solicitud
   const actualizarSolicitud = async (estado) => {
     if (!selected?.id) return;
     setLoading(true);
@@ -107,7 +107,7 @@ export default function MostrarSolicitudes() {
     return e.charAt(0).toUpperCase() + e.slice(1);
   };
 
-  // ✅ Paginación: 5 por página sobre el arreglo filtrado
+  // Paginación: 5 por página sobre el arreglo filtrado
   const {
     page,
     setPage,
@@ -118,7 +118,7 @@ export default function MostrarSolicitudes() {
     pageItems, // usar en el <tbody>
   } = usePageSlice(filtered, 5);
 
-  // ✅ Al cambiar búsqueda o el total filtrado, vuelve a la página 1
+  // Al cambiar búsqueda o el total filtrado, vuelve a la página 1
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filtered.length, setPage]);
@@ -182,6 +182,7 @@ export default function MostrarSolicitudes() {
         ) : (
           <>
             <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-yellow max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
+              {/* Tabla de solicitudes */}
               <table className="min-w-full divide-y divide-blue text-blue text-xs sm:text-sm">
                 <thead className="bg-yellow text-blue uppercase text-xs">
                   <tr>

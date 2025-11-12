@@ -96,7 +96,7 @@ export default function LibrosPorRgCampusCnms() {
         return;
       }
 
-      // 🔹 Trae SOLO columnas existentes en tu tabla
+      // Trae SOLO columnas existentes en la tabla
       const { data: libros, error } = await supabase
         .from("libros")
         .select("division, campus, departamento, anioPublicacion");

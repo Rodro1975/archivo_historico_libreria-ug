@@ -28,7 +28,7 @@ export default function FormularioEspacioTrabajo({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Obtener el nombre del lector desde la tabla "lectores"
     const { data: lectorData, error: lectorError } = await supabase
       .from("lectores")
       .select("nombre")
@@ -40,7 +40,7 @@ export default function FormularioEspacioTrabajo({ onClose }) {
       setLoading(false);
       return;
     }
-
+    // Construir el detalle de la solicitud
     const detalle = `Solicitud de espacio de trabajo:
 Fecha solicitada: ${data.fecha}
 Duración (horas): ${data.duracion}
